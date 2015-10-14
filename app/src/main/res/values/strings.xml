@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">dotaerTest</string>
+
+    <string name="title_section1">附近玩家</string>
+    <string name="title_section2">我的主页</string>
+    <string name="title_section3">今日话题</string>
+    <string name="title_section4">视频解说</string>
+    <string name="title_section5">我的圈子</string>
+
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="show_mode">mode</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_placeholder_fragment">PlaceholderFragment</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_my_page">myPage</string>
+
+    <string name="binding_score">战绩认证</string>
+    <string name="action_search">小秘书</string>
+
+
+</resources>
