@@ -26,7 +26,8 @@
         android:layout_marginTop="10dp"
         android:imeOptions="actionSend"
         android:textColor="#FFFFFF"
-        android:gravity="center_horizontal"
+        android:gravity="center"
+
 
         android:background="@drawable/nocolor"
         android:maxLines="3"

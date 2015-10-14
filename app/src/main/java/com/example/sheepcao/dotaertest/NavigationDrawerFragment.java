@@ -101,7 +101,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+//        selectItem(mCurrentSelectedPosition);
 
 
     }
@@ -128,14 +128,13 @@ public class NavigationDrawerFragment extends Fragment {
                 R.layout.menu_item,
                 android.R.id.text1,
                 new String[]{
-                        getString(R.string.title_section1),
                         getString(R.string.title_section2),
                         getString(R.string.title_section3),
                         getString(R.string.title_section4),
                         getString(R.string.title_section5)
 
                 }));
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+//        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
     }
 
@@ -355,7 +354,7 @@ public class NavigationDrawerFragment extends Fragment {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setTitle(R.string.app_name);
+        actionBar.setTitle("菜单");
     }
 
     private ActionBar getActionBar() {

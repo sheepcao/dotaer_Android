@@ -1,12 +1,16 @@
 <!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
-    android:layout_width="match_parent" android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".MainActivity">
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
-    <FrameLayout android:id="@+id/container" android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
@@ -19,31 +23,55 @@
 
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:orientation="vertical"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/main_back"
-        >
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="15dp"
+        android:paddingRight="5dp"
+        android:paddingTop="@dimen/activity_vertical_margin">
 
-        <TextView android:id="@+id/section_label" android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/section_label"
+            android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:text="啊锕锕锕锕锕锕锕锕锕锕锕锕锕锕锕锕"/>
-        <ListView
-            android:id="@+id/dotaerList"
-            android:layout_height="match_parent"
+            android:text="啊锕锕锕锕锕锕锕锕锕锕锕锕锕锕锕锕" />
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:fastScrollEnabled="true"
-            />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <ListView
+                android:id="@+id/dotaerList"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:fastScrollEnabled="true"
+                android:layout_weight="9"/>
+
+
+            <Button
+                android:id="@+id/search_button"
+                android:layout_width="80dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:onClick="searchDotaer"
+                android:text="Search" />
+        </LinearLayout>
 
     </LinearLayout>
 
-    <fragment android:id="@+id/navigation_drawer"
-        android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
-        android:layout_gravity="start"
+
+    <fragment
+        android:id="@+id/navigation_drawer"
         android:name="com.example.sheepcao.dotaertest.NavigationDrawerFragment"
+        android:layout_width="@dimen/navigation_drawer_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
         tools:layout="@layout/fragment_navigation_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

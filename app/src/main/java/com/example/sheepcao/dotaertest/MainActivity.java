@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
@@ -32,14 +33,29 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,14 +67,26 @@ public class MainActivity extends AppCompatActivity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
+    RequestQueue mQueue = null;
+
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
     LocationClient mLocClient;
 
+    MyAdapter adapter  = null;
+
+
     private ListView lv;
     private List<Map<String, Object>> data;
+
+    List<String> usernameList;
+    List<String> ageList;
+    List<String> genderList;
+    List<String> distanceList;
+
+    ImageLoader imageLoader;
 
 
     private int pageIndex = 0;
@@ -66,6 +94,8 @@ public class MainActivity extends AppCompatActivity
     private int totalPage = 0;
     private double lati = 0.0;
     private double longi = 0.0;
+    private int ratio = 100000;
+
 
 
     @Override
@@ -75,7 +105,7 @@ public class MainActivity extends AppCompatActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+        mTitle = "附近玩家";
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -86,7 +116,7 @@ public class MainActivity extends AppCompatActivity
         mLocClient = new LocationClient(this);
         mLocClient.registerLocationListener(this);
 
-        Log.i("onCreate", "onCreate");
+        Log.i("onCreate", "onCreate title" + mTitle);
 
 //        initLocation();
 
@@ -100,14 +130,35 @@ public class MainActivity extends AppCompatActivity
 //        mLocClient.start();
 
 
-        lv = (ListView)findViewById(R.id.dotaerList);
+        mQueue = Volley.newRequestQueue(this);
+        usernameList = new ArrayList<>();
+        ageList = new ArrayList<>();
+        genderList = new ArrayList<>();
+        distanceList = new ArrayList<>();
+
+        imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
+            @Override
+            public void putBitmap(String url, Bitmap bitmap) {
+            }
+
+            @Override
+            public Bitmap getBitmap(String url) {
+                return null;
+            }
+        });
+
+
+        lv = (ListView) findViewById(R.id.dotaerList);
         //获取将要绑定的数据设置到data中
         data = getData();
-        MyAdapter adapter = new MyAdapter(this);
+        adapter = new MyAdapter(this);
         lv.setAdapter(adapter);
 
 
+
+
     }
+
 
 
     //ViewHolder静态类
@@ -127,16 +178,15 @@ public class MainActivity extends AppCompatActivity
     private List<Map<String, Object>> getData() {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Map<String, Object> map;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < usernameList.size(); i++) {
             map = new HashMap<String, Object>();
             map.put("img", R.drawable.male);
             map.put("map", R.drawable.mid_fujin);
 
-            map.put("gender", "male");
-            map.put("username", "阿里山");
-            map.put("distance", "12KM");
-            map.put("isReviewed", "暂未认证");
-            map.put("age", "19岁");
+            map.put("gender", genderList.get(i));
+            map.put("username", usernameList.get(i));
+            map.put("distance", distanceList.get(i)+"米");
+            map.put("age", ageList.get(i));
 
             list.add(map);
         }
@@ -185,7 +235,6 @@ public class MainActivity extends AppCompatActivity
                 holder.headImg = (ImageView) convertView.findViewById(R.id.headImg);
                 holder.gender = (ImageView) convertView.findViewById(R.id.genderImg);
                 holder.username = (TextView) convertView.findViewById(R.id.usernameLabel);
-                holder.isReviewed = (TextView) convertView.findViewById(R.id.isReviewedLabel);
                 holder.age = (TextView) convertView.findViewById(R.id.ageLabel);
                 holder.mapImg = (ImageView) convertView.findViewById(R.id.roundImg);
                 holder.distance = (TextView) convertView.findViewById(R.id.distanceLabel);
@@ -197,7 +246,7 @@ public class MainActivity extends AppCompatActivity
 
             String gender = (String) data.get(position).get("gender");
 
-            holder.headImg.setImageResource((Integer) data.get(position).get("img"));
+//            holder.headImg.setImageResource((Integer) data.get(position).get("img"));
             if (gender.equals("male")) {
                 holder.gender.setBackgroundResource(R.drawable.male);
 
@@ -206,11 +255,13 @@ public class MainActivity extends AppCompatActivity
 
             }
             holder.username.setText((String) data.get(position).get("username"));
-            holder.isReviewed.setText((String) data.get(position).get("isReviewed"));
             holder.age.setText((String) data.get(position).get("age"));
             holder.mapImg.setBackgroundResource((Integer) data.get(position).get("map"));
             holder.distance.setText((String) data.get(position).get("distance"));
 
+            ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg,  R.drawable.male,  R.drawable.male);
+
+            imageLoader.get("http://cgx.nwpu.info/Sites/upload/"+data.get(position).get("username")+".png", listener);
 
             return convertView;
         }
@@ -227,38 +278,36 @@ public class MainActivity extends AppCompatActivity
 //                fragmentManager.beginTransaction()
 //                        .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
 //                        .commit();
+                Intent intent = new Intent(MainActivity.this, myPage.class);
+                startActivity(intent);
 
                 Log.i("i", "=============================");
 
                 break;
             case 1:
-                Intent intent = new Intent(MainActivity.this, myPage.class);
-                startActivity(intent);
+
                 break;
             default:
-                FragmentManager fragmentManager1 = getSupportFragmentManager();
-                fragmentManager1.beginTransaction()
-                        .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                        .commit();
+
                 break;
         }
 
 
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-        }
-    }
+//    public void onSectionAttached(int number) {
+//        switch (number) {
+//            case 1:
+//                mTitle = getString(R.string.title_section1);
+//                break;
+//            case 2:
+//                mTitle = getString(R.string.title_section2);
+//                break;
+//            case 3:
+//                mTitle = getString(R.string.title_section3);
+//                break;
+//        }
+//    }
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -314,63 +363,81 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    //    /**
-//     * A placeholder fragment containing a simple view.
-//     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+
+    public void searchDotaer(View v) {
+
+        lati = 22.299439;
+        longi = 114.173881;
+
+        Log.i("TAG", "searchDotaer");
 
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
 
 
-        }
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/position.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("TAG", response);
+
+                        JSONObject jObject = new JSONObject(response);
+                        String aJsonString = jObject.getString("tag");
+
+                        JSONArray jArray = jObject.getJSONArray("username");
+                        JSONArray jArrayAge = jObject.getJSONArray("age");
+                        JSONArray jArrayGender = jObject.getJSONArray("sex");
+                        JSONArray jArrayDistance = jObject.getJSONArray("juli");
 
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+                        for (int i=0; i < jArray.length(); i++)
+                        {
+                            try {
+                                String oneName = jArray.getString(i);
+                                usernameList.add(oneName);
 
-//
+                                String oneAge = jArrayAge.getString(i);
+                                ageList.add(oneAge);
+
+                                String oneGender = jArrayGender.getString(i);
+                                genderList.add(oneGender);
+
+                                String oneDistance = jArrayDistance.getString(i);
+                                distanceList.add(oneDistance);
+
+                                Log.d("oneObject", oneName+"--"+oneAge+"--"+oneGender+"--"+oneDistance);
+                            } catch (JSONException e) {
+                                // Oops
+                            }
+                        }
+
+                        Log.d("TAG", response);
+                        Log.d("usernameList", usernameList.toString());
+                        data = getData();
+                        adapter.notifyDataSetChanged();
 
 
-            return rootView;
-        }
 
-//
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("TAG", error.getMessage(), error);
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("tag", "getDistance");
+                map.put("lat", Double.toString(lati));
+                map.put("long", Double.toString(longi));
+                map.put("ratio", Double.toString(ratio));
+                map.put("page", Double.toString(pageIndex));
+                return map;
+            }
+        };
 
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-    }
+        mQueue.add(stringRequest);
 
-
-    public void searchDotaer() {
 
     }
 
