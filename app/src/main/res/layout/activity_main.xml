@@ -27,11 +27,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/main_back"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="15dp"
-        android:paddingRight="5dp"
-        android:paddingTop="@dimen/activity_vertical_margin">
+        android:orientation="vertical">
+
+        <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
+        <!--android:paddingTop="0dp"-->
+
 
         <TextView
             android:id="@+id/section_label"
@@ -50,17 +50,32 @@
                 android:id="@+id/dotaerList"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="5dp"
                 android:fastScrollEnabled="true"
                 android:layout_weight="9"/>
 
 
-            <Button
-                android:id="@+id/search_button"
-                android:layout_width="80dp"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:orientation="horizontal"
                 android:layout_weight="1"
-                android:onClick="searchDotaer"
-                android:text="Search" />
+                android:background="#FF232323"
+                >
+
+                <ImageButton
+                    android:id="@+id/search_button"
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+
+                    android:onClick="searchDotaer"
+                    android:text="Search" />
+
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>

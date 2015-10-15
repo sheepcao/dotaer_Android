@@ -5,8 +5,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
@@ -35,10 +38,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.makeramen.roundedimageview.RoundedImageView;
+
+import java.io.InputStream;
 
 import static com.example.sheepcao.dotaertest.R.id.fragment_list;
 import static com.example.sheepcao.dotaertest.R.id.search_close_btn;
@@ -77,6 +86,8 @@ public class NavigationDrawerFragment extends Fragment {
     private View sideBarView;
     private Button signatureView;
     private Button headButton;
+    private RoundedImageView headImage;
+
 
 
     private int mCurrentSelectedPosition = 0;
@@ -149,11 +160,24 @@ public class NavigationDrawerFragment extends Fragment {
         final EditText et = new EditText(getActivity());
 
 
+        headImage = (RoundedImageView)sideBarView.findViewById(R.id.headImg_bg);
+        headImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.male);
+        int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
+        Bitmap resizedBitmap=Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
+
+        headImage.setImageBitmap(resizedBitmap);
+
+
+
         headButton = (Button) sideBarView.findViewById(R.id.headBtn);
-        headButton.setBackgroundResource(R.drawable.menu1);
+//        headButton.setImageResource(R.drawable.boy);
         headButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                getImageFromAlbum();
+//                getImageFromAlbum();
+                Log.v("show", "head button -----");
+
             }
         });
 

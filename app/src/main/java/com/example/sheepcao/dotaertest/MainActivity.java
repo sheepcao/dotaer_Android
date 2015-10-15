@@ -239,6 +239,8 @@ public class MainActivity extends AppCompatActivity
                 holder.mapImg = (ImageView) convertView.findViewById(R.id.roundImg);
                 holder.distance = (TextView) convertView.findViewById(R.id.distanceLabel);
 
+                holder.headImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -260,6 +262,8 @@ public class MainActivity extends AppCompatActivity
             holder.distance.setText((String) data.get(position).get("distance"));
 
             ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg,  R.drawable.male,  R.drawable.male);
+
+
 
             imageLoader.get("http://cgx.nwpu.info/Sites/upload/"+data.get(position).get("username")+".png", listener);
 
