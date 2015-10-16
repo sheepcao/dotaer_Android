@@ -1,6 +1,7 @@
 package com.example.sheepcao.dotaertest;
 
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,10 +17,19 @@ public class myPage extends AppCompatActivity {
         setContentView(R.layout.activity_my_page);
     }
 
+    public void restoreActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle("个人主页");
+        actionBar.setHomeButtonEnabled(true);
+
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_my_page, menu);
+        restoreActionBar();
         return true;
     }
 
@@ -31,15 +41,24 @@ public class myPage extends AppCompatActivity {
         int id = item.getItemId();
 
 
+        Log.v("option",id+"----home id:"+android.R.id.home);
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_binding) {
             return true;
-        }else if (id == R.id.home)
+        }else if (id == android.R.id.home)
         {
-            onBackPressed();
+            Log.v("back","menu back-----------");
+            Intent intent = new Intent();
+            //把返回数据存入Intent
+//        intent.putExtra(BACK_CODE, BACK_CODE_NO);
+            //设置返回数据
+            this.setResult(RESULT_CANCELED, intent);
+            this.finish();
+            return true;
+        }else {
+            return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -60,11 +79,10 @@ public class myPage extends AppCompatActivity {
         super.onBackPressed();
         Log.v("back","back!!!!!");
         Intent intent = new Intent();
-        //把返回数据存入Intent
-//        intent.putExtra(BACK_CODE, BACK_CODE_NO);
-        //设置返回数据
-        this.setResult(RESULT_OK, intent);
+
         //关闭Activity
-        this.finish();
+        super.onBackPressed();
+
+
     }
 }

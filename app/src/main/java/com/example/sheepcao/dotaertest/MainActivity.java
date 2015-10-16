@@ -198,13 +198,13 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                showLoginPage();
-//            }
-//        }, 1000);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                showLoginPage();
+            }
+        }, 1000);
 
 
     }
@@ -697,15 +697,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.v("activity requestCode", requestCode+"<<<<<<<<<");
+
         switch(requestCode) {
             case (1) : {
-                if (resultCode == Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    Log.v("activity resultCode", resultCode+"<<<<<<<<<1");
+
 //                    int tabIndex = data.getIntExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
                     // TODO Switch tabs using the index.
                 }
                 break;
             }
             case (2) : {
+                Log.v("activity resultCode", resultCode+"<<<<<<<<<");
+
                 if (resultCode == Activity.RESULT_OK) {
 //                    int tabIndex = data.getIntExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
                     // TODO Switch tabs using the index.
