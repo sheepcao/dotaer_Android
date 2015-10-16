@@ -1,7 +1,10 @@
 package com.example.sheepcao.dotaertest;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -27,11 +30,41 @@ public class myPage extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_binding) {
             return true;
+        }else if (id == R.id.home)
+        {
+            onBackPressed();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            // write your code here
+
+            onBackPressed();
+        }
+        return true;
+    }
+    @Override
+    public void onBackPressed() {
+        //数据是使用Intent返回
+        super.onBackPressed();
+        Log.v("back","back!!!!!");
+        Intent intent = new Intent();
+        //把返回数据存入Intent
+//        intent.putExtra(BACK_CODE, BACK_CODE_NO);
+        //设置返回数据
+        this.setResult(RESULT_OK, intent);
+        //关闭Activity
+        this.finish();
     }
 }

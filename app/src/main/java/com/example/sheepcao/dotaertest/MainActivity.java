@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,7 +63,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, BDLocationListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, BDLocationListener, OnSeekBarChangeListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -68,6 +71,11 @@ public class MainActivity extends AppCompatActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     RequestQueue mQueue = null;
+    TextView ratioText;
+
+    Button pageUp;
+    Button pageDown;
+    TextView pageNum;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -75,7 +83,7 @@ public class MainActivity extends AppCompatActivity
     private CharSequence mTitle;
     LocationClient mLocClient;
 
-    MyAdapter adapter  = null;
+    MyAdapter adapter = null;
 
 
     private ListView lv;
@@ -90,12 +98,11 @@ public class MainActivity extends AppCompatActivity
 
 
     private int pageIndex = 0;
-    private int curPage = 0;
-    private int totalPage = 0;
+
     private double lati = 0.0;
     private double longi = 0.0;
-    private int ratio = 100000;
-
+//    private int ratio = 100000;
+    private int searchRadius = 0;
 
 
     @Override
@@ -155,10 +162,134 @@ public class MainActivity extends AppCompatActivity
         lv.setAdapter(adapter);
 
 
+        SeekBar ratioBar = (SeekBar) findViewById(R.id.seekbar_ratio);
+        ratioBar.setOnSeekBarChangeListener(this);
+        ratioText = (TextView)findViewById(R.id.ratioText);
+
+        populateRatio(9);
+
+        pageUp = (Button)findViewById(R.id.pageUp);
+        pageDown = (Button)findViewById(R.id.pageDown);
+        pageNum = (TextView)findViewById(R.id.pageIndex);
+        pageNum.setText(pageIndex + 1 + "");
+
+        pageDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pageIndex++;
+
+                Log.v("page", pageIndex + "");
+                searchPeople();
+
+                pageUp.setEnabled(true);
+            }
+        });
+
+        pageUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pageIndex > 0) {
+                    pageIndex--;
+                    searchPeople();
+                } else {
+                    v.setEnabled(false);
+                }
+
+            }
+        });
+
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                showLoginPage();
+//            }
+//        }, 1000);
 
 
     }
 
+    public void showLoginPage()
+    {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivityForResult(intent, 1);
+
+    }
+
+    public int calculateFabonacci(int seq)
+    {
+        int i; // used in the "for" loop
+        int fcounter = seq; // specifies the number of values to loop through
+        int f1 = 1; // seed value 1
+        int f2 = 0; // seed value 2
+        int fn = 0; // used as a holder for each new value in the loop
+
+        for (i=1; i<fcounter; i++){
+
+            fn = f1 + f2;
+            f1 = f2;
+            f2 = fn;
+        }
+        return fn;
+    }
+
+    public void populateRatio(int progress)
+    {
+        int seed = progress + 13;
+
+        if (seed<31) {
+            searchRadius =  calculateFabonacci(seed);
+
+
+            if (searchRadius<1000) {
+                ratioText.setText((searchRadius/100)+"00米");
+
+            }else if(searchRadius>1000000)
+            {
+                ratioText.setText("> 500KM");
+
+            }else
+            {
+                ratioText.setText(((searchRadius/1000) +1)+"KM");
+
+            }
+
+
+        }else
+        {
+            searchRadius = 9999999;//无限远
+            ratioText.setText("> 500KM");
+
+        }
+
+        Log.v("Radius------",searchRadius+"");
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress,
+                                  boolean fromUser) {
+        // TODO Auto-generated method stub
+
+        populateRatio(progress);
+
+        Log.v("ratio","Progress is " + progress
+                + (fromUser ? " Trigger" : " Nontrigger") + " by user.");
+    }
+
+    @Override
+
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        // TODO Auto-generated method stub
+        System.out.println("onStart-->" + seekBar.getProgress());
+        }
+
+    @Override
+
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        // TODO Auto-generated method stub
+
+        System.out.println("onStop-->" + seekBar.getProgress());
+      }
 
 
     //ViewHolder静态类
@@ -185,7 +316,7 @@ public class MainActivity extends AppCompatActivity
 
             map.put("gender", genderList.get(i));
             map.put("username", usernameList.get(i));
-            map.put("distance", distanceList.get(i)+"米");
+            map.put("distance", distanceList.get(i) + "米");
             map.put("age", ageList.get(i));
 
             list.add(map);
@@ -261,11 +392,10 @@ public class MainActivity extends AppCompatActivity
             holder.mapImg.setBackgroundResource((Integer) data.get(position).get("map"));
             holder.distance.setText((String) data.get(position).get("distance"));
 
-            ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg,  R.drawable.male,  R.drawable.male);
+            ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg, R.drawable.male, R.drawable.male);
 
 
-
-            imageLoader.get("http://cgx.nwpu.info/Sites/upload/"+data.get(position).get("username")+".png", listener);
+            imageLoader.get("http://cgx.nwpu.info/Sites/upload/" + data.get(position).get("username") + ".png", listener);
 
             return convertView;
         }
@@ -278,12 +408,9 @@ public class MainActivity extends AppCompatActivity
 
         switch (position) {
             case 0:
-//                FragmentManager fragmentManager = getSupportFragmentManager();
-//                fragmentManager.beginTransaction()
-//                        .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-//                        .commit();
+
                 Intent intent = new Intent(MainActivity.this, myPage.class);
-                startActivity(intent);
+                startActivityForResult(intent, 2);
 
                 Log.i("i", "=============================");
 
@@ -319,7 +446,6 @@ public class MainActivity extends AppCompatActivity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
         actionBar.setHomeAsUpIndicator(R.drawable.menu4);
-
 
     }
 
@@ -367,15 +493,24 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public void searchPeople()
+    {
 
-    public void searchDotaer(View v) {
+        CustomProgressBar.showProgressBar(MainActivity.this, false,"正在登录");
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                CustomProgressBar.hideProgressBar();
+            }
+        }, 8000);
+
 
         lati = 22.299439;
         longi = 114.173881;
 
         Log.i("TAG", "searchDotaer");
-
-
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/position.php",
@@ -385,17 +520,30 @@ public class MainActivity extends AppCompatActivity
 
                         Log.d("TAG", response);
 
+                        pageNum.setText(pageIndex+1+"");
+
                         JSONObject jObject = new JSONObject(response);
-                        String aJsonString = jObject.getString("tag");
 
                         JSONArray jArray = jObject.getJSONArray("username");
                         JSONArray jArrayAge = jObject.getJSONArray("age");
                         JSONArray jArrayGender = jObject.getJSONArray("sex");
                         JSONArray jArrayDistance = jObject.getJSONArray("juli");
 
+                        usernameList.clear();
+                        ageList.clear();
+                        genderList.clear();
+                        distanceList.clear();
 
-                        for (int i=0; i < jArray.length(); i++)
+                        if (jArray.length()>=50)
                         {
+                            pageDown.setEnabled(true);
+                        }else
+                        {
+                            pageDown.setEnabled(false);
+                        }
+
+
+                        for (int i = 0; i < jArray.length(); i++) {
                             try {
                                 String oneName = jArray.getString(i);
                                 usernameList.add(oneName);
@@ -409,7 +557,7 @@ public class MainActivity extends AppCompatActivity
                                 String oneDistance = jArrayDistance.getString(i);
                                 distanceList.add(oneDistance);
 
-                                Log.d("oneObject", oneName+"--"+oneAge+"--"+oneGender+"--"+oneDistance);
+                                Log.d("oneObject", oneName + "--" + oneAge + "--" + oneGender + "--" + oneDistance);
                             } catch (JSONException e) {
                                 // Oops
                             }
@@ -420,12 +568,15 @@ public class MainActivity extends AppCompatActivity
                         data = getData();
                         adapter.notifyDataSetChanged();
 
+//                        CustomProgressBar.hideProgressBar();
 
 
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+//                CustomProgressBar.hideProgressBar();
+
                 Log.e("TAG", error.getMessage(), error);
             }
         }) {
@@ -434,7 +585,7 @@ public class MainActivity extends AppCompatActivity
                 map.put("tag", "getDistance");
                 map.put("lat", Double.toString(lati));
                 map.put("long", Double.toString(longi));
-                map.put("ratio", Double.toString(ratio));
+                map.put("ratio", Double.toString(searchRadius));
                 map.put("page", Double.toString(pageIndex));
                 return map;
             }
@@ -442,6 +593,12 @@ public class MainActivity extends AppCompatActivity
 
         mQueue.add(stringRequest);
 
+
+    }
+
+    public void searchDotaer(View v) {
+
+        searchPeople();
 
     }
 
@@ -534,6 +691,29 @@ public class MainActivity extends AppCompatActivity
         option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
         option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
         mLocClient.setLocOption(option);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case (1) : {
+                if (resultCode == Activity.RESULT_OK) {
+//                    int tabIndex = data.getIntExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
+                    // TODO Switch tabs using the index.
+                }
+                break;
+            }
+            case (2) : {
+                if (resultCode == Activity.RESULT_OK) {
+//                    int tabIndex = data.getIntExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
+                    // TODO Switch tabs using the index.
+                    Log.v("activity return","2");
+                }
+                break;
+            }
+        }
     }
 
 }

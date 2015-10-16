@@ -4,6 +4,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#016cafaf"
     tools:context=".MainActivity">
 
     <!-- As the main content view, the view below consumes the entire
@@ -43,35 +44,108 @@
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <ListView
                 android:id="@+id/dotaerList"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="5dp"
+                android:layout_weight="45"
                 android:fastScrollEnabled="true"
-                android:layout_weight="9"/>
+                android:paddingLeft="15dp"
+                android:paddingRight="5dp" />
 
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_weight="4"
                 android:orientation="horizontal"
-                android:layout_weight="1"
+               >
+                <Button
+                    android:id="@+id/pageUp"
+                    android:layout_height="match_parent"
+                    android:layout_width="60dp"
+                    android:text="上一页"
+                    android:textSize="12sp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/nocolor"
+                    android:enabled="false"
+                    />
+                <TextView
+                    android:id="@+id/pageIndex"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="13sp"
+
+                    />
+                <Button
+                    android:id="@+id/pageDown"
+                    android:layout_height="match_parent"
+                    android:layout_width="60dp"
+                    android:text="下一页"
+                    android:textSize="12sp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/nocolor"
+                    android:enabled="false"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="5"
                 android:background="#FF232323"
-                >
+                android:orientation="horizontal"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp">
 
-                <ImageButton
+
+                <TextView
+                    android:id="@+id/ratioText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:text=">500KM"
+                    android:textColor="#eeeeee"
+                    android:textSize="15dp" />
+
+                <SeekBar
+                    android:id="@+id/seekbar_ratio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="3"
+                    android:longClickable="false"
+                    android:max="18"
+                    android:progress="9"
+                    android:progressTint="#058272"
+                    android:thumb="@drawable/thumb_image" />
+
+                <Button
                     android:id="@+id/search_button"
-                    android:layout_width="50dp"
-                    android:layout_height="30dp"
-
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/listbutton"
+                    android:gravity="center"
                     android:onClick="searchDotaer"
-                    android:text="Search" />
+                    android:scaleType="centerInside"
+                    android:text="搜 索"
+                    android:textColor="#dddddd"
+
+                    />
 
 
             </LinearLayout>
