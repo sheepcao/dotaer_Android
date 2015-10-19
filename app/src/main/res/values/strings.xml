@@ -21,6 +21,8 @@
 
     <string name="binding_score">战绩认证</string>
     <string name="action_search">小秘书</string>
+    <string name="register_enter">还没圈子账号？快速注册<u>underline</u>.</string>
+
 
 
 </resources>

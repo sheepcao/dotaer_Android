@@ -88,6 +88,8 @@ public class NavigationDrawerFragment extends Fragment {
     private Button headButton;
     private RoundedImageView headImage;
 
+    private TextView nameLabel;
+
 
 
     private int mCurrentSelectedPosition = 0;
@@ -158,6 +160,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         Log.v("show", "onCreateView");
         final EditText et = new EditText(getActivity());
+
+        nameLabel = (TextView)sideBarView.findViewById(R.id.nameLabel);
 
 
         headImage = (RoundedImageView)sideBarView.findViewById(R.id.headImg_bg);
@@ -233,6 +237,7 @@ public class NavigationDrawerFragment extends Fragment {
      */
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
+
         mDrawerLayout = drawerLayout;
 
         // set a custom shadow that overlays the main content when the drawer opens
@@ -242,6 +247,8 @@ public class NavigationDrawerFragment extends Fragment {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+
+
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
@@ -297,6 +304,17 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    public void findIdentity()
+    {
+        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences("dotaerSharedPreferences", 0);
+        String name = mSharedPreferences.getString("username","游客");
+
+        if(!name.equals("游客"))
+        {
+            nameLabel.setText(name);
+        }
     }
 
     private void selectItem(int position) {

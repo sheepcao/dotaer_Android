@@ -9,6 +9,7 @@ import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -19,7 +20,9 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -33,8 +36,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,12 +65,15 @@ public class LoginActivity extends AppCompatActivity {
      * TODO: remove after connecting to a real authentication system.
      */
 
+    LoginActivity myLogin = this;
+
 
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    RequestQueue mQueue = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +96,23 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        mQueue = Volley.newRequestQueue(this);
+
+        TextView registerButton = (TextView)findViewById(R.id.register_button);
+        String udata="还没圈子账号？快速注册->";
+        SpannableString content = new SpannableString(udata);
+        content.setSpan(new UnderlineSpan(), 0, udata.length(), 0);
+        registerButton.setText(content);
+
+        registerButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("register","register enter");
+                //添加注册界面 intent.
+            }
+        });
+
     }
 
 
@@ -92,8 +129,8 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String account = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        final String account = mEmailView.getText().toString();
+        final String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -126,6 +163,67 @@ public class LoginActivity extends AppCompatActivity {
             showProgress();
 
 
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/upload.php",
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) throws JSONException {
+
+                            Log.d("TAG", response);
+
+                            JSONObject jObject = new JSONObject(response);
+
+                            String username = jObject.getString("username");
+                            String password = jObject.getString("password");
+                            String age = jObject.getString("age");
+                            String sex = jObject.getString("sex");
+                            String isReviewed = jObject.getString("isReviewed");
+
+
+
+
+                            SharedPreferences mSharedPreferences = getSharedPreferences("dotaerSharedPreferences", 0);
+
+
+                            SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+                            mEditor.putString("username",username);
+                            mEditor.putString("password",password);
+                            mEditor.putString("age",age);
+                            mEditor.putString("sex",sex);
+                            mEditor.putString("isReviewed",isReviewed);
+
+                            mEditor.commit();
+
+                            CustomProgressBar.hideProgressBar();
+
+                            Log.v("login", "login OK-----------");
+                            Intent intent = new Intent();
+
+                            myLogin.setResult(RESULT_OK, intent);
+                            myLogin.finish();
+
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+//                CustomProgressBar.hideProgressBar();
+
+                    Log.e("TAG", error.getMessage(), error);
+                }
+            }) {
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put("tag", "login");
+                    map.put("name", account);
+                    map.put("password", password);
+
+                    return map;
+                }
+            };
+
+            mQueue.add(stringRequest);
+
+
         }
     }
 
@@ -147,20 +245,20 @@ public class LoginActivity extends AppCompatActivity {
     public void showProgress() {
         CustomProgressBar.showProgressBar(this, false, "正在登录");
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                CustomProgressBar.hideProgressBar();
-            }
-        }, 8000);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                CustomProgressBar.hideProgressBar();
+//            }
+//        }, 3000);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.global, menu);
+        getMenuInflater().inflate(R.menu.login_menu, menu);
         restoreActionBar();
 
         return true;
@@ -187,9 +285,8 @@ public class LoginActivity extends AppCompatActivity {
 
         Log.v("option", id + "----home id:" + android.R.id.home);
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_binding) {
-            return true;
-        } else if (id == android.R.id.home) {
+        if (id == R.id.visitor || id == android.R.id.home) {
+
             Log.v("back", "menu back-----------");
             Intent intent = new Intent();
             //把返回数据存入Intent

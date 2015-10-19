@@ -706,6 +706,11 @@ public class MainActivity extends AppCompatActivity
 
 //                    int tabIndex = data.getIntExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
                     // TODO Switch tabs using the index.
+                }else  if (resultCode == Activity.RESULT_OK)
+                {
+                    Log.v("activity resultCode", resultCode+"<<<<<<<<<1");
+                    mNavigationDrawerFragment.findIdentity();
+
                 }
                 break;
             }

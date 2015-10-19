@@ -23,6 +23,8 @@ public class myPage extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle("个人主页");
         actionBar.setHomeButtonEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.menu4);
+
 
     }
     @Override
