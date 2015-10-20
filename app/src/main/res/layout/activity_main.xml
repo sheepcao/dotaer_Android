@@ -127,7 +127,9 @@
                     android:max="18"
                     android:progress="9"
                     android:progressTint="#058272"
-                    android:thumb="@drawable/thumb_image" />
+
+                    />
+                <!--android:thumb="@drawable/thumb_image"-->
 
                 <Button
                     android:id="@+id/search_button"

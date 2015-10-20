@@ -9,6 +9,6 @@
 
     <style name="MenuTextStyle">
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 </resources>
