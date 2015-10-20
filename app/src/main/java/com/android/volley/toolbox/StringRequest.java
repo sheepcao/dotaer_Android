@@ -16,15 +16,19 @@
 
 package com.android.volley.toolbox;
 
+import android.util.Log;
+
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
 
 import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 
 /**
  * A canned request for retrieving the response body at a given URL as a String.
@@ -76,4 +80,6 @@ public class StringRequest extends Request<String> {
         }
         return Response.success(parsed, com.android.volley.toolbox.HttpHeaderParser.parseCacheHeaders(response));
     }
+
+
 }

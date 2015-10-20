@@ -319,7 +319,7 @@ public abstract class Request<T> implements Comparable<Request<T>> {
      * provide these values.
      * @throws AuthFailureError In the event of auth failure
      */
-    public Map<String, String> getHeaders() throws AuthFailureError {
+    public Map<String, String> getHeaders() throws AuthFailureError, com.android.volley.AuthFailureError {
         return Collections.emptyMap();
     }
 
@@ -559,7 +559,7 @@ public abstract class Request<T> implements Comparable<Request<T>> {
      *
      * @param error Error details
      */
-    public void deliverError(VolleyError error) {
+     public void deliverError(VolleyError error) {
         if (mErrorListener != null) {
             mErrorListener.onErrorResponse(error);
         }
