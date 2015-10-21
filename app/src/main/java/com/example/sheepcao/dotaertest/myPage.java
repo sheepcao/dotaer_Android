@@ -18,6 +18,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -30,6 +31,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,14 +53,24 @@ public class myPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_page);
 
+         mQueue = Volley.newRequestQueue(this, new HurlStack() {
+            @Override
+            protected HttpURLConnection createConnection(URL url) throws IOException {
+                HttpURLConnection connection = super.createConnection(url);
+                connection.setInstanceFollowRedirects(false);
 
-        mQueue = Volley.newRequestQueue(this);
+                return connection;
+            }
+        });
+
+//        mQueue = Volley.newRequestQueue(this);
 //
 //        Network network = new BasicNetwork(new OkHttpStack());
 //        RequestQueue mQueue = new RequestQueue(new DiskBasedCache(new File(getCacheDir(), "volley")), network);
 //        mQueue.start();
 
-        requestBasicInfo("小奴");
+//        requestBasicInfo("小奴");
+        requestExtroInfoWithUser("小奴");
 
     }
 
@@ -380,7 +393,18 @@ public class myPage extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
 //                CustomProgressBar.hideProgressBar();
 
-                Log.e("TAG=========================", error.getMessage(), error);
+                Log.e("TAG=========123=", error.networkResponse.headers.get("Set-Cookie"), error);
+
+
+                for (String key:
+                        error.networkResponse.headers.keySet()) {
+                    Log.d("VOLLEY_HEADERFIX",key + " - " +error.networkResponse.headers.get("Set-Cookie"));
+
+
+                }
+
+
+
             }
         }) {
             @Override

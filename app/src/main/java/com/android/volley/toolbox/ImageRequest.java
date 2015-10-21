@@ -212,7 +212,7 @@ public class ImageRequest extends Request<Bitmap> {
         if (bitmap == null) {
             return Response.error(new ParseError(response));
         } else {
-            return Response.success(bitmap, com.android.volley.toolbox.HttpHeaderParser.parseCacheHeaders(response));
+            return Response.success(bitmap, HttpHeaderParser.parseCacheHeaders(response));
         }
     }
 

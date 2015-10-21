@@ -17,6 +17,7 @@
 package com.android.volley.toolbox;
 
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
@@ -86,6 +87,8 @@ public class BasicNetwork implements Network {
     public NetworkResponse performRequest(Request<?> request) throws VolleyError {
         long requestStart = SystemClock.elapsedRealtime();
         while (true) {
+
+
             HttpResponse httpResponse = null;
             byte[] responseContents = null;
             Map<String, String> responseHeaders = Collections.emptyMap();
@@ -96,6 +99,7 @@ public class BasicNetwork implements Network {
                 httpResponse = mHttpStack.performRequest(request, headers);
                 StatusLine statusLine = httpResponse.getStatusLine();
                 int statusCode = statusLine.getStatusCode();
+                Log.v("NetworkResponse","statusCode"+statusCode);
 
                 responseHeaders = convertHeaders(httpResponse.getAllHeaders());
                 // Handle cache validation.
@@ -110,7 +114,7 @@ public class BasicNetwork implements Network {
 
                     // A HTTP 304 response does not have all header fields. We
                     // have to use the header fields from the cache entry plus
-                    // the new ones from the response.
+                    // the new ones from the response.h
                     // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.5
                     entry.responseHeaders.putAll(responseHeaders);
                     return new NetworkResponse(HttpStatus.SC_NOT_MODIFIED, entry.data,
@@ -118,6 +122,10 @@ public class BasicNetwork implements Network {
                             SystemClock.elapsedRealtime() - requestStart);
                 }
 
+                if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY|| statusCode == 302)
+                {
+                    Log.v("SC_MOVED_PERMANENTLY",responseHeaders.get("location"));
+                }
 
                 // Some responses such as 204s do not have content.  We must check.
                 if (httpResponse.getEntity() != null) {
@@ -138,12 +146,19 @@ public class BasicNetwork implements Network {
                 return new NetworkResponse(statusCode, responseContents, responseHeaders, false,
                         SystemClock.elapsedRealtime() - requestStart);
             } catch (SocketTimeoutException e) {
+                Log.v("NetworkResponse","socket");
+
                 attemptRetryOnException("socket", request, new TimeoutError());
             } catch (ConnectTimeoutException e) {
+                Log.v("NetworkResponse","connection");
+
                 attemptRetryOnException("connection", request, new TimeoutError());
             } catch (MalformedURLException e) {
+                Log.v("NetworkResponse","Bad URL");
+
                 throw new RuntimeException("Bad URL " + request.getUrl(), e);
             } catch (IOException e) {
+
                 int statusCode = 0;
                 NetworkResponse networkResponse = null;
                 if (httpResponse != null) {
@@ -156,11 +171,12 @@ public class BasicNetwork implements Network {
                     networkResponse = new NetworkResponse(statusCode, responseContents,
                             responseHeaders, false, SystemClock.elapsedRealtime() - requestStart);
                     if (statusCode == HttpStatus.SC_UNAUTHORIZED ||
-                            statusCode == HttpStatus.SC_FORBIDDEN) {
+                            statusCode == HttpStatus.SC_FORBIDDEN ) {
                         attemptRetryOnException("auth",
                                 request, new AuthFailureError(networkResponse));
                     } else {
                         // TODO: Only throw ServerError for 5xx status codes.
+                        Log.v("ServerError","ServerError");
                         throw new ServerError(networkResponse);
                     }
                 } else {

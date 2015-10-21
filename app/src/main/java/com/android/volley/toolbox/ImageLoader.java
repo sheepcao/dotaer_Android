@@ -107,18 +107,7 @@ public class ImageLoader {
             @Override
             public void onResponse(ImageContainer response, boolean isImmediate) {
                 if (response.getBitmap() != null) {
-
-
-                    Bitmap bmp= response.getBitmap();
-                    int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
-
-
-
-                    Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
-                    view.setImageBitmap(resizedBitmap);
-
-
-//                    view.setImageBitmap(response.getBitmap());
+                    view.setImageBitmap(response.getBitmap());
                 } else if (defaultImageResId != 0) {
                     view.setImageResource(defaultImageResId);
                 }
@@ -260,7 +249,7 @@ public class ImageLoader {
 
     protected Request<Bitmap> makeImageRequest(String requestUrl, int maxWidth, int maxHeight,
             ScaleType scaleType, final String cacheKey) {
-        return new com.android.volley.toolbox.ImageRequest(requestUrl, new Listener<Bitmap>() {
+        return new ImageRequest(requestUrl, new Listener<Bitmap>() {
             @Override
             public void onResponse(Bitmap response) {
                 onGetImageSuccess(cacheKey, response);

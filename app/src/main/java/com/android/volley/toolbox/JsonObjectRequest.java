@@ -31,7 +31,7 @@ import java.io.UnsupportedEncodingException;
  * A request for retrieving a {@link JSONObject} response body at a given URL, allowing for an
  * optional {@link JSONObject} to be passed in as part of the request body.
  */
-public class JsonObjectRequest extends com.android.volley.toolbox.JsonRequest<JSONObject> {
+public class JsonObjectRequest extends JsonRequest<JSONObject> {
 
     /**
      * Creates a new request.
@@ -64,9 +64,9 @@ public class JsonObjectRequest extends com.android.volley.toolbox.JsonRequest<JS
     protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
         try {
             String jsonString = new String(response.data,
-                    com.android.volley.toolbox.HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+                    HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
             return Response.success(new JSONObject(jsonString),
-                    com.android.volley.toolbox.HttpHeaderParser.parseCacheHeaders(response));
+                    HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         } catch (JSONException je) {

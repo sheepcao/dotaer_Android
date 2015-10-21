@@ -60,7 +60,7 @@ public class Volley {
             }
         }
 
-        Network network = new com.android.volley.toolbox.BasicNetwork(stack);
+        Network network = new BasicNetwork(stack);
 
         RequestQueue queue = new RequestQueue(new DiskBasedCache(cacheDir), network);
         queue.start();

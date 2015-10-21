@@ -16,19 +16,15 @@
 
 package com.android.volley.toolbox;
 
-import android.util.Log;
-
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
 
 import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 
 /**
  * A canned request for retrieving the response body at a given URL as a String.
@@ -62,24 +58,18 @@ public class StringRequest extends Request<String> {
     }
 
     @Override
-    protected void deliverResponse(String response) {
-        try {
-            mListener.onResponse(response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    protected void deliverResponse(String response) throws JSONException {
+        mListener.onResponse(response);
     }
 
     @Override
     protected Response<String> parseNetworkResponse(NetworkResponse response) {
         String parsed;
         try {
-            parsed = new String(response.data, com.android.volley.toolbox.HttpHeaderParser.parseCharset(response.headers));
+            parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
         } catch (UnsupportedEncodingException e) {
             parsed = new String(response.data);
         }
-        return Response.success(parsed, com.android.volley.toolbox.HttpHeaderParser.parseCacheHeaders(response));
+        return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
     }
-
-
 }

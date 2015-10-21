@@ -54,6 +54,7 @@ public class HttpClientStack implements HttpStack {
 
     public HttpClientStack(HttpClient client) {
         mClient = client;
+
     }
 
     private static void addHeaders(HttpUriRequest httpRequest, Map<String, String> headers) {
