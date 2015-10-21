@@ -29,10 +29,13 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files('libs/locSDK_6.03.jar')
-
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.makeramen:roundedimageview:2.2.0'
     compile 'com.google.android.gms:play-services:8.1.0'
+    compile files('libs/mockwebserver-2.5.0.jar')
+    compile files('libs/okhttp-urlconnection-2.5.0.jar')
+    compile files('libs/okio-1.6.0.jar')
+    compile files('libs/okhttp-2.5.0.jar')
 }
 repositories {
     mavenCentral()

@@ -1,8 +1,6 @@
 package com.example.sheepcao.dotaertest;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,7 +9,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.CookieManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,24 +18,24 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.RequestBody;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.CookieHandler;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public class myPage extends AppCompatActivity {
 
@@ -54,9 +51,11 @@ public class myPage extends AppCompatActivity {
         setContentView(R.layout.activity_my_page);
 
 
-
         mQueue = Volley.newRequestQueue(this);
-
+//
+//        Network network = new BasicNetwork(new OkHttpStack());
+//        RequestQueue mQueue = new RequestQueue(new DiskBasedCache(new File(getCacheDir(), "volley")), network);
+//        mQueue.start();
 
         requestBasicInfo("小奴");
 
@@ -229,6 +228,7 @@ public class myPage extends AppCompatActivity {
                         String EVENTVALIDATION = pickEVENTVALIDATION(response);
 
                         requestUserID(VIEWSTATE, VIEWSTATEGENERATOR, EVENTVALIDATION, "不是故意咯", "xuechan99", username);
+//                        requestUserID_e(VIEWSTATE, VIEWSTATEGENERATOR, EVENTVALIDATION, "不是故意咯", "xuechan99", username);
 
 
                     }
@@ -427,7 +427,7 @@ public class myPage extends AppCompatActivity {
                 String parsed;
                 try {
                     parsed = new String(response.data, com.android.volley.toolbox.HttpHeaderParser.parseCharset(response.headers));
-                    Log.v("cookieqqq","cookieqqq");
+                    Log.v("cookieqqq", "cookieqqq");
 
 //                    String cookie = response.headers.get("Set-Cookie");
 //
@@ -482,6 +482,66 @@ public class myPage extends AppCompatActivity {
 
         mQueue.add(stringRequest);
     }
+
+
+    private void requestUserID_e(final String VIEWSTATE, final String VIEWSTATEGENERATOR, final String EVENTVALIDATION, final String username, final String password, final String SearchName) {
+
+         final OkHttpClient client = new OkHttpClient();
+
+        Thread thread=new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+
+                RequestBody formBody = new FormEncodingBuilder()
+                        .add("__VIEWSTATE", VIEWSTATE)
+                        .add("__VIEWSTATEGENERATOR", VIEWSTATEGENERATOR)
+                        .add("__EVENTVALIDATION", EVENTVALIDATION)
+                        .add("txtUser", username)
+                        .add("txtPassWord", password)
+                        .add("butLogin", "登录")
+
+                        .build();
+
+                com.squareup.okhttp.Request request = new com.squareup.okhttp.Request.Builder()
+                        .url("https://api.github.com/repos/square/okhttp/issues")
+                        .header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+                        .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                        .addHeader("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
+                        .addHeader("Referer", "http://passport.5211game.com/t/Login.aspx?ReturnUrl=http%3a%2f%2fi.5211game.com%2flogin.aspx%3freturnurl%3d%252frating&loginUserName=")
+                        .addHeader("Accept-Encoding", "gzip, deflate")
+                        .addHeader("Cookie", requestCookie)
+
+                        .post(formBody)
+                        .build();
+
+
+                com.squareup.okhttp.Response response = null;
+                try {
+                    response = client.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (response.isSuccessful()) {
+                    try {
+                        Log.v("tttttest:", response.body().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        throw new IOException("Unexpected code " + response);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        thread.start();
+
+    }
+
 
     private void requestSearchUserID(String searchName) {
         String infoURLstring = "";

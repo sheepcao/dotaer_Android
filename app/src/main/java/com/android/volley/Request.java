@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.android.volley.VolleyLog.MarkerLog;
 
@@ -559,7 +560,8 @@ public abstract class Request<T> implements Comparable<Request<T>> {
      *
      * @param error Error details
      */
-     public void deliverError(VolleyError error) {
+     public void deliverError(com.android.volley.VolleyError error) {
+         Log.v("deliverError",error.toString());
         if (mErrorListener != null) {
             mErrorListener.onErrorResponse(error);
         }
