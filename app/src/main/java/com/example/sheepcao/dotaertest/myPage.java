@@ -26,6 +26,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.RequestBody;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +47,18 @@ public class myPage extends AppCompatActivity {
 
     String requestCookie = "";
     String searchCookie = "";
+    String redirectCookie = "";
+    String ratingCookie = "";
+
+    JSONObject mjInfos = null;
+    JSONObject ttInfos = null;
+    JSONObject jjcInfos = null;
+
+    String jjcScore = "";
+    String mjScore = "";
+    String ttScore = "";
+
+
 
 
     @Override
@@ -53,7 +66,7 @@ public class myPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_page);
 
-         mQueue = Volley.newRequestQueue(this, new HurlStack() {
+        mQueue = Volley.newRequestQueue(this, new HurlStack() {
             @Override
             protected HttpURLConnection createConnection(URL url) throws IOException {
                 HttpURLConnection connection = super.createConnection(url);
@@ -70,7 +83,7 @@ public class myPage extends AppCompatActivity {
 //        mQueue.start();
 
 //        requestBasicInfo("小奴");
-        requestExtroInfoWithUser("小奴");
+        requestExtroInfoWithUser("宝贝拼吧");
 
     }
 
@@ -146,6 +159,33 @@ public class myPage extends AppCompatActivity {
     }
 
 
+    private void setUpScorePage()
+    {
+        TextView score_label = (TextView) findViewById(R.id.score_label);
+        TextView total_label = (TextView) findViewById(R.id.total_label);
+        TextView win_rate = (TextView) findViewById(R.id.win_rate);
+        TextView mvp_label = (TextView) findViewById(R.id.mvp_label);
+        TextView podi_label = (TextView) findViewById(R.id.podi_label);
+        TextView pojun_label = (TextView) findViewById(R.id.pojun_label);
+        TextView fuhao_label = (TextView) findViewById(R.id.fuhao_label);
+        TextView buwang_label = (TextView) findViewById(R.id.buwang_label);
+        TextView pianjiang_label = (TextView) findViewById(R.id.pianjiang_label);
+        TextView yinghun_label = (TextView) findViewById(R.id.yinghun_label);
+        TextView double_kill = (TextView) findViewById(R.id.double_kill);
+        TextView triple_kill = (TextView) findViewById(R.id.triple_kill);
+
+        ImageView hero_first = (ImageView) findViewById(R.id.hero_first);
+        ImageView hero_second = (ImageView) findViewById(R.id.hero_second);
+        ImageView hero_third = (ImageView) findViewById(R.id.hero_third);
+
+
+        score_label.setText(ttScore);
+
+
+
+    }
+
+
     //request score procedure.........
 
 
@@ -204,7 +244,6 @@ public class myPage extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-//                CustomProgressBar.hideProgressBar();
 
                 Log.e("TAG", error.getMessage(), error);
                 CustomProgressBar.hideProgressBar();
@@ -248,7 +287,7 @@ public class myPage extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-//                CustomProgressBar.hideProgressBar();
+                CustomProgressBar.hideProgressBar();
 
                 Log.e("TAG", error.getMessage(), error);
             }
@@ -384,7 +423,7 @@ public class myPage extends AppCompatActivity {
                     public void onResponse(String response) throws JSONException {
 
                         Log.d("TAG<<<<<<<<<<", response);
-//                        requestSearchUserID(SearchName);
+                        requestSearchUserID(SearchName);
 
 
                     }
@@ -393,22 +432,50 @@ public class myPage extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
 //                CustomProgressBar.hideProgressBar();
 
-                Log.e("TAG=========123=", error.networkResponse.headers.get("Set-Cookie"), error);
+//                Log.e("TAG=========123=", error.networkResponse.headers.get("Set-Cookie"), error);
+
+                String location = "";
+                String cookie_final = "";
 
 
-//
-//                for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
-//                    Log.d("GEORGEI_VOLLEY",error.networkResponse.apacheHeaders[i]);
-//                }
+                if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
+                    for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
+//                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
+
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {
+                            String cookieTemp = error.networkResponse.apacheHeaders[i].getValue();
+
+                            String[] cookieparts = cookieTemp.split(";");
+                            for (int j = 0; j < cookieparts.length; j++) {
+                                if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=")) {
+                                    if (cookie_final.equals("")) {
+                                        cookie_final = cookieparts[j];
+
+                                    } else {
+                                        cookie_final = cookie_final + ";" + cookieparts[j];
+                                    }
+                                }
+                            }
 
 
-                for (String key:
-                        error.networkResponse.headers.keySet()) {
-                    Log.d("VOLLEY_HEADERFIX",key + " - " +error.networkResponse.headers.get(key));
+                        }
+
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Location")) {
+                            location = error.networkResponse.apacheHeaders[i].getValue();
+                            if (!location.startsWith("http")) {
+                                location = "http://passport.5211game.com" + location;
+                            }
+                        }
+
+                    }
 
 
                 }
 
+
+                searchCookie = cookie_final;
+
+                redirectWithCookie(cookie_final, location, SearchName);
 
 
             }
@@ -459,48 +526,22 @@ public class myPage extends AppCompatActivity {
                     parsed = new String(response.data, com.android.volley.toolbox.HttpHeaderParser.parseCharset(response.headers));
                     Log.v("cookieqqq", "cookieqqq");
 
-//                    String cookie = response.headers.get("Set-Cookie");
+                    String cookie_final = "";
+
+                    String cookie = response.headers.get("Set-Cookie");
+                    String[] cookieparts = cookie.split(";");
+                    for (int j = 0; j < cookieparts.length; j++) {
+                        if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=") && !cookieparts[j].toLowerCase().contains("httponly")) {
+                            if (cookie_final.equals("")) {
+                                cookie_final = cookieparts[j];
+
+                            } else {
+                                cookie_final = cookie_final + ";" + cookieparts[j];
+                            }
+                        }
+                    }
 //
-//                    Log.v("cookieqqq",cookie);
-//                    String cookie_final = "";
-//                    String cookie1;
-//                    String cookie2;
-//
-//                    Pattern p = Pattern.compile("5211auth=(.+)");
-//                    Matcher m = p.matcher(cookie);
-//
-//                    if (m.find()) { //注意这里，是while不是if
-//                        String xxx = m.group();
-//                        Log.v("5211authxxx", xxx);
-//                        String[] aa = xxx.split(";");
-//                        cookie1 = aa[0];
-//                        Log.v("5211auth", cookie1);
-//
-//                        cookie_final = cookie1;
-//
-//
-//                    }
-//
-//                    Pattern p2 = Pattern.compile("User=(.+)");
-//                    Matcher m2 = p2.matcher(cookie);
-//
-//                    if (m2.find()) { //注意这里，是while不是if
-//                        String xxx = m.group();
-//                        Log.v("5211authxxx", xxx);
-//                        String[] aa = xxx.split(";");
-//                        cookie2 = aa[0];
-//                        Log.v("5211auth", cookie2);
-//
-//                        if (cookie_final.equals("")) {
-//                            cookie_final = cookie2;
-//                        } else {
-//                            cookie_final = cookie_final + ";" + cookie2;
-//                        }
-//
-//
-//                    }
-//
-//                    searchCookie = cookie_final;
+                    ratingCookie = cookie_final;
 //
 
                 } catch (UnsupportedEncodingException e) {
@@ -514,62 +555,93 @@ public class myPage extends AppCompatActivity {
     }
 
 
-    private void requestUserID_e(final String VIEWSTATE, final String VIEWSTATEGENERATOR, final String EVENTVALIDATION, final String username, final String password, final String SearchName) {
+    private void redirectWithCookie(final String cookie, final String loc, final String SearchName) {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, loc,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
 
-         final OkHttpClient client = new OkHttpClient();
+//                        Log.d("redirect done", response);
 
-        Thread thread=new Thread(new Runnable()
-        {
+                        for (int i = 0; i < response.length(); i += 1024) {
+                            if (i + 1024 < response.length())
+                                Log.d("redirect done", response.substring(i, i + 1024));
+                            else
+                                Log.d("redirect done", response.substring(i, response.length()));
+                        }
+
+                        requestSearchUserID(SearchName);
+
+
+                    }
+                }, new Response.ErrorListener() {
             @Override
-            public void run()
-            {
+            public void onErrorResponse(VolleyError error) {
 
-                RequestBody formBody = new FormEncodingBuilder()
-                        .add("__VIEWSTATE", VIEWSTATE)
-                        .add("__VIEWSTATEGENERATOR", VIEWSTATEGENERATOR)
-                        .add("__EVENTVALIDATION", EVENTVALIDATION)
-                        .add("txtUser", username)
-                        .add("txtPassWord", password)
-                        .add("butLogin", "登录")
-
-                        .build();
-
-                com.squareup.okhttp.Request request = new com.squareup.okhttp.Request.Builder()
-                        .url("https://api.github.com/repos/square/okhttp/issues")
-                        .header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-                        .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-                        .addHeader("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
-                        .addHeader("Referer", "http://passport.5211game.com/t/Login.aspx?ReturnUrl=http%3a%2f%2fi.5211game.com%2flogin.aspx%3freturnurl%3d%252frating&loginUserName=")
-                        .addHeader("Accept-Encoding", "gzip, deflate")
-                        .addHeader("Cookie", requestCookie)
-
-                        .post(formBody)
-                        .build();
-
-
-                com.squareup.okhttp.Response response = null;
-                try {
-                    response = client.newCall(request).execute();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                Log.e("TAG Redirect", error.getMessage(), error);
+                String hostString = "";
+                if (loc.startsWith("http://")) {
+                    hostString = "http://" + loc.substring(7).split("/")[0];
+                } else if (loc.startsWith("https://")) {
+                    hostString = "https://" + loc.substring(8).split("/")[0];
                 }
-                if (response.isSuccessful()) {
-                    try {
-                        Log.v("tttttest:", response.body().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        throw new IOException("Unexpected code " + response);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+
+
+                String location = "";
+                String cookie_final = "";
+                if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
+                    for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
+                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {
+                            String cookieTemp = error.networkResponse.apacheHeaders[i].getValue();
+                            String[] cookieparts = cookieTemp.split(";");
+                            for (int j = 0; j < cookieparts.length; j++) {
+                                if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=") && !cookieparts[j].toLowerCase().contains("httponly")) {
+                                    if (cookie_final.equals("")) {
+                                        cookie_final = cookieparts[j];
+
+                                    } else {
+                                        cookie_final = cookie_final + ";" + cookieparts[j];
+                                    }
+                                }
+                            }
+                        }
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Location")) {
+                            location = error.networkResponse.apacheHeaders[i].getValue();
+                            if (!location.startsWith("http")) {
+                                location = hostString + location;
+                            }
+                        }
                     }
                 }
+                redirectCookie = cookie_final;
+                cookie_final = searchCookie + ";" + redirectCookie;
+                ratingCookie = cookie_final;
+                redirectWithCookie(cookie_final, location, SearchName);
+
             }
-        });
-        thread.start();
 
+
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0");
+                params.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                params.put("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
+                params.put("Referer", "http://passport.5211game.com/t/Login.aspx?ReturnUrl=http%3a%2f%2fi.5211game.com%2flogin.aspx%3freturnurl%3d%252frating&loginUserName=");
+
+
+                Log.v("cookie redict", cookie);
+                params.put("Cookie", cookie);
+
+                return params;
+            }
+
+
+        };
+
+        mQueue.add(stringRequest);
     }
 
 
@@ -590,10 +662,28 @@ public class myPage extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) throws JSONException {
 
-                        Log.d("Before score", response);
+
+                        String userID = "";
 
 
-                        CustomProgressBar.hideProgressBar();
+                        Pattern p = Pattern.compile("YY.d.u = (.+)");
+                        Matcher m = p.matcher(response);
+
+                        if (m.find()) { //注意这里，是while不是if
+                            String xxx = m.group();
+                            Log.v("Before score", xxx);
+
+                            String[] resultArray = xxx.split("YY.d.j = ");
+                            if (resultArray.length > 1) {
+                                userID = resultArray[1].split(",YY.d.k")[0];
+                                if (userID.equals("YY.d.u")) {
+                                    userID = "443732422";
+                                }
+                            }
+
+                        }
+
+                        requestScore(userID);
 
 
                     }
@@ -613,8 +703,8 @@ public class myPage extends AppCompatActivity {
                 params.put("Referer", "http://passport.5211game.com/t/Login.aspx?ReturnUrl=http%3a%2f%2fi.5211game.com%2flogin.aspx%3freturnurl%3d%252frating&loginUserName=");
 
 
-                Log.v("cookie3", searchCookie);
-                params.put("Cookie", searchCookie);
+                Log.v("ratingCookie", ratingCookie);
+                params.put("Cookie", ratingCookie);
 
                 return params;
             }
@@ -625,4 +715,70 @@ public class myPage extends AppCompatActivity {
         mQueue.add(stringRequest);
     }
 
+    private void requestScore(final String userID) {
+        Long tsLong = System.currentTimeMillis();
+        String ts = tsLong.toString();
+
+        String urlString = "http://i.5211game.com/request/rating/?r=" + ts;
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, urlString,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("Json string>>>>>", response);
+
+
+                        JSONObject jObject = new JSONObject(response);
+
+
+                        mjInfos = jObject.getJSONObject("mjInfos");
+                        ttInfos = jObject.getJSONObject("ttInfos");
+                        jjcInfos = jObject.getJSONObject("jjcInfos");
+
+                        mjScore = mjInfos.getString("MingJiang");
+                        ttScore = jObject.getInt("rating")+"";
+                        jjcScore = jObject.getInt("jjcRating")+"";
+
+
+
+
+                        setUpScorePage();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("TAG", error.getMessage(), error);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+
+
+                params.put("Cookie", ratingCookie);
+
+                return params;
+            }
+
+
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("method", "getrating");
+                map.put("u", userID);
+                map.put("t", "10001");
+
+
+                return map;
+            }
+
+
+        };
+        mQueue.add(stringRequest);
+    }
+
 }
+

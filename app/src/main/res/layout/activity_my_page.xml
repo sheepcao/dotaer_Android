@@ -126,6 +126,7 @@
 
                     />
                 <TextView
+                    android:id="@+id/score_label"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
@@ -157,6 +158,7 @@
 
                     />
                 <TextView
+                    android:id="@+id/total_label"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
@@ -188,6 +190,7 @@
 
                     />
                 <TextView
+                    android:id="@+id/win_rate"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
@@ -244,6 +247,7 @@
                         android:gravity="center"
                         />
                     <TextView
+
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -276,6 +280,7 @@
                     >
 
                     <TextView
+                        android:id="@+id/mvp_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -284,6 +289,7 @@
 
                         />
                     <TextView
+                        android:id="@+id/pojun_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -291,6 +297,7 @@
                         android:gravity="center"
                         />
                     <TextView
+                        android:id="@+id/podi_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -298,6 +305,7 @@
                         android:gravity="center"
                         />
                     <TextView
+                        android:id="@+id/fuhao_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -375,6 +383,7 @@
                     >
 
                     <TextView
+                        android:id="@+id/buwang_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -383,6 +392,7 @@
 
                         />
                     <TextView
+                        android:id="@+id/pianjiang_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -390,6 +400,7 @@
                         android:gravity="center"
                         />
                     <TextView
+                        android:id="@+id/yinghun_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -443,6 +454,7 @@
                     android:textSize="17sp"
                     />
                 <TextView
+                    android:id="@+id/double_kill"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -465,6 +477,7 @@
 
                     />
                 <TextView
+                    android:id="@+id/triple_kill"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -505,6 +518,7 @@
                 />
 
             <ImageView
+                android:id="@+id/hero_first"
                 android:layout_width="47dp"
                 android:layout_height="47dp"
                 android:layout_gravity="center_vertical"
@@ -512,6 +526,7 @@
                 />
 
             <ImageView
+                android:id="@+id/hero_second"
                 android:layout_width="47dp"
                 android:layout_height="47dp"
                 android:layout_gravity="center_vertical"
@@ -520,6 +535,7 @@
                 />
 
             <ImageView
+                android:id="@+id/hero_third"
                 android:layout_width="47dp"
                 android:layout_height="47dp"
                 android:layout_gravity="center_vertical"
@@ -561,6 +577,7 @@
 
 
         <TextView
+            android:id="@+id/tt_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -576,6 +593,7 @@
         <!--android:background="@drawable/listbutton"-->
 
         <TextView
+            android:id="@+id/jjc_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -590,6 +608,7 @@
 
             />
         <TextView
+            android:id="@+id/mj_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -605,6 +624,7 @@
 
             />
         <TextView
+            android:id="@+id/note_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
