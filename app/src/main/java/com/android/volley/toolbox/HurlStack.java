@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2011 The Android Open Source Project
  *
@@ -23,7 +24,6 @@ import com.android.volley.Request.Method;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
 import org.apache.http.entity.BasicHttpEntity;
@@ -116,30 +116,16 @@ public class HurlStack implements HttpStack {
         StatusLine responseStatus = new BasicStatusLine(protocolVersion,
                 connection.getResponseCode(), connection.getResponseMessage());
         BasicHttpResponse response = new BasicHttpResponse(responseStatus);
-        if (hasResponseBody(request.getMethod(), responseStatus.getStatusCode())) {
-            response.setEntity(entityFromConnection(connection));
-        }
+        response.setEntity(entityFromConnection(connection));
         for (Entry<String, List<String>> header : connection.getHeaderFields().entrySet()) {
             if (header.getKey() != null) {
-                Header h = new BasicHeader(header.getKey(), header.getValue().get(0));
-                response.addHeader(h);
+                for (String headerValue : header.getValue()) {
+                    Header h = new BasicHeader(header.getKey(), headerValue);
+                    response.addHeader(h);
+                }
             }
         }
         return response;
-    }
-
-    /**
-     * Checks if a response message contains a body.
-     * @see <a href="https://tools.ietf.org/html/rfc7230#section-3.3">RFC 7230 section 3.3</a>
-     * @param requestMethod request method
-     * @param responseCode response status code
-     * @return whether the response has a body
-     */
-    private static boolean hasResponseBody(int requestMethod, int responseCode) {
-        return requestMethod != Request.Method.HEAD
-            && !(HttpStatus.SC_CONTINUE <= responseCode && responseCode < HttpStatus.SC_OK)
-            && responseCode != HttpStatus.SC_NO_CONTENT
-            && responseCode != HttpStatus.SC_NOT_MODIFIED;
     }
 
     /**
@@ -194,7 +180,7 @@ public class HurlStack implements HttpStack {
 
     @SuppressWarnings("deprecation")
     /* package */ static void setConnectionParametersForRequest(HttpURLConnection connection,
-            Request<?> request) throws IOException, AuthFailureError {
+                                                                Request<?> request) throws IOException, AuthFailureError {
         switch (request.getMethod()) {
             case Method.DEPRECATED_GET_OR_POST:
                 // This is the deprecated way that needs to be handled for backwards compatibility.
@@ -228,19 +214,6 @@ public class HurlStack implements HttpStack {
                 break;
             case Method.PUT:
                 connection.setRequestMethod("PUT");
-                addBodyIfExists(connection, request);
-                break;
-            case Method.HEAD:
-                connection.setRequestMethod("HEAD");
-                break;
-            case Method.OPTIONS:
-                connection.setRequestMethod("OPTIONS");
-                break;
-            case Method.TRACE:
-                connection.setRequestMethod("TRACE");
-                break;
-            case Method.PATCH:
-                connection.setRequestMethod("PATCH");
                 addBodyIfExists(connection, request);
                 break;
             default:

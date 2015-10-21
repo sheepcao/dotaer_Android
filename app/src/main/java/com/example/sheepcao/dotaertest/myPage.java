@@ -396,9 +396,15 @@ public class myPage extends AppCompatActivity {
                 Log.e("TAG=========123=", error.networkResponse.headers.get("Set-Cookie"), error);
 
 
+//
+//                for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
+//                    Log.d("GEORGEI_VOLLEY",error.networkResponse.apacheHeaders[i]);
+//                }
+
+
                 for (String key:
                         error.networkResponse.headers.keySet()) {
-                    Log.d("VOLLEY_HEADERFIX",key + " - " +error.networkResponse.headers.get("Set-Cookie"));
+                    Log.d("VOLLEY_HEADERFIX",key + " - " +error.networkResponse.headers.get(key));
 
 
                 }

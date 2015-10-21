@@ -23,6 +23,7 @@ import org.apache.http.impl.cookie.DateParseException;
 import org.apache.http.impl.cookie.DateUtils;
 import org.apache.http.protocol.HTTP;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,6 +51,8 @@ public class HttpHeaderParser {
         long staleWhileRevalidate = 0;
         boolean hasCacheControl = false;
         boolean mustRevalidate = false;
+
+
 
         String serverEtag = null;
         String headerValue;
@@ -119,6 +122,8 @@ public class HttpHeaderParser {
 
         return entry;
     }
+
+
 
     /**
      * Parse date in RFC1123 format, and return its value as epoch

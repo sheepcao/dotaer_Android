@@ -31,10 +31,12 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -554,6 +556,18 @@ public class DiskBasedCache implements Cache {
         }
     }
 
+//    static void writeStringStringMap(Map<String, List<String>> map, OutputStream os) throws IOException {
+//        if (map != null) {
+//            writeInt(os, map.size());
+//            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+//                writeString(os, entry.getKey());
+//                writeString(os, joinStringsList(entry.getValue()));
+//            }
+//        } else {
+//            writeInt(os, 0);
+//        }
+//    }
+
     static Map<String, String> readStringStringMap(InputStream is) throws IOException {
         int size = readInt(is);
         Map<String, String> result = (size == 0)
@@ -566,6 +580,35 @@ public class DiskBasedCache implements Cache {
         }
         return result;
     }
+//
+//    static Map<String, List<String>> readStringStringMap(InputStream is) throws IOException {
+//        int size = readInt(is);
+//        Map<String, List<String>> result = (size == 0)
+//                ? Collections.<String, List<String>>emptyMap()
+//                : new HashMap<String, List<String>>(size);
+//        for (int i = 0; i < size; i++) {
+//            String key = readString(is).intern();
+//            String value = readString(is).intern();
+//            result.put(key, parseNullStringsList(value));
+//        }
+//        return result;
+//    }
+//
+//    static List<String> parseNullStringsList(String str) {
+//        String[] strs = str.split("\0");
+//        return Arrays.asList(strs);
+//    }
+//
+//    static String joinStringsList(List<String> list) {
+//        StringBuilder ret = new StringBuilder();
+//        boolean first = true;
+//        for (String str : list) {
+//            if (first) first = false;
+//            else ret.append("\0");
+//            ret.append(str);
+//        }
+//        return ret.toString();
+//    }
 
 
 }
