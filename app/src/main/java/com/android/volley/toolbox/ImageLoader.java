@@ -107,7 +107,18 @@ public class ImageLoader {
             @Override
             public void onResponse(ImageContainer response, boolean isImmediate) {
                 if (response.getBitmap() != null) {
-                    view.setImageBitmap(response.getBitmap());
+
+
+                    Bitmap bmp= response.getBitmap();
+                    int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
+
+
+
+                    Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
+                    view.setImageBitmap(resizedBitmap);
+
+
+//                    view.setImageBitmap(response.getBitmap());
                 } else if (defaultImageResId != 0) {
                     view.setImageResource(defaultImageResId);
                 }

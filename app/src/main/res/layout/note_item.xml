@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal">
+
+
+    <TextView
+        android:id="@+id/note_number"
+        android:layout_width="33dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:paddingTop="16dp"
+        android:text="9999."/>
+
+    <com.makeramen.roundedimageview.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/note_head"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        app:riv_border_color="#acacac"
+        app:riv_border_width="1.5dp"
+        app:riv_corner_radius="25dp"
+        app:riv_mutate_background="true"
+        app:riv_oval="true"
+        app:riv_tile_mode="repeat"
+        android:src="@drawable/boysmall"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="5dp">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/note_username"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textSize="15sp"
+                android:layout_gravity="center_vertical"
+                android:text="不是不能试一下子"
+                android:gravity="left|center_vertical"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/time_label"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textSize="13sp"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="20dp"
+                android:gravity="bottom|left"
+                android:text="2015-09-01 22:11:00"/>
+
+
+        </LinearLayout>
+
+        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:paddingBottom="3dp"
+            android:paddingTop="2dp">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="33dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/chat_bubble_white"/>
+
+            <TextView
+                android:id="@+id/note_text"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="17.5dp"
+                android:layout_marginRight="20dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/round_shape"
+                android:text="大神求带"
+                android:textSize="13sp"
+                android:lines="2"
+                />
+
+
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

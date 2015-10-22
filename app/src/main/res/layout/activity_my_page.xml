@@ -10,10 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
+        android:background="@drawable/info_back"
 
 
         >
-        <!--android:background="@drawable/info_back"-->
 
         <com.makeramen.roundedimageview.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/my_head"
@@ -21,12 +21,12 @@
             android:layout_height="90dp"
             android:layout_centerHorizontal="true"
             android:paddingTop="5dp"
+            android:src="@drawable/boysmall"
             app:riv_border_color="#bbbbbb"
             app:riv_border_width="1dp"
             app:riv_mutate_background="true"
             app:riv_oval="true"
             app:riv_tile_mode="repeat" />
-        <!--android:src="@drawable/boysmall"-->
 
 
         <TextView
@@ -48,7 +48,7 @@
             android:layout_marginRight="20dp"
             android:layout_marginTop="43dp"
             android:layout_toLeftOf="@id/my_head"
-            android:src="@drawable/female" />
+             />
 
         <TextView
             android:id="@+id/age_label"
@@ -57,512 +57,572 @@
             android:layout_marginLeft="18dp"
             android:layout_marginTop="47dp"
             android:layout_toRightOf="@id/my_head"
-            android:text="19岁"
+            android:text=""
             android:textColor="#dddddd" />
 
 
     </RelativeLayout>
 
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"
         android:orientation="vertical">
 
-
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2">
-
-            <TextView
-                android:id="@+id/game_name"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:text="游戏名字"
-                android:textColor="#eeeeee" />
-
-            <TextView
-                android:layout_width="90dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_marginLeft="3dp"
-                android:layout_toRightOf="@id/game_name"
-                android:gravity="center"
-                android:text="11游戏账号"
-                android:textSize="11sp" />
-
-
-        </RelativeLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:orientation="horizontal"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingTop="3dp">
-
-                <TextView
-                    android:layout_width="85dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="#3d3e3e"
-                    android:text="天梯积分"
-                    android:gravity="center"
-                    android:layout_gravity="center_horizontal"
-                    android:textColor="#cccccc"
-
-                    />
-                <TextView
-                    android:id="@+id/score_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/nocolor"
-                    android:text="1300"
-                    android:gravity="center"
-
-                    />
-
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingTop="3dp">
-
-                <TextView
-                    android:layout_width="85dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="#3d3e3e"
-                    android:text="总场次"
-                    android:gravity="center"
-                    android:layout_gravity="center_horizontal"
-                    android:textColor="#cccccc"
-
-                    />
-                <TextView
-                    android:id="@+id/total_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/nocolor"
-                    android:text="80"
-                    android:gravity="center"
-
-                    />
-
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingTop="3dp">
-
-                <TextView
-                    android:layout_width="85dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="#3d3e3e"
-                    android:text="胜率"
-                    android:gravity="center"
-                    android:layout_gravity="center_horizontal"
-                    android:textColor="#cccccc"
-
-                    />
-                <TextView
-                    android:id="@+id/win_rate"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/nocolor"
-                    android:text="65%"
-                    android:gravity="center"
-                    android:paddingLeft="4dp"
-
-                    />
-
-
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="6"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/main_back"
             >
-            <View
-                android:id="@+id/lineTop"
-                android:layout_width="match_parent"
-                android:layout_height="1.5dp"
-                android:background="#666666"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
-                android:layout_gravity="center_horizontal"
+            <!--android:layout_weight="5"-->
+            <!--android:background="@drawable/main_back"-->
 
-                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2">
+
+                <TextView
+                    android:id="@+id/game_name"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+
+                    android:textColor="#eeeeee" />
+
+                <TextView
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="3dp"
+                    android:layout_toRightOf="@id/game_name"
+                    android:gravity="center"
+                    android:text="11游戏账号"
+                    android:textSize="11sp" />
+
+
+            </RelativeLayout>
+
             <LinearLayout
-                android:id="@+id/score_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
                 android:orientation="horizontal"
-                android:paddingLeft="28dp"
-                android:paddingRight="28dp"
-                android:layout_below="@id/lineTop"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
 
-                >
-
-                <LinearLayout  android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-
-                    >
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="MVP"
-                        android:gravity="center"
-                        />
-                    <TextView
-
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="破军"
-                        android:gravity="center"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="破敌"
-                        android:gravity="center"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="富豪"
-                        android:gravity="center"
-                        />
-
-
-
-
-                </LinearLayout>
-                <LinearLayout  android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-                    >
-
-                    <TextView
-                        android:id="@+id/mvp_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="10"
-                        android:gravity="center"
-
-                        />
-                    <TextView
-                        android:id="@+id/pojun_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="10"
-                        android:gravity="center"
-                        />
-                    <TextView
-                        android:id="@+id/podi_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="10"
-                        android:gravity="center"
-                        />
-                    <TextView
-                        android:id="@+id/fuhao_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="10"
-                        android:gravity="center"
-
-                        />
-
-
-
-                </LinearLayout>
-                <FrameLayout
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingTop="3dp">
 
-                    >
-                    <View android:layout_width="0.8dp"
-                        android:layout_height="match_parent"
-                        android:background="#666666"
+                    <TextView
+                        android:layout_width="85dp"
+                        android:layout_height="0dp"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginBottom="12dp"
-                        />
-
-                    <TextView
-                        android:id="@+id/noRecord_label"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:text="暂未认证"
-                        android:textSize="15sp"
-                        android:lines="1"
-                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:background="#3d3e3e"
                         android:gravity="center"
-                        android:visibility="gone"
+                        android:text="天梯积分"
+                        android:textColor="#cccccc"
 
                         />
 
-                </FrameLayout>
-                <LinearLayout  android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-                    >
-
                     <TextView
+                        android:id="@+id/score_label"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:text="补王"
+                        android:background="@drawable/nocolor"
                         android:gravity="center"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="偏将"
-                        android:gravity="center"
-                        />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="英魂"
-                        android:gravity="center"
-                        />
+                        android:text="0"
 
-
-
-                </LinearLayout>
-                <LinearLayout  android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-                    >
-
-                    <TextView
-                        android:id="@+id/buwang_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="10"
-                        android:gravity="center"
-
-                        />
-                    <TextView
-                        android:id="@+id/pianjiang_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="10"
-                        android:gravity="center"
-                        />
-                    <TextView
-                        android:id="@+id/yinghun_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="10"
-                        android:gravity="center"
                         />
 
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingTop="3dp">
+
+                    <TextView
+                        android:layout_width="85dp"
+                        android:layout_height="0dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="1"
+                        android:background="#3d3e3e"
+                        android:gravity="center"
+                        android:text="总场次"
+                        android:textColor="#cccccc"
+
+                        />
+
+                    <TextView
+                        android:id="@+id/total_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/nocolor"
+                        android:gravity="center"
+                        android:text="0"
+
+                        />
 
 
+                </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingTop="3dp">
+
+                    <TextView
+                        android:layout_width="85dp"
+                        android:layout_height="0dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="1"
+                        android:background="#3d3e3e"
+                        android:gravity="center"
+                        android:text="胜率"
+                        android:textColor="#cccccc"
+
+                        />
+
+                    <TextView
+                        android:id="@+id/win_rate"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/nocolor"
+                        android:gravity="center"
+                        android:paddingLeft="4dp"
+                        android:text="0%"
+
+                        />
+
+
+                </LinearLayout>
 
 
             </LinearLayout>
 
-           <View android:layout_width="match_parent"
-               android:layout_height="1.5dp"
-               android:background="#666666"
-               android:layout_marginLeft="25dp"
-               android:layout_marginRight="25dp"
-               android:layout_gravity="center_horizontal"
-               android:layout_alignParentBottom="true"/>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2">
-
-            <LinearLayout
-                android:id="@+id/kill_layout"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:paddingLeft="28dp"
-                android:paddingRight="28dp"
-                android:paddingTop="3dp"
-                android:gravity="center_vertical"
+                android:layout_height="0dp"
+                android:layout_weight="6">
 
-                >
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="双杀"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:textSize="17sp"
-                    />
-                <TextView
-                    android:id="@+id/double_kill"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="22"
-                    android:gravity="center"
-                    />
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    />
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="三杀"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:textSize="17sp"
+                <View
+                    android:id="@+id/lineTop"
+                    android:layout_width="match_parent"
+                    android:layout_height="1.5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="#666666"
 
                     />
-                <TextView
-                    android:id="@+id/triple_kill"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="11"
-                    android:gravity="center"
 
-                    />
+                <LinearLayout
+                    android:id="@+id/score_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/lineTop"
+                    android:orientation="horizontal"
+                    android:paddingLeft="28dp"
+                    android:paddingRight="28dp"
+
+                    >
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+
+                        >
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="MVP" />
+
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="破军" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="破敌" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="富豪" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/mvp_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="0"
+
+                            />
+
+                        <TextView
+                            android:id="@+id/pojun_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="0" />
+
+                        <TextView
+                            android:id="@+id/podi_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="0" />
+
+                        <TextView
+                            android:id="@+id/fuhao_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="0"
+
+                            />
+
+
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+
+                        >
+
+                        <View
+                            android:layout_width="0.8dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginTop="12dp"
+                            android:background="#666666" />
+
+                        <TextView
+                            android:id="@+id/noRecord_label"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:lines="1"
+                            android:text="暂未认证"
+                            android:textSize="15sp"
+                            android:visibility="gone"
+
+                            />
+
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="补王" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="偏将" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="英魂" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/buwang_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="0"
+
+                            />
+
+                        <TextView
+                            android:id="@+id/pianjiang_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="0" />
+
+                        <TextView
+                            android:id="@+id/yinghun_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="0" />
+
+
+                    </LinearLayout>
+
 
                 </LinearLayout>
 
-            <View android:layout_width="match_parent"
-                android:layout_height="1.5dp"
-                android:background="#666666"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_alignParentBottom="true"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1.5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="#666666" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2">
+
+                <LinearLayout
+                    android:id="@+id/kill_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingLeft="28dp"
+                    android:paddingRight="28dp"
+                    android:paddingTop="3dp"
+
+                    >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="双杀"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/double_kill"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="0" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="三杀"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+
+                        />
+
+                    <TextView
+                        android:id="@+id/triple_kill"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="0"
+
+                        />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1.5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:background="#666666" />
 
 
-        </RelativeLayout>
+            </RelativeLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:orientation="horizontal"
-            android:paddingLeft="25dp"
-            android:paddingRight="25dp"
-            android:paddingBottom="2dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:orientation="horizontal"
+                android:paddingBottom="2dp"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp">
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/thumb"
-                android:layout_marginLeft="15dp"
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
+                    android:src="@drawable/thumb"
 
-                />
+                    />
 
-            <ImageView
-                android:id="@+id/hero_first"
-                android:layout_width="47dp"
-                android:layout_height="47dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="15dp"
-                />
+                <ImageView
+                    android:id="@+id/hero_first"
+                    android:layout_width="47dp"
+                    android:layout_height="47dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp" />
 
-            <ImageView
-                android:id="@+id/hero_second"
-                android:layout_width="47dp"
-                android:layout_height="47dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="15dp"
+                <ImageView
+                    android:id="@+id/hero_second"
+                    android:layout_width="47dp"
+                    android:layout_height="47dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="15dp"
 
-                />
+                    />
 
-            <ImageView
-                android:id="@+id/hero_third"
-                android:layout_width="47dp"
-                android:layout_height="47dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="10dp"
+                <ImageView
+                    android:id="@+id/hero_third"
+                    android:layout_width="47dp"
+                    android:layout_height="47dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
 
-                />
-            <TextView
-                android:layout_width="52dp"
-                android:layout_height="29dp"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"
-                android:text="详情>>"
-                android:textColor="#cccccc"
-                android:textSize="13sp"
-                android:layout_marginLeft="10dp"
-                android:clickable="true"
+                    />
 
-                />
-            <!--android:background="@drawable/listbutton"-->
+                <TextView
+                    android:layout_width="52dp"
+                    android:layout_height="29dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/listbutton"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:text="详情>>"
+                    android:textColor="#cccccc"
+                    android:textSize="13sp"
 
 
+                    />
 
 
+            </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/note_pad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="#bebebe">
+
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginLeft="25dp"
+                    android:text="留言板"
+                    android:textSize="17sp"
+                    android:textStyle="bold"/>
+
+                <TextView android:layout_width="60dp"
+                    android:layout_height="34dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="25dp"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:text="留 言"
+                    android:textSize="14sp"
+                    android:textColor="#eeeeee"
+                    android:background="@drawable/listbutton"/>
+
+            </RelativeLayout>
+
+            <ListView
+                android:id="@+id/note_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#cccccc"
+                android:fastScrollEnabled="true"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp" />
+
+        </LinearLayout>
+    </FrameLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -570,71 +630,75 @@
         android:layout_weight="0.95"
         android:background="#FF232323"
         android:orientation="horizontal"
+        android:paddingBottom="5dp"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp">
+        android:paddingTop="5dp">
 
 
         <TextView
             android:id="@+id/tt_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@drawable/listbutton"
+            android:clickable="true"
             android:gravity="center"
             android:text="天梯局"
             android:textColor="#dddddd"
             android:textSize="15sp"
-            android:clickable="true"
 
 
             />
-        <!--android:background="@drawable/listbutton"-->
 
         <TextView
             android:id="@+id/jjc_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/listbutton"
+            android:clickable="true"
             android:gravity="center"
             android:text="竞技场"
             android:textColor="#dddddd"
             android:textSize="15sp"
-            android:clickable="true"
-            android:layout_marginLeft="10dp"
 
 
             />
+
         <TextView
             android:id="@+id/mj_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/listbutton"
+            android:clickable="true"
             android:gravity="center"
             android:text="名将局"
             android:textColor="#dddddd"
             android:textSize="15sp"
-            android:clickable="true"
-            android:layout_marginLeft="10dp"
-
 
 
             />
+
         <TextView
             android:id="@+id/note_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/listbutton"
+            android:clickable="true"
             android:gravity="center"
             android:text="留言板"
             android:textColor="#dddddd"
             android:textSize="15sp"
-            android:clickable="true"
-            android:layout_marginLeft="10dp"
 
             />
 

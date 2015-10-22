@@ -1,16 +1,26 @@
 package com.example.sheepcao.dotaertest;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -19,8 +29,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.plus.model.people.Person;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.RequestBody;
@@ -29,13 +41,16 @@ import com.squareup.okhttp.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,11 +59,14 @@ import java.util.regex.Pattern;
 public class myPage extends AppCompatActivity {
 
     RequestQueue mQueue = null;
+    ImageLoader imageLoader;
 
     String requestCookie = "";
     String searchCookie = "";
     String redirectCookie = "";
     String ratingCookie = "";
+
+    TextView selectedButton = null;
 
     JSONObject mjInfos = null;
     JSONObject ttInfos = null;
@@ -58,6 +76,39 @@ public class myPage extends AppCompatActivity {
     String mjScore = "";
     String ttScore = "";
 
+
+    TextView score_label = null;
+    TextView total_label = null;
+    TextView win_rate = null;
+    TextView mvp_label = null;
+    TextView podi_label = null;
+    TextView pojun_label = null;
+    TextView fuhao_label = null;
+    TextView buwang_label = null;
+    TextView pianjiang_label = null;
+    TextView yinghun_label = null;
+    TextView double_kill = null;
+    TextView triple_kill = null;
+
+    ImageView hero_first = null;
+    ImageView hero_second = null;
+    ImageView hero_third = null;
+
+
+    TextView ttMenu = null;
+    TextView jjcMenu = null;
+    TextView mjMenu = null;
+    TextView noteMenu = null;
+
+
+
+    private ListView lv;
+    private List<Map<String, Object>> data;
+    MyAdapter adapter = null;
+
+    List<String> visitorList;
+    List<String> contentList;
+    List<String> timeList;
 
 
 
@@ -75,12 +126,106 @@ public class myPage extends AppCompatActivity {
                 return connection;
             }
         });
+        imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
+            @Override
+            public void putBitmap(String url, Bitmap bitmap) {
+            }
 
-//        mQueue = Volley.newRequestQueue(this);
-//
-//        Network network = new BasicNetwork(new OkHttpStack());
-//        RequestQueue mQueue = new RequestQueue(new DiskBasedCache(new File(getCacheDir(), "volley")), network);
-//        mQueue.start();
+            @Override
+            public Bitmap getBitmap(String url) {
+                return null;
+            }
+        });
+
+
+        score_label = (TextView) findViewById(R.id.score_label);
+        total_label = (TextView) findViewById(R.id.total_label);
+        win_rate = (TextView) findViewById(R.id.win_rate);
+        mvp_label = (TextView) findViewById(R.id.mvp_label);
+        podi_label = (TextView) findViewById(R.id.podi_label);
+        pojun_label = (TextView) findViewById(R.id.pojun_label);
+        fuhao_label = (TextView) findViewById(R.id.fuhao_label);
+        buwang_label = (TextView) findViewById(R.id.buwang_label);
+        pianjiang_label = (TextView) findViewById(R.id.pianjiang_label);
+        yinghun_label = (TextView) findViewById(R.id.yinghun_label);
+        double_kill = (TextView) findViewById(R.id.double_kill);
+        triple_kill = (TextView) findViewById(R.id.triple_kill);
+
+        hero_first = (ImageView) findViewById(R.id.hero_first);
+        hero_second = (ImageView) findViewById(R.id.hero_second);
+        hero_third = (ImageView) findViewById(R.id.hero_third);
+
+        ttMenu = (TextView) findViewById(R.id.tt_button);
+        ttMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView tv = (TextView)v;
+                try {
+                    selectedItem(tv);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        jjcMenu = (TextView) findViewById(R.id.jjc_button);
+        jjcMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView tv = (TextView)v;
+                try {
+                    selectedItem(tv);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        mjMenu = (TextView) findViewById(R.id.mj_button);
+        mjMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView tv = (TextView) v;
+                try {
+                    selectedItem(tv);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        noteMenu = (TextView) findViewById(R.id.note_button);
+        noteMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView tv = (TextView) v;
+                try {
+                    selectedItem(tv);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        selectedButton = ttMenu;
+        selectedButton.setBackgroundResource(R.drawable.list_button_press);
+        selectedButton.setClickable(false);
+        selectedButton.setTextColor(Color.parseColor("#C97311"));
+
+
+
+        visitorList = new ArrayList<>();
+        contentList = new ArrayList<>();
+        timeList = new ArrayList<>();
+
+        lv = (ListView) findViewById(R.id.note_list);
+        //获取将要绑定的数据设置到data中
+        data = getData();
+        adapter = new MyAdapter(this);
+        lv.setAdapter(adapter);
+
+
+
+        CustomProgressBar.showProgressBar(this, false, "Loading");
+
 
 //        requestBasicInfo("小奴");
         requestExtroInfoWithUser("宝贝拼吧");
@@ -159,31 +304,274 @@ public class myPage extends AppCompatActivity {
     }
 
 
-    private void setUpScorePage()
-    {
-        TextView score_label = (TextView) findViewById(R.id.score_label);
-        TextView total_label = (TextView) findViewById(R.id.total_label);
-        TextView win_rate = (TextView) findViewById(R.id.win_rate);
-        TextView mvp_label = (TextView) findViewById(R.id.mvp_label);
-        TextView podi_label = (TextView) findViewById(R.id.podi_label);
-        TextView pojun_label = (TextView) findViewById(R.id.pojun_label);
-        TextView fuhao_label = (TextView) findViewById(R.id.fuhao_label);
-        TextView buwang_label = (TextView) findViewById(R.id.buwang_label);
-        TextView pianjiang_label = (TextView) findViewById(R.id.pianjiang_label);
-        TextView yinghun_label = (TextView) findViewById(R.id.yinghun_label);
-        TextView double_kill = (TextView) findViewById(R.id.double_kill);
-        TextView triple_kill = (TextView) findViewById(R.id.triple_kill);
+    private void setUpScorePage(TextView btn) throws JSONException {
 
-        ImageView hero_first = (ImageView) findViewById(R.id.hero_first);
-        ImageView hero_second = (ImageView) findViewById(R.id.hero_second);
-        ImageView hero_third = (ImageView) findViewById(R.id.hero_third);
+        if(btn==noteMenu)
+        {
+            View notePad = (View)findViewById(R.id.note_pad);
+            notePad.setVisibility(View.VISIBLE);
+            requestNotes("小奴");
+            return;
+        }else
+        {
+            View notePad = (View)findViewById(R.id.note_pad);
+            notePad.setVisibility(View.GONE);
+        }
+
+        JSONObject tempDic = ttInfos;
+        if (btn == ttMenu)
+        {
+            tempDic = ttInfos;
+            score_label.setText(ttScore);
+        } else  if (btn == jjcMenu)
+        {
+            tempDic = jjcInfos;
+            score_label.setText(jjcScore);
+        } else  if (btn == mjMenu)
+        {
+            tempDic = mjInfos;
+            score_label.setText(mjScore);
+        }
+
+        total_label.setText(tempDic.getInt("Total")+"");
+        win_rate.setText(tempDic.getString("R_Win"));
+
+        mvp_label.setText(tempDic.getInt("MVP")+"");
+        fuhao_label.setText(tempDic.getInt("FuHao")+"");
+        podi_label.setText(tempDic.getInt("PoDi")+"");
+        pojun_label.setText(tempDic.getInt("PoJun")+"");
+        buwang_label.setText(tempDic.getInt("BuWang")+"");
+        pianjiang_label.setText(tempDic.getInt("PianJiang")+"");
+        yinghun_label.setText(tempDic.getInt("YingHun") + "");
+
+        double_kill.setText(tempDic.getInt("DoubleKill") + "");
+        triple_kill.setText(tempDic.getInt("TripleKill")+"");
+
+        String hero1 = tempDic.getString("AdeptHero1");
+        String hero2 = tempDic.getString("AdeptHero2");
+        String hero3 = tempDic.getString("AdeptHero3");
 
 
-        score_label.setText(ttScore);
+        ImageLoader.ImageListener listener = ImageLoader.getImageListener(hero_first, R.drawable.nocolor, R.drawable.nocolor);
+        String heroUrl = "http://i.5211game.com/img/dota/hero/" + hero1 + ".jpg";
+        imageLoader.get(heroUrl, listener);
 
+        ImageLoader.ImageListener listener2 = ImageLoader.getImageListener(hero_second, R.drawable.nocolor, R.drawable.nocolor);
+        String heroUrl2 = "http://i.5211game.com/img/dota/hero/" + hero2 + ".jpg";
+        imageLoader.get(heroUrl2, listener2);
+
+        ImageLoader.ImageListener listener3 = ImageLoader.getImageListener(hero_third, R.drawable.nocolor, R.drawable.nocolor);
+        String heroUrl3 = "http://i.5211game.com/img/dota/hero/" + hero3 + ".jpg";
+        imageLoader.get(heroUrl3, listener3);
 
 
     }
+
+    private void selectedItem(TextView btn) throws JSONException {
+
+        selectedButton.setBackgroundResource(R.drawable.listbutton);
+        selectedButton.setClickable(true);
+        selectedButton.setTextColor(Color.parseColor("#dddddd"));
+
+        btn.setBackgroundResource(R.drawable.list_button_press);
+        btn.setClickable(false);
+        btn.setTextColor(Color.parseColor("#C97311"));
+
+        selectedButton = btn;
+
+        try {
+            setUpScorePage(btn);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    private void requestNotes(final String name)
+    {
+        CustomProgressBar.showProgressBar(this, false, "Loading");
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/note.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("TAG", response);
+                        JSONObject jObject = new JSONObject(response);
+                        JSONArray jArray = jObject.getJSONArray("visitor");
+                        JSONArray jArray_content = jObject.getJSONArray("content");
+                        JSONArray jArray_time = jObject.getJSONArray("createdAt");
+
+                        visitorList.clear();
+                        contentList.clear();
+                        timeList.clear();
+
+                        for (int i = 0; i < jArray.length(); i++) {
+                            try {
+                                String oneName = jArray.getString(i);
+                                visitorList.add(oneName);
+
+                                String oneContent = jArray_content.getString(i);
+                                contentList.add(oneContent);
+
+                                String oneTime = jArray_time.getString(i);
+                                timeList.add(oneTime);
+
+                            } catch (JSONException e) {
+                                // Oops
+                            }
+                        }
+
+
+                        data = getData();
+                        adapter.notifyDataSetChanged();
+
+
+                        CustomProgressBar.hideProgressBar();
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("TAG", error.getMessage(), error);
+                CustomProgressBar.hideProgressBar();
+                Toast.makeText(myPage.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+
+
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("tag", "getNote");
+                map.put("username", name);
+
+                return map;
+            }
+
+
+        };
+
+        mQueue.add(stringRequest);
+
+    }
+
+
+
+    //ViewHolder静态类
+    static class ViewHolder {
+        public ImageView headImg;
+
+        public TextView usernameLabel;
+        public TextView timeLabel;
+        public TextView noteNumber;
+        public TextView noteText;
+
+
+    }
+
+    private List<Map<String, Object>> getData() {
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        Map<String, Object> map;
+        for (int i = 0; i < visitorList.size(); i++) {
+            map = new HashMap<String, Object>();
+
+
+            map.put("visitor", visitorList.get(i));
+            map.put("content", contentList.get(i));
+            map.put("time", timeList.get(i));
+
+            list.add(map);
+        }
+        return list;
+    }
+
+    public class MyAdapter extends BaseAdapter {
+        private LayoutInflater mInflater = null;
+
+        private MyAdapter(Context context) {
+            //根据context上下文加载布局，这里的是Demo17Activity本身，即this
+            this.mInflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public int getCount() {
+            //How many items are in the data set represented by this Adapter.
+            //在此适配器中所代表的数据集中的条目数
+            return data.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            // Get the data item associated with the specified position in the data set.
+            //获取数据集中与指定索引对应的数据项
+            return position;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            //Get the row id associated with the specified position in the list.
+            //获取在列表中与指定索引对应的行id
+            return position;
+        }
+
+        //Get a View that displays the data at the specified position in the data set.
+        //获取一个在数据集中指定索引的视图来显示数据
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder = null;
+            //如果缓存convertView为空，则需要创建View
+            if (convertView == null) {
+                holder = new ViewHolder();
+                //根据自定义的Item布局加载布局
+                convertView = mInflater.inflate(R.layout.note_item, null);
+                holder.headImg = (ImageView) convertView.findViewById(R.id.note_head);
+                holder.usernameLabel = (TextView) convertView.findViewById(R.id.note_username);
+
+                holder.timeLabel = (TextView) convertView.findViewById(R.id.time_label);
+                holder.noteNumber = (TextView) convertView.findViewById(R.id.note_number);
+                holder.noteText = (TextView) convertView.findViewById(R.id.note_text);
+
+
+                holder.headImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+
+            holder.noteNumber.setText((position+1)+".");
+
+            holder.usernameLabel.setText((String) data.get(position).get("visitor"));
+            holder.timeLabel.setText((String) data.get(position).get("time"));
+            holder.noteText.setText((String) data.get(position).get("content"));
+
+            ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg, R.drawable.nocolor, R.drawable.nocolor);
+
+            String name = (String) data.get(position).get("visitor");
+            String nameURLstring = "";
+            try {
+                String strUTF8 = URLEncoder.encode((name+ ".png"), "UTF-8");
+                nameURLstring = "http://cgx.nwpu.info/Sites/upload/" + strUTF8;
+                Log.v("nameURLstring", nameURLstring);
+
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+
+            imageLoader.get(nameURLstring, listener);
+
+            return convertView;
+        }
+
+    }
+
+
+
 
 
     //request score procedure.........
@@ -191,7 +579,6 @@ public class myPage extends AppCompatActivity {
 
     private void requestBasicInfo(final String username) {
 
-        CustomProgressBar.showProgressBar(this, false, "战绩读取...");
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/playerInfo.php",
                 new Response.Listener<String>() {
@@ -273,7 +660,7 @@ public class myPage extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) throws JSONException {
 
-                        Log.d("TAG", response);
+//                        Log.d("TAG", response);
 
                         String VIEWSTATEGENERATOR = pickVIEWSTATEGENERATOR(response);
                         String VIEWSTATE = pickVIEWSTATE(response);
@@ -316,10 +703,10 @@ public class myPage extends AppCompatActivity {
 
                     if (m.find()) { //注意这里，是while不是if
                         String xxx = m.group();
-                        Log.v("cookiexxx", xxx);
+//                        Log.v("cookiexxx", xxx);
                         String[] aa = xxx.split(";");
                         cookie_final = aa[0];
-                        Log.v("cookiexxx1111", cookie);
+//                        Log.v("cookiexxx1111", cookie);
 
 
                     }
@@ -344,18 +731,18 @@ public class myPage extends AppCompatActivity {
 
         if (m.find()) { //注意这里，是while不是if
             String xxx = m.group();
-            Log.v("VIEWSTATEGENERATOR", xxx);
+//            Log.v("VIEWSTATEGENERATOR", xxx);
 
 
             String[] aa = xxx.split("value=\"");
-            Log.v("VIEWSTATEGENERATOR", aa[0]);
+//            Log.v("VIEWSTATEGENERATOR", aa[0]);
 
             if (aa.length > 1) {
-                Log.v("VIEWSTATEGENERATOR", aa[1]);
+//                Log.v("VIEWSTATEGENERATOR", aa[1]);
 
                 String[] bb = aa[1].split("\"");
                 VIEWSTATEGENERATOR = bb[0];
-                Log.v("VIEWSTATEGENERATOR---->", VIEWSTATEGENERATOR);
+//                Log.v("VIEWSTATEGENERATOR---->", VIEWSTATEGENERATOR);
 
             }
 
@@ -371,18 +758,18 @@ public class myPage extends AppCompatActivity {
 
         if (m.find()) { //注意这里，是while不是if
             String xxx = m.group();
-            Log.v("VIEWSTATE", xxx);
+//            Log.v("VIEWSTATE", xxx);
 
 
             String[] aa = xxx.split("value=\"");
-            Log.v("VIEWSTATE", aa[0]);
+//            Log.v("VIEWSTATE", aa[0]);
 
             if (aa.length > 1) {
-                Log.v("VIEWSTATE", aa[1]);
+//                Log.v("VIEWSTATE", aa[1]);
 
                 String[] bb = aa[1].split("\"");
                 VIEWSTATE = bb[0];
-                Log.v("VIEWSTATE---->", VIEWSTATE);
+//                Log.v("VIEWSTATE---->", VIEWSTATE);
 
             }
 
@@ -397,18 +784,18 @@ public class myPage extends AppCompatActivity {
 
         if (m.find()) { //注意这里，是while不是if
             String xxx = m.group();
-            Log.v("EVENTVALIDATION", xxx);
+//            Log.v("EVENTVALIDATION", xxx);
 
 
             String[] aa = xxx.split("value=\"");
-            Log.v("EVENTVALIDATION", aa[0]);
+//            Log.v("EVENTVALIDATION", aa[0]);
 
             if (aa.length > 1) {
-                Log.v("EVENTVALIDATION", aa[1]);
+//                Log.v("EVENTVALIDATION", aa[1]);
 
                 String[] bb = aa[1].split("\"");
                 EVENTVALIDATION = bb[0];
-                Log.v("EVENTVALIDATION---->", EVENTVALIDATION);
+//                Log.v("EVENTVALIDATION---->", EVENTVALIDATION);
 
             }
 
@@ -422,7 +809,7 @@ public class myPage extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) throws JSONException {
 
-                        Log.d("TAG<<<<<<<<<<", response);
+//                        Log.d("TAG<<<<<<<<<<", response);
                         requestSearchUserID(SearchName);
 
 
@@ -563,12 +950,12 @@ public class myPage extends AppCompatActivity {
 
 //                        Log.d("redirect done", response);
 
-                        for (int i = 0; i < response.length(); i += 1024) {
-                            if (i + 1024 < response.length())
-                                Log.d("redirect done", response.substring(i, i + 1024));
-                            else
-                                Log.d("redirect done", response.substring(i, response.length()));
-                        }
+//                        for (int i = 0; i < response.length(); i += 1024) {
+//                            if (i + 1024 < response.length())
+//                                Log.d("redirect done", response.substring(i, i + 1024));
+//                            else
+//                                Log.d("redirect done", response.substring(i, response.length()));
+//                        }
 
                         requestSearchUserID(SearchName);
 
@@ -591,7 +978,7 @@ public class myPage extends AppCompatActivity {
                 String cookie_final = "";
                 if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
                     for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
-                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
+//                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
                         if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {
                             String cookieTemp = error.networkResponse.apacheHeaders[i].getValue();
                             String[] cookieparts = cookieTemp.split(";");
@@ -671,7 +1058,7 @@ public class myPage extends AppCompatActivity {
 
                         if (m.find()) { //注意这里，是while不是if
                             String xxx = m.group();
-                            Log.v("Before score", xxx);
+//                            Log.v("Before score", xxx);
 
                             String[] resultArray = xxx.split("YY.d.j = ");
                             if (resultArray.length > 1) {
@@ -727,7 +1114,7 @@ public class myPage extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) throws JSONException {
 
-                        Log.d("Json string>>>>>", response);
+//                        Log.d("Json string>>>>>", response);
 
 
                         JSONObject jObject = new JSONObject(response);
@@ -738,13 +1125,14 @@ public class myPage extends AppCompatActivity {
                         jjcInfos = jObject.getJSONObject("jjcInfos");
 
                         mjScore = mjInfos.getString("MingJiang");
-                        ttScore = jObject.getInt("rating")+"";
-                        jjcScore = jObject.getInt("jjcRating")+"";
+                        ttScore = jObject.getInt("rating") + "";
+                        jjcScore = jObject.getInt("jjcRating") + "";
 
 
+                        setUpScorePage(selectedButton);
 
+                        CustomProgressBar.hideProgressBar();
 
-                        setUpScorePage();
 
                     }
                 }, new Response.ErrorListener() {
