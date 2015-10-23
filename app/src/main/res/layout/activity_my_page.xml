@@ -10,10 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
-        android:background="@drawable/info_back"
+
 
 
         >
+        <!--android:background="@drawable/info_back"-->
 
         <com.makeramen.roundedimageview.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/my_head"
@@ -74,7 +75,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:background="@drawable/main_back"
             >
             <!--android:layout_weight="5"-->
             <!--android:background="@drawable/main_back"-->

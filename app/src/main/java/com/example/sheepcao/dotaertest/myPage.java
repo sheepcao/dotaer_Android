@@ -541,11 +541,13 @@ public class myPage extends AppCompatActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
 
+            String time =(String) data.get(position).get("time");
+            time = time.substring(0, time.length()-3);
 
             holder.noteNumber.setText((position+1)+".");
 
             holder.usernameLabel.setText((String) data.get(position).get("visitor"));
-            holder.timeLabel.setText((String) data.get(position).get("time"));
+            holder.timeLabel.setText(time);
             holder.noteText.setText((String) data.get(position).get("content"));
 
             ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg, R.drawable.nocolor, R.drawable.nocolor);

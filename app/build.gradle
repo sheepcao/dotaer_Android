@@ -35,6 +35,7 @@ dependencies {
     compile files('libs/okhttp-urlconnection-2.5.0.jar')
     compile files('libs/okio-1.6.0.jar')
     compile files('libs/okhttp-2.5.0.jar')
+    compile files('libs/pushservice-4.5.3.48.jar')
 }
 repositories {
     mavenCentral()

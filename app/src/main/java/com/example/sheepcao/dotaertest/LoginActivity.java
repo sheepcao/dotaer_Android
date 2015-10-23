@@ -99,8 +99,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mQueue = Volley.newRequestQueue(this);
 
-        TextView registerButton = (TextView)findViewById(R.id.register_button);
-        String udata="还没圈子账号？快速注册->";
+        TextView registerButton = (TextView) findViewById(R.id.register_button);
+        String udata = "还没圈子账号？快速注册->";
         SpannableString content = new SpannableString(udata);
         content.setSpan(new UnderlineSpan(), 0, udata.length(), 0);
         registerButton.setText(content);
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v("register","register enter");
+                Log.v("register", "register enter");
                 //添加注册界面 intent.
             }
         });
@@ -179,23 +179,25 @@ public class LoginActivity extends AppCompatActivity {
                             String isReviewed = jObject.getString("isReviewed");
 
 
-
-
                             SharedPreferences mSharedPreferences = getSharedPreferences("dotaerSharedPreferences", 0);
 
 
                             SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-                            mEditor.putString("username",username);
-                            mEditor.putString("password",password);
-                            mEditor.putString("age",age);
-                            mEditor.putString("sex",sex);
-                            mEditor.putString("isReviewed",isReviewed);
+                            mEditor.putString("username", username);
+                            mEditor.putString("password", password);
+                            mEditor.putString("age", age);
+                            mEditor.putString("sex", sex);
+                            mEditor.putString("isReviewed", isReviewed);
 
                             mEditor.commit();
 
                             CustomProgressBar.hideProgressBar();
 
                             Log.v("login", "login OK-----------");
+
+                            uploadPushId();
+
+
                             Intent intent = new Intent();
 
                             myLogin.setResult(RESULT_OK, intent);
@@ -289,11 +291,17 @@ public class LoginActivity extends AppCompatActivity {
         if (id == R.id.visitor || id == android.R.id.home) {
 
             Log.v("back", "menu back-----------");
+
+            uploadPushId();
+
+
             Intent intent = new Intent();
             //把返回数据存入Intent
 //        intent.putExtra(BACK_CODE, BACK_CODE_NO);
             //设置返回数据
+
             this.setResult(RESULT_CANCELED, intent);
+
             this.finish();
             return true;
         } else {
@@ -320,8 +328,63 @@ public class LoginActivity extends AppCompatActivity {
         Log.v("back", "back!!!!!");
         Intent intent = new Intent();
 
+        uploadPushId();
+
         //关闭Activity
         super.onBackPressed();
+
+
+    }
+
+
+    private void uploadPushId() {
+        SharedPreferences mSharedPreferences = getSharedPreferences("dotaerSharedPreferences", 0);
+        String name = mSharedPreferences.getString("username", "游客");
+        String channelId = mSharedPreferences.getString("channelId", "none");
+
+        if (name.equals("游客")) {
+            name = "SystemAnonymous";
+        }
+        if (!channelId.equals("none"))
+        {
+            channelId = "Android"+channelId;
+            startUploading(name,channelId);
+
+        }
+
+
+
+    }
+
+    private void startUploading(final String name , final String channelId)
+    {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/deviceURL.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("deivce added", response);
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                CustomProgressBar.hideProgressBar();
+
+                Log.e("TAG", error.getMessage(), error);
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("tag", "addDevice");
+                map.put("username", name);
+                map.put("device", channelId);
+
+                return map;
+            }
+        };
+        mQueue.add(stringRequest);
 
 
     }
