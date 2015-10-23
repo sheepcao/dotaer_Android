@@ -1,7 +1,10 @@
 package com.example.sheepcao.dotaertest;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v7.app.ActionBar;
@@ -17,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -57,6 +61,10 @@ import java.util.regex.Pattern;
 
 
 public class myPage extends AppCompatActivity {
+
+    String playerName = "";
+
+
 
     RequestQueue mQueue = null;
     ImageLoader imageLoader;
@@ -226,6 +234,7 @@ public class myPage extends AppCompatActivity {
 
         CustomProgressBar.showProgressBar(this, false, "Loading");
 
+        playerName = "小奴";
 
 //        requestBasicInfo("小奴");
         requestExtroInfoWithUser("宝贝拼吧");
@@ -310,7 +319,51 @@ public class myPage extends AppCompatActivity {
         {
             View notePad = (View)findViewById(R.id.note_pad);
             notePad.setVisibility(View.VISIBLE);
-            requestNotes("小奴");
+
+            final EditText et = new EditText(myPage.this);
+
+            TextView addNote = (TextView)findViewById(R.id.add_note_button);
+            addNote.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(myPage.this).setTitle("请输入您的留言").setView(et).setPositiveButton("确定", null).setNegativeButton("取消", null);
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // TODO Auto-generated method stub
+
+                            String content = et.getText().toString();
+                            SharedPreferences mSharedPreferences = getSharedPreferences("dotaerSharedPreferences", 0);
+                            String name = mSharedPreferences.getString("username", "匿名游客");
+
+                            String replyTo = "";
+                            String[] replyArray = content.split("回复:");
+                            if (replyArray.length>1) {
+                                replyTo = replyArray[1].split(",")[0];
+                            }
+
+                            addNoteRequest(playerName,content,name,replyTo);
+                            et.setText("");
+                            ((ViewGroup) et.getParent()).removeView(et);
+
+                        }
+                    });
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // TODO Auto-generated method stub
+
+
+                            ((ViewGroup) et.getParent()).removeView(et);
+
+                        }
+
+                    });
+                    builder.show();
+
+                }
+            });
+            requestNotes(playerName);
             return;
         }else
         {
@@ -365,6 +418,83 @@ public class myPage extends AppCompatActivity {
         imageLoader.get(heroUrl3, listener3);
 
 
+    }
+
+    private void addNoteRequest(final String username, final String content , final String visitor , final String replyTo)
+    {
+
+        CustomProgressBar.showProgressBar(this, false, "uploading");
+
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/note.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("TAG", response);
+
+                        JSONObject jObject = new JSONObject(response);
+                        JSONArray jArray = jObject.getJSONArray("visitor");
+                        JSONArray jArray_content = jObject.getJSONArray("content");
+                        JSONArray jArray_time = jObject.getJSONArray("createdAt");
+
+                        visitorList.clear();
+                        contentList.clear();
+                        timeList.clear();
+
+                        for (int i = 0; i < jArray.length(); i++) {
+                            try {
+                                String oneName = jArray.getString(i);
+                                visitorList.add(oneName);
+
+                                String oneContent = jArray_content.getString(i);
+                                contentList.add(oneContent);
+
+                                String oneTime = jArray_time.getString(i);
+                                timeList.add(oneTime);
+
+                            } catch (JSONException e) {
+                                // Oops
+                            }
+                        }
+
+
+                        data = getData();
+                        adapter.notifyDataSetChanged();
+
+
+                        CustomProgressBar.hideProgressBar();
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("TAG", error.getMessage(), error);
+                CustomProgressBar.hideProgressBar();
+                Toast.makeText(myPage.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+
+
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("tag", "addNote");
+                map.put("username", username);
+                map.put("content", content);
+                map.put("visitor", visitor);
+                map.put("replyTo", replyTo);
+
+
+                return map;
+            }
+
+
+        };
+
+        mQueue.add(stringRequest);
     }
 
     private void selectedItem(TextView btn) throws JSONException {

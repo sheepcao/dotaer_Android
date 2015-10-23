@@ -188,7 +188,7 @@ public class NavigationDrawerFragment extends Fragment {
         signatureView = (Button) sideBarView.findViewById(R.id.signature_edit);
         signatureView.setText("fuck");
         signatureView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle("请输入您的签名").setView(et).setPositiveButton("确定", null).setNegativeButton("取消", null);
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
@@ -197,7 +197,21 @@ public class NavigationDrawerFragment extends Fragment {
                         // TODO Auto-generated method stub
 
                         signatureView.setText(et.getText());
+
+                        ((ViewGroup) et.getParent()).removeView(et);
+
                     }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO Auto-generated method stub
+
+
+                        ((ViewGroup) et.getParent()).removeView(et);
+
+                    }
+
                 });
                 builder.show();
 
