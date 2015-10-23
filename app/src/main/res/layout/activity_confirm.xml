@@ -6,10 +6,10 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@drawable/main_back"
-    tools:context="com.example.sheepcao.dotaertest.LoginActivity">
+    tools:context="com.example.sheepcao.dotaertest.confirmActivity">
 
     <!-- Login progress -->
-    <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"
+    <ProgressBar android:id="@+id/login_progress_confirm" style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_marginBottom="8dp" android:visibility="gone" />
 
@@ -17,35 +17,42 @@
         android:layout_height="260dp"
         >
 
-        <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
+        <LinearLayout android:id="@+id/email_login_form_confirm" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:orientation="vertical">
 
-            <EditText android:id="@+id/account" android:layout_width="match_parent"
+            <EditText android:id="@+id/account_confirm" android:layout_width="220dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
                 android:layout_marginTop="10dp"
-                android:layout_height="wrap_content" android:hint="请输入您的账号"
+                android:layout_height="wrap_content" android:hint="请输入11游戏账号"
+                android:textColor="#dddddd"
                 android:inputType="textPersonName" android:maxLines="1"
                 android:singleLine="true" />
 
-            <EditText android:id="@+id/password" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:hint="请输入您的密码"
+            <EditText android:id="@+id/password_confirm" android:layout_width="220dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:layout_height="wrap_content" android:hint="请输入11账号的密码"
                 android:inputType="textPassword"
+                android:textColor="#dddddd"
                 android:maxLines="1" android:singleLine="true" />
 
-            <Button android:id="@+id/email_sign_in_button" style="?android:textAppearanceSmall"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="20dp" android:text="登 录"
+            <Button android:id="@+id/email_sign_in_button_confirm" style="?android:textAppearanceSmall"
+                android:layout_width="160dp" android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp" android:text="认 证"
                 android:textStyle="bold" />
 
-            <TextView android:id="@+id/register_button" style="?android:textAppearanceMedium"
+            <TextView android:id="@+id/hint_text_confirm" style="?android:textAppearanceMedium"
                 android:layout_width="200dp" android:layout_height="wrap_content"
                 android:gravity="right"
                 android:paddingRight="15dp"
                 android:textSize="12sp"
-                android:layout_marginTop="20dp"
-                android:layout_gravity="right"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="center_horizontal"
                 android:textStyle="italic"
-                android:textColor="#6CADFF"
-                android:clickable="true"/>
+                android:textColor="#000000"
+                android:text="请输入您的11平台账号绑定战绩"/>
 
         </LinearLayout>
     </ScrollView>

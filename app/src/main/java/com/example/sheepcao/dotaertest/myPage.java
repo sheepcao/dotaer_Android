@@ -272,6 +272,10 @@ public class myPage extends AppCompatActivity {
         Log.v("option", id + "----home id:" + android.R.id.home);
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_binding) {
+//
+//            Intent intent = new Intent(myPage.this, confirmActivity.class);
+//            startActivityForResult(intent, 1);
+
             return true;
         } else if (id == android.R.id.home) {
             Log.v("back", "menu back-----------");

@@ -18,6 +18,8 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_my_page">myPage</string>
+    <string name="title_activity_confirm">战绩认证</string>
+
 
     <string name="binding_score">战绩认证</string>
     <string name="action_search">小秘书</string>
