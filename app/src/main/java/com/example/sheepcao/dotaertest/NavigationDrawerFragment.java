@@ -52,6 +52,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -108,7 +109,7 @@ public class NavigationDrawerFragment extends Fragment {
     private TextView nameLabel;
     RequestQueue mQueue = null;
 
-
+    ImageLoader imageLoader;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
@@ -350,6 +351,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     public void makeGuest()
     {
+        nameLabel.setText("");
         headImage.setVisibility(View.INVISIBLE);
         signatureView.setVisibility(View.INVISIBLE);
         headButton.setText("点击登陆\n\ndota有你更精彩!");
@@ -373,8 +375,28 @@ public class NavigationDrawerFragment extends Fragment {
         {
             nameLabel.setText(name);
             requestSignature(name);
+            loadHead(name);
         }
 
+    }
+
+    private void loadHead(String name)
+    {
+         imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
+            @Override
+            public void putBitmap(String url, Bitmap bitmap) {
+            }
+
+            @Override
+            public Bitmap getBitmap(String url) {
+                return null;
+            }
+        });
+        ImageLoader.ImageListener listener = ImageLoader.getImageListener(headImage, R.drawable.nocolor, R.drawable.nocolor);
+
+
+        imageLoader.get("http://cgx.nwpu.info/Sites/upload/" + name + ".png", listener);
+        Log.v("head","http://cgx.nwpu.info/Sites/upload/" + name + ".png");
     }
 
 

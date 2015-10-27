@@ -458,7 +458,7 @@ public class MainActivity extends AppCompatActivity
             holder.mapImg.setBackgroundResource((Integer) data.get(position).get("map"));
             holder.distance.setText((String) data.get(position).get("distance"));
 
-            ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg, R.drawable.male, R.drawable.male);
+            ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg, R.drawable.nocolor, R.drawable.nocolor);
 
 
             imageLoader.get("http://cgx.nwpu.info/Sites/upload/" + data.get(position).get("username") + ".png", listener);
