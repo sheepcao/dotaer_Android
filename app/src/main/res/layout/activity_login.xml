@@ -14,37 +14,41 @@
         android:layout_marginBottom="8dp" android:visibility="gone" />
 
     <ScrollView android:id="@+id/login_form" android:layout_width="250dp"
-        android:layout_height="260dp"
+        android:layout_height="300dp"
         >
 
         <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:orientation="vertical">
+            android:layout_height="wrap_content" android:orientation="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
             <EditText android:id="@+id/account" android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_height="wrap_content" android:hint="请输入您的账号"
                 android:inputType="textPersonName" android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                />
 
             <EditText android:id="@+id/password" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:hint="请输入您的密码"
                 android:inputType="textPassword"
-                android:maxLines="1" android:singleLine="true" />
+                android:maxLines="1" android:singleLine="true"
+                />
 
             <Button android:id="@+id/email_sign_in_button" style="?android:textAppearanceSmall"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="20dp" android:text="登 录"
+                android:layout_marginTop="12dp" android:text="登 录"
                 android:textStyle="bold" />
 
             <TextView android:id="@+id/register_button" style="?android:textAppearanceMedium"
                 android:layout_width="200dp" android:layout_height="wrap_content"
                 android:gravity="right"
-                android:paddingRight="15dp"
+                android:paddingRight="0dp"
                 android:textSize="12sp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="7dp"
                 android:layout_gravity="right"
                 android:textStyle="italic"
-                android:textColor="#6CADFF"
+                android:textColor="#1013c9"
                 android:clickable="true"/>
 
         </LinearLayout>

@@ -3,5 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.sheepcao.dotaertest.myPage">
     <item android:id="@+id/action_binding" android:title="@string/binding_score"
+        app:actionViewClass="android.widget.Button"
         app:showAsAction = "withText|ifRoom" />
 </menu>

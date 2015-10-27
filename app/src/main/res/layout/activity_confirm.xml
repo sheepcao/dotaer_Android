@@ -44,8 +44,8 @@
                 android:textStyle="bold" />
 
             <TextView android:id="@+id/hint_text_confirm" style="?android:textAppearanceMedium"
-                android:layout_width="200dp" android:layout_height="wrap_content"
-                android:gravity="right"
+                android:layout_width="240dp" android:layout_height="wrap_content"
+                android:gravity="center"
                 android:paddingRight="15dp"
                 android:textSize="12sp"
                 android:layout_marginTop="30dp"

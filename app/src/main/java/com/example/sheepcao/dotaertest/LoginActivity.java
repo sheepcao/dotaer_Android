@@ -30,11 +30,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -86,6 +88,9 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView = (EditText) findViewById(R.id.password);
 
 
+
+
+
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -96,6 +101,10 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
+
+
 
         mQueue = Volley.newRequestQueue(this);
 
@@ -114,6 +123,8 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
+
+
 
 
     /**
@@ -208,8 +219,17 @@ public class LoginActivity extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-//                CustomProgressBar.hideProgressBar();
+                CustomProgressBar.hideProgressBar();
 
+                    if (error.networkResponse.statusCode == 417)
+                    {
+                        Toast.makeText(LoginActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
+
+                    }else
+                    {
+                        Toast.makeText(LoginActivity.this, "登录请求失败，请稍后重试", Toast.LENGTH_SHORT).show();
+
+                    }
                     Log.e("TAG", error.getMessage(), error);
                 }
             }) {

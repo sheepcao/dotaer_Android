@@ -23,6 +23,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -45,9 +47,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.makeramen.roundedimageview.RoundedImageView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.example.sheepcao.dotaertest.R.id.fragment_list;
 import static com.example.sheepcao.dotaertest.R.id.search_close_btn;
@@ -86,9 +101,12 @@ public class NavigationDrawerFragment extends Fragment {
     private View sideBarView;
     private Button signatureView;
     private Button headButton;
+    private Button logOutButton;
+
     private RoundedImageView headImage;
 
     private TextView nameLabel;
+    RequestQueue mQueue = null;
 
 
 
@@ -102,6 +120,8 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mQueue = Volley.newRequestQueue(getActivity());
+
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
@@ -186,7 +206,7 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         signatureView = (Button) sideBarView.findViewById(R.id.signature_edit);
-        signatureView.setText("fuck");
+        signatureView.setText("签名的力气都拿来打dota了!");
         signatureView.setOnClickListener(new View.OnClickListener() {
             public void onClick(final View view) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle("请输入您的签名").setView(et).setPositiveButton("确定", null).setNegativeButton("取消", null);
@@ -233,6 +253,14 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
+
+        logOutButton = (Button)sideBarView.findViewById(R.id.logout_button);
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectItem(100);
+            }
+        });
 
         return sideBarView;
 
@@ -320,27 +348,100 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
+    public void makeGuest()
+    {
+        headImage.setVisibility(View.INVISIBLE);
+        signatureView.setVisibility(View.INVISIBLE);
+        headButton.setText("点击登陆\n\ndota有你更精彩!");
+        headButton.setClickable(false);
+
+        logOutButton.setText("登 录");
+
+    }
     public void findIdentity()
     {
+        headImage.setVisibility(View.VISIBLE);
+        signatureView.setVisibility(View.VISIBLE);
+        headButton.setText("");
+        headButton.setClickable(true);
+        logOutButton.setText("注 销");
+
         SharedPreferences mSharedPreferences = getActivity().getSharedPreferences("dotaerSharedPreferences", 0);
         String name = mSharedPreferences.getString("username","游客");
 
         if(!name.equals("游客"))
         {
             nameLabel.setText(name);
+            requestSignature(name);
         }
+
+    }
+
+
+    private void requestSignature(final String username)
+    {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/signature.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("TAG", response);
+
+                        JSONObject jObject = new JSONObject(response);
+                        String content = jObject.getString("content");
+
+                        signatureView.setText(content);
+
+
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("TAG", error.getMessage(), error);
+
+
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("tag", "getSignature");
+                map.put("username", username);
+
+
+
+                return map;
+            }
+
+
+        };
+
+        mQueue.add(stringRequest);
     }
 
     private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
-        }
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(mFragmentContainerView);
-        }
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+        if (position<99) {
+            mCurrentSelectedPosition = position;
+            if (mDrawerListView != null) {
+                mDrawerListView.setItemChecked(position, true);
+            }
+            if (mDrawerLayout != null) {
+                mDrawerLayout.closeDrawer(mFragmentContainerView);
+            }
+            if (mCallbacks != null) {
+                mCallbacks.onNavigationDrawerItemSelected(position);
+            }
+        }else
+        {
+            if (mDrawerLayout != null) {
+                mDrawerLayout.closeDrawer(mFragmentContainerView);
+            }
+            if (mCallbacks != null) {
+                mCallbacks.onNavigationDrawerItemSelected(position);
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
@@ -19,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -26,13 +28,17 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +56,6 @@ public class confirmActivity extends AppCompatActivity {
      */
 
 
-
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -63,6 +68,21 @@ public class confirmActivity extends AppCompatActivity {
     String searchCookie = "";
     String redirectCookie = "";
     String ratingCookie = "";
+
+
+    JSONObject mjInfos = null;
+    JSONObject ttInfos = null;
+    JSONObject jjcInfos = null;
+
+    String jjcScore = "";
+    String mjScore = "";
+    String ttScore = "";
+
+    String YYaccount="";
+    String YYpassword = "";
+
+    confirmActivity myConfirm = this;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +106,15 @@ public class confirmActivity extends AppCompatActivity {
         mLoginFormView = findViewById(R.id.email_login_form_confirm);
         mProgressView = findViewById(R.id.login_progress_confirm);
 
-        mQueue = Volley.newRequestQueue(this);
+        mQueue = Volley.newRequestQueue(this, new HurlStack() {
+            @Override
+            protected HttpURLConnection createConnection(URL url) throws IOException {
+                HttpURLConnection connection = super.createConnection(url);
+                connection.setInstanceFollowRedirects(false);
 
+                return connection;
+            }
+        });
     }
 
 
@@ -104,16 +131,18 @@ public class confirmActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        final String account = mEmailView.getText().toString();
-        final String password = mPasswordView.getText().toString();
+//        final String account = mEmailView.getText().toString();
+//        final String password = mPasswordView.getText().toString();
+        final String account ="不是故意咯";
+        final String password = "xuechan99";
 
 
-
+        YYaccount = account;
+        YYpassword = password;
         showProgress();
 
 
-        requestExtroInfoWithUser(account,password);
-
+        requestExtroInfoWithUser(account, password);
 
 
     }
@@ -134,7 +163,7 @@ public class confirmActivity extends AppCompatActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress() {
-        CustomProgressBar.showProgressBar(this, false, "正在登录");
+        CustomProgressBar.showProgressBar(this, false, "认证中");
 
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
@@ -177,10 +206,9 @@ public class confirmActivity extends AppCompatActivity {
 
         Log.v("option", id + "----home id:" + android.R.id.home);
         //noinspection SimplifiableIfStatement
-        if ( id == android.R.id.home) {
+        if (id == android.R.id.home) {
 
             Log.v("back", "menu back-----------");
-
 
 
             Intent intent = new Intent();
@@ -223,15 +251,10 @@ public class confirmActivity extends AppCompatActivity {
     }
 
 
-
-
-
     // request from 11....
 
 
-
-
-    private void requestExtroInfoWithUser(final String username , final String password) {
+    private void requestExtroInfoWithUser(final String username, final String password) {
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://passport.5211game.com/t/Login.aspx?ReturnUrl=http%3a%2f%2fi.5211game.com%2flogin.aspx%3freturnurl%3d%252frating&loginUserName=",
@@ -245,7 +268,7 @@ public class confirmActivity extends AppCompatActivity {
                         String VIEWSTATE = pickVIEWSTATE(response);
                         String EVENTVALIDATION = pickEVENTVALIDATION(response);
 
-                        requestUserID(VIEWSTATE, VIEWSTATEGENERATOR, EVENTVALIDATION, username ,password);
+                        requestUserID(VIEWSTATE, VIEWSTATEGENERATOR, EVENTVALIDATION, username, password);
 //                        requestUserID_e(VIEWSTATE, VIEWSTATEGENERATOR, EVENTVALIDATION, "不是故意咯", "xuechan99", username);
 
 
@@ -388,8 +411,11 @@ public class confirmActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) throws JSONException {
 
-                        Log.d("TAG<<<<<<<<<<", response);
-//                        requestSearchUserID(SearchName);
+//                        Log.d("TAG<<<<<<<<<<", response);
+//
+                        CustomProgressBar.hideProgressBar();
+
+                        Toast.makeText(confirmActivity.this, "用户名或密码错误，请重新输入", Toast.LENGTH_SHORT).show();
 
 
                     }
@@ -483,38 +509,38 @@ public class confirmActivity extends AppCompatActivity {
             }
 
 
-            @Override
+//            @Override
 
 
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String parsed;
-                try {
-                    parsed = new String(response.data, com.android.volley.toolbox.HttpHeaderParser.parseCharset(response.headers));
-                    Log.v("cookieqqq", "cookieqqq");
-
-                    String cookie_final = "";
-
-                    String cookie = response.headers.get("Set-Cookie");
-                    String[] cookieparts = cookie.split(";");
-                    for (int j = 0; j < cookieparts.length; j++) {
-                        if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=") && !cookieparts[j].toLowerCase().contains("httponly")) {
-                            if (cookie_final.equals("")) {
-                                cookie_final = cookieparts[j];
-
-                            } else {
-                                cookie_final = cookie_final + ";" + cookieparts[j];
-                            }
-                        }
-                    }
+//            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+//                String parsed;
+//                try {
+//                    parsed = new String(response.data, com.android.volley.toolbox.HttpHeaderParser.parseCharset(response.headers));
+//                    Log.v("cookieqqq", "cookieqqq");
 //
-                    ratingCookie = cookie_final;
+//                    String cookie_final = "";
 //
-
-                } catch (UnsupportedEncodingException e) {
-                    parsed = new String(response.data);
-                }
-                return Response.success(parsed, com.android.volley.toolbox.HttpHeaderParser.parseCacheHeaders(response));
-            }
+//                    String cookie = response.headers.get("Set-Cookie");
+//                    String[] cookieparts = cookie.split(";");
+//                    for (int j = 0; j < cookieparts.length; j++) {
+//                        if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=") && !cookieparts[j].toLowerCase().contains("httponly")) {
+//                            if (cookie_final.equals("")) {
+//                                cookie_final = cookieparts[j];
+//
+//                            } else {
+//                                cookie_final = cookie_final + ";" + cookieparts[j];
+//                            }
+//                        }
+//                    }
+////
+//                    ratingCookie = cookie_final;
+////
+//
+//                } catch (UnsupportedEncodingException e) {
+//                    parsed = new String(response.data);
+//                }
+//                return Response.success(parsed, com.android.volley.toolbox.HttpHeaderParser.parseCacheHeaders(response));
+//            }
         };
 
         mQueue.add(stringRequest);
@@ -536,7 +562,34 @@ public class confirmActivity extends AppCompatActivity {
                                 Log.d("redirect done", response.substring(i, response.length()));
                         }
 
-//                        requestSearchUserID(SearchName);
+                        String userID;
+
+
+                        Pattern p = Pattern.compile("YY.d.u = (.+)");
+                        Matcher m = p.matcher(response);
+
+                        if (m.find()) { //注意这里，是while不是if
+                            String xxx = m.group();
+//                            Log.v("Before score", xxx);
+
+                            String[] resultArray = xxx.split("YY.d.u = ");
+                            if (resultArray.length > 1) {
+                                userID = resultArray[1].split(",YY.d.n")[0];
+                                requestScore(userID);
+
+                            }
+
+                        } else {
+                            CustomProgressBar.hideProgressBar();
+                            if (response.contains("密码错误")) {
+                                Toast.makeText(confirmActivity.this, "用户名或密码错误，请重新输入", Toast.LENGTH_SHORT).show();
+
+                            } else {
+                                Toast.makeText(confirmActivity.this, "绑定请求出错，请稍后再试", Toast.LENGTH_SHORT).show();
+
+                            }
+
+                        }
 
 
                     }
@@ -611,7 +664,7 @@ public class confirmActivity extends AppCompatActivity {
     }
 
 
-//    private void requestSearchUserID(String searchName) {
+    //    private void requestSearchUserID(String searchName) {
 //        String infoURLstring = "";
 //        try {
 //            String strUTF8 = URLEncoder.encode(searchName, "UTF-8");
@@ -681,72 +734,143 @@ public class confirmActivity extends AppCompatActivity {
 //        mQueue.add(stringRequest);
 //    }
 //
-//    private void requestScore(final String userID) {
-//        Long tsLong = System.currentTimeMillis();
-//        String ts = tsLong.toString();
-//
-//        String urlString = "http://i.5211game.com/request/rating/?r=" + ts;
-//
-//
-//        StringRequest stringRequest = new StringRequest(Request.Method.POST, urlString,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) throws JSONException {
-//
-////                        Log.d("Json string>>>>>", response);
-//
+    private void requestScore(final String userID) {
+        Long tsLong = System.currentTimeMillis();
+        String ts = tsLong.toString();
+
+        String urlString = "http://i.5211game.com/request/rating/?r=" + ts;
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, urlString,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        for (int i = 0; i < response.length(); i += 1024) {
+                            if (i + 1024 < response.length())
+                                Log.d("Json string>>>>>", response.substring(i, i + 1024));
+                            else
+                                Log.d("Json string>>>>>", response.substring(i, response.length()));
+                        }
+
 //
 //                        JSONObject jObject = new JSONObject(response);
 //
+//                        if (!jObject.getString("mjInfos").equals("null")) {
+//                            mjInfos = jObject.getJSONObject("mjInfos");
+//                            mjScore = mjInfos.getString("MingJiang");
 //
-//                        mjInfos = jObject.getJSONObject("mjInfos");
-//                        ttInfos = jObject.getJSONObject("ttInfos");
-//                        jjcInfos = jObject.getJSONObject("jjcInfos");
+//                        }
+//                        if (!jObject.getString("ttInfos").equals("null")) {
+//                            ttInfos = jObject.getJSONObject("ttInfos");
 //
-//                        mjScore = mjInfos.getString("MingJiang");
+//                        }
+//                        if (!jObject.getString("jjcInfos").equals("null")) {
+//                            jjcInfos = jObject.getJSONObject("jjcInfos");
+//                        }
+//
 //                        ttScore = jObject.getInt("rating") + "";
+//
 //                        jjcScore = jObject.getInt("jjcRating") + "";
-//
-//
-//                        setUpScorePage(selectedButton);
-//
-//                        CustomProgressBar.hideProgressBar();
-//
-//
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//
-//                Log.e("TAG", error.getMessage(), error);
-//            }
-//        }) {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> params = new HashMap<String, String>();
-//
-//
-//                params.put("Cookie", ratingCookie);
-//
-//                return params;
-//            }
-//
-//
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                Map<String, String> map = new HashMap<String, String>();
-//                map.put("method", "getrating");
-//                map.put("u", userID);
-//                map.put("t", "10001");
-//
-//
-//                return map;
-//            }
-//
-//
-//        };
-//        mQueue.add(stringRequest);
-//    }
 
+                        submitLevel(userID);
+
+                        CustomProgressBar.hideProgressBar();
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("TAG", error.getMessage(), error);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+
+
+                params.put("Cookie", ratingCookie);
+
+                return params;
+            }
+
+
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("method", "getrating");
+                map.put("u", userID);
+                map.put("t", "10001");
+
+
+                return map;
+            }
+
+
+        };
+        mQueue.add(stringRequest);
+    }
+
+
+    private void submitLevel(final String userID) {
+
+        SharedPreferences mSharedPreferences = getApplication().getSharedPreferences("dotaerSharedPreferences", 0);
+        final String username = mSharedPreferences.getString("username", "");
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/confirmLevel.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        for (int i = 0; i < response.length(); i += 1024) {
+                            if (i + 1024 < response.length())
+                                Log.d("submitLevel string>>>>>", response.substring(i, i + 1024));
+                            else
+                                Log.d("submitLevel string>>>>>", response.substring(i, response.length()));
+                        }
+
+
+                        CustomProgressBar.hideProgressBar();
+                        Toast.makeText(confirmActivity.this, "恭喜,战绩绑定成功!", Toast.LENGTH_SHORT).show();
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                Intent intent = new Intent();
+
+                                myConfirm.setResult(RESULT_OK, intent);
+                                myConfirm.finish();
+                            }
+                        }, 1000);
+
+
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("TAG", error.getMessage(), error);
+            }
+        }) {
+
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("tag", "confirmLevel");
+                map.put("username", "lol");
+                map.put("gameID", userID);
+                map.put("gameName", YYaccount);
+                map.put("password", YYpassword);
+
+
+                return map;
+            }
+        };
+        mQueue.add(stringRequest);
+    }
 
 }
 

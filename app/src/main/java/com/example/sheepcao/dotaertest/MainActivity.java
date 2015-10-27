@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity
 
     private double lati = 0.0;
     private double longi = 0.0;
-//    private int ratio = 100000;
+    //    private int ratio = 100000;
     private int searchRadius = 0;
 
 
@@ -114,8 +115,6 @@ public class MainActivity extends AppCompatActivity
 
 
         PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY, "Ts2amouZ7yRx5FEmslGc4xDm");
-
-
 
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -140,7 +139,7 @@ public class MainActivity extends AppCompatActivity
 //        LocationClientOption option = new LocationClientOption();
 //        option.setOpenGps(false);// 打开gps
 //        option.setCoorType("bd09ll"); // 设置坐标类型
-//        option.setScanSpan(1000);
+//        option.setScanSpan(10000);
 //        mLocClient.setLocOption(option);
 //        mLocClient.start();
 
@@ -172,13 +171,13 @@ public class MainActivity extends AppCompatActivity
 
         SeekBar ratioBar = (SeekBar) findViewById(R.id.seekbar_ratio);
         ratioBar.setOnSeekBarChangeListener(this);
-        ratioText = (TextView)findViewById(R.id.ratioText);
+        ratioText = (TextView) findViewById(R.id.ratioText);
 
         populateRatio(9);
 
-        pageUp = (Button)findViewById(R.id.pageUp);
-        pageDown = (Button)findViewById(R.id.pageDown);
-        pageNum = (TextView)findViewById(R.id.pageIndex);
+        pageUp = (Button) findViewById(R.id.pageUp);
+        pageDown = (Button) findViewById(R.id.pageDown);
+        pageNum = (TextView) findViewById(R.id.pageIndex);
         pageNum.setText(pageIndex + 1 + "");
 
         pageDown.setOnClickListener(new View.OnClickListener() {
@@ -206,33 +205,96 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
 
-                showLoginPage();
-            }
-        }, 1000);
+        SharedPreferences mSharedPreferences = this.getSharedPreferences("dotaerSharedPreferences", 0);
+        String name = mSharedPreferences.getString("username", "游客");
+        String password = mSharedPreferences.getString("password", "");
+
+        if (name.equals("游客")) {
+            showLoginPage();
+
+        }else
+        {
+            defaultLogin(name,password);
+        }
 
 
     }
 
-    public void showLoginPage()
-    {
+    public void showLoginPage() {
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivityForResult(intent, 1);
 
     }
 
-    public int calculateFabonacci(int seq)
+    private void defaultLogin(final String username, final String password)
     {
+        CustomProgressBar.showProgressBar(MainActivity.this, false, "登录中");
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/upload.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("TAG", response);
+
+                        mNavigationDrawerFragment.findIdentity();
+                        CustomProgressBar.hideProgressBar();
+                        searchPeople();
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                CustomProgressBar.hideProgressBar();
+
+                if (error.networkResponse.statusCode == 417)
+                {
+                    Toast.makeText(MainActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
+
+                }else
+                {
+                    Toast.makeText(MainActivity.this, "登录请求失败，请稍后重试", Toast.LENGTH_SHORT).show();
+
+                }
+                SharedPreferences mSharedPreferences = MainActivity.this.getSharedPreferences("dotaerSharedPreferences", 0);
+                SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+                mEditor.putString("username", "游客");
+                mEditor.commit();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        showLoginPage();
+                    }
+                }, 1200);
+                Log.e("TAG", error.getMessage(), error);
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("tag", "login");
+                map.put("name", username);
+                map.put("password", password);
+
+                return map;
+            }
+        };
+
+        mQueue.add(stringRequest);
+
+    }
+
+    public int calculateFabonacci(int seq) {
         int i; // used in the "for" loop
         int fcounter = seq; // specifies the number of values to loop through
         int f1 = 1; // seed value 1
         int f2 = 0; // seed value 2
         int fn = 0; // used as a holder for each new value in the loop
 
-        for (i=1; i<fcounter; i++){
+        for (i = 1; i < fcounter; i++) {
 
             fn = f1 + f2;
             f1 = f2;
@@ -241,36 +303,32 @@ public class MainActivity extends AppCompatActivity
         return fn;
     }
 
-    public void populateRatio(int progress)
-    {
+    public void populateRatio(int progress) {
         int seed = progress + 13;
 
-        if (seed<31) {
-            searchRadius =  calculateFabonacci(seed);
+        if (seed < 31) {
+            searchRadius = calculateFabonacci(seed);
 
 
-            if (searchRadius<1000) {
-                ratioText.setText((searchRadius/100)+"00米");
+            if (searchRadius < 1000) {
+                ratioText.setText((searchRadius / 100) + "00米");
 
-            }else if(searchRadius>1000000)
-            {
+            } else if (searchRadius > 1000000) {
                 ratioText.setText("> 500KM");
 
-            }else
-            {
-                ratioText.setText(((searchRadius/1000) +1)+"KM");
+            } else {
+                ratioText.setText(((searchRadius / 1000) + 1) + "KM");
 
             }
 
 
-        }else
-        {
+        } else {
             searchRadius = 9999999;//无限远
             ratioText.setText("> 500KM");
 
         }
 
-        Log.v("Radius------",searchRadius+"");
+        Log.v("Radius------", searchRadius + "");
     }
 
     @Override
@@ -280,7 +338,7 @@ public class MainActivity extends AppCompatActivity
 
         populateRatio(progress);
 
-        Log.v("ratio","Progress is " + progress
+        Log.v("ratio", "Progress is " + progress
                 + (fromUser ? " Trigger" : " Nontrigger") + " by user.");
     }
 
@@ -289,7 +347,7 @@ public class MainActivity extends AppCompatActivity
     public void onStartTrackingTouch(SeekBar seekBar) {
         // TODO Auto-generated method stub
         System.out.println("onStart-->" + seekBar.getProgress());
-        }
+    }
 
     @Override
 
@@ -297,7 +355,7 @@ public class MainActivity extends AppCompatActivity
         // TODO Auto-generated method stub
 
         System.out.println("onStop-->" + seekBar.getProgress());
-      }
+    }
 
 
     //ViewHolder静态类
@@ -426,6 +484,32 @@ public class MainActivity extends AppCompatActivity
             case 1:
 
                 break;
+            case 100:
+                Log.i("i", "=login page=");
+                SharedPreferences mSharedPreferences = this.getSharedPreferences("dotaerSharedPreferences", 0);
+                String name = mSharedPreferences.getString("username", "游客");
+
+                if (name.equals("游客")) {
+                    showLoginPage();
+
+                } else {
+                    SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+                    mEditor.putString("username", "游客");
+
+
+                    mEditor.commit();
+                    Toast.makeText(MainActivity.this, "注销成功", Toast.LENGTH_SHORT).show();
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            showLoginPage();
+                        }
+                    }, 1200);
+                }
+
+                break;
             default:
 
                 break;
@@ -501,22 +585,25 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void searchPeople()
-    {
+    public void searchPeople() {
 
-        CustomProgressBar.showProgressBar(MainActivity.this, false,"正在登录");
+        CustomProgressBar.showProgressBar(MainActivity.this, false, "搜索中");
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                CustomProgressBar.hideProgressBar();
+//            }
+//        }, 8000);
 
-                CustomProgressBar.hideProgressBar();
-            }
-        }, 8000);
 
-
-        lati = 22.299439;
-        longi = 114.173881;
+        if (lati < 0.00001 || lati > -0.00001) {
+            lati = 22.299439;
+        }
+        if (longi < 0.00001 || longi > -0.00001) {
+            longi = 114.173881;
+        }
 
         Log.i("TAG", "searchDotaer");
 
@@ -528,55 +615,64 @@ public class MainActivity extends AppCompatActivity
 
                         Log.d("TAG", response);
 
-                        pageNum.setText(pageIndex+1+"");
+
+
+                        pageNum.setText(pageIndex + 1 + "");
 
                         JSONObject jObject = new JSONObject(response);
 
-                        JSONArray jArray = jObject.getJSONArray("username");
-                        JSONArray jArrayAge = jObject.getJSONArray("age");
-                        JSONArray jArrayGender = jObject.getJSONArray("sex");
-                        JSONArray jArrayDistance = jObject.getJSONArray("juli");
-
-                        usernameList.clear();
-                        ageList.clear();
-                        genderList.clear();
-                        distanceList.clear();
-
-                        if (jArray.length()>=50)
+                        if (jObject.getString("noRecord").equals("yes"))
                         {
-                            pageDown.setEnabled(true);
+                            Toast.makeText(MainActivity.this, "没有搜到玩家，请加大搜索半径!", Toast.LENGTH_SHORT).show();
+
                         }else
                         {
-                            pageDown.setEnabled(false);
-                        }
+                            JSONArray jArray = jObject.getJSONArray("username");
+                            JSONArray jArrayAge = jObject.getJSONArray("age");
+                            JSONArray jArrayGender = jObject.getJSONArray("sex");
+                            JSONArray jArrayDistance = jObject.getJSONArray("juli");
 
+                            usernameList.clear();
+                            ageList.clear();
+                            genderList.clear();
+                            distanceList.clear();
 
-                        for (int i = 0; i < jArray.length(); i++) {
-                            try {
-                                String oneName = jArray.getString(i);
-                                usernameList.add(oneName);
-
-                                String oneAge = jArrayAge.getString(i);
-                                ageList.add(oneAge);
-
-                                String oneGender = jArrayGender.getString(i);
-                                genderList.add(oneGender);
-
-                                String oneDistance = jArrayDistance.getString(i);
-                                distanceList.add(oneDistance);
-
-                                Log.d("oneObject", oneName + "--" + oneAge + "--" + oneGender + "--" + oneDistance);
-                            } catch (JSONException e) {
-                                // Oops
+                            if (jArray.length() >= 50) {
+                                pageDown.setEnabled(true);
+                            } else {
+                                pageDown.setEnabled(false);
                             }
+
+
+                            for (int i = 0; i < jArray.length(); i++) {
+                                try {
+                                    String oneName = jArray.getString(i);
+                                    usernameList.add(oneName);
+
+                                    String oneAge = jArrayAge.getString(i);
+                                    ageList.add(oneAge);
+
+                                    String oneGender = jArrayGender.getString(i);
+                                    genderList.add(oneGender);
+
+                                    String oneDistance = jArrayDistance.getString(i);
+                                    distanceList.add(oneDistance);
+
+                                    Log.d("oneObject", oneName + "--" + oneAge + "--" + oneGender + "--" + oneDistance);
+                                } catch (JSONException e) {
+                                    // Oops
+                                }
+                            }
+
+                            Log.d("TAG", response);
+                            Log.d("usernameList", usernameList.toString());
+                            data = getData();
+                            adapter.notifyDataSetChanged();
                         }
 
-                        Log.d("TAG", response);
-                        Log.d("usernameList", usernameList.toString());
-                        data = getData();
-                        adapter.notifyDataSetChanged();
 
-//                        CustomProgressBar.hideProgressBar();
+
+                        CustomProgressBar.hideProgressBar();
 
 
                     }
@@ -629,53 +725,55 @@ public class MainActivity extends AppCompatActivity
         this.lati = location.getLatitude();
         this.longi = location.getLongitude();
 
-        if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
-            sb.append("\nspeed : ");
-            sb.append(location.getSpeed());// 单位：公里每小时
-            sb.append("\nsatellite : ");
-            sb.append(location.getSatelliteNumber());
-            sb.append("\nheight : ");
-            sb.append(location.getAltitude());// 单位：米
-            sb.append("\ndirection : ");
-            sb.append(location.getDirection());// 单位度
-            sb.append("\naddr : ");
-            sb.append(location.getAddrStr());
-            sb.append("\ndescribe : ");
-            sb.append("gps定位成功");
-
-        } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
-            sb.append("\naddr : ");
-            sb.append(location.getAddrStr());
-            //运营商信息
-            sb.append("\noperationers : ");
-            sb.append(location.getOperators());
-            sb.append("\ndescribe : ");
-            sb.append("网络定位成功");
-        } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
-            sb.append("\ndescribe : ");
-            sb.append("离线定位成功，离线定位结果也是有效的");
-        } else if (location.getLocType() == BDLocation.TypeServerError) {
-            sb.append("\ndescribe : ");
-            sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
-        } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
-            sb.append("\ndescribe : ");
-            sb.append("网络不同导致定位失败，请检查网络是否通畅");
-        } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
-            sb.append("\ndescribe : ");
-            sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
-        }
-        sb.append("\nlocationdescribe : ");
-        sb.append(location.getLocationDescribe());// 位置语义化信息
-        List<Poi> list = location.getPoiList();// POI数据
-        if (list != null) {
-            sb.append("\npoilist size = : ");
-            sb.append(list.size());
-            for (Poi p : list) {
-                sb.append("\npoi= : ");
-                sb.append(p.getId() + " " + p.getName() + " " + p.getRank());
-            }
-        }
-        Log.i("BaiduLocationApiDem", sb.toString());
+        Log.v("la,long", lati + "...." + longi);
+//
+//        if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
+//            sb.append("\nspeed : ");
+//            sb.append(location.getSpeed());// 单位：公里每小时
+//            sb.append("\nsatellite : ");
+//            sb.append(location.getSatelliteNumber());
+//            sb.append("\nheight : ");
+//            sb.append(location.getAltitude());// 单位：米
+//            sb.append("\ndirection : ");
+//            sb.append(location.getDirection());// 单位度
+//            sb.append("\naddr : ");
+//            sb.append(location.getAddrStr());
+//            sb.append("\ndescribe : ");
+//            sb.append("gps定位成功");
+//
+//        } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
+//            sb.append("\naddr : ");
+//            sb.append(location.getAddrStr());
+//            //运营商信息
+//            sb.append("\noperationers : ");
+//            sb.append(location.getOperators());
+//            sb.append("\ndescribe : ");
+//            sb.append("网络定位成功");
+//        } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
+//            sb.append("\ndescribe : ");
+//            sb.append("离线定位成功，离线定位结果也是有效的");
+//        } else if (location.getLocType() == BDLocation.TypeServerError) {
+//            sb.append("\ndescribe : ");
+//            sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
+//        } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
+//            sb.append("\ndescribe : ");
+//            sb.append("网络不同导致定位失败，请检查网络是否通畅");
+//        } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
+//            sb.append("\ndescribe : ");
+//            sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
+//        }
+//        sb.append("\nlocationdescribe : ");
+//        sb.append(location.getLocationDescribe());// 位置语义化信息
+//        List<Poi> list = location.getPoiList();// POI数据
+//        if (list != null) {
+//            sb.append("\npoilist size = : ");
+//            sb.append(list.size());
+//            for (Poi p : list) {
+//                sb.append("\npoi= : ");
+//                sb.append(p.getId() + " " + p.getName() + " " + p.getRank());
+//            }
+//        }
+//        Log.i("BaiduLocationApiDem", sb.toString());
 
 
     }
@@ -705,30 +803,32 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.v("activity requestCode", requestCode+"<<<<<<<<<");
+        Log.v("activity requestCode", requestCode + "<<<<<<<<<");
 
-        switch(requestCode) {
-            case (1) : {
+        switch (requestCode) {
+            case (1): {
                 if (resultCode == Activity.RESULT_CANCELED) {
-                    Log.v("activity resultCode", resultCode+"<<<<<<<<<1");
+                    Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
+                    mNavigationDrawerFragment.makeGuest();
 
 //                    int tabIndex = data.getIntExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
                     // TODO Switch tabs using the index.
-                }else  if (resultCode == Activity.RESULT_OK)
-                {
-                    Log.v("activity resultCode", resultCode+"<<<<<<<<<1");
+                } else if (resultCode == Activity.RESULT_OK) {
+                    Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
                     mNavigationDrawerFragment.findIdentity();
 
                 }
+
+                searchPeople();
                 break;
             }
-            case (2) : {
-                Log.v("activity resultCode", resultCode+"<<<<<<<<<");
+            case (2): {
+                Log.v("activity resultCode", resultCode + "<<<<<<<<<");
 
                 if (resultCode == Activity.RESULT_OK) {
 //                    int tabIndex = data.getIntExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
                     // TODO Switch tabs using the index.
-                    Log.v("activity return","2");
+                    Log.v("activity return", "2");
                 }
                 break;
             }

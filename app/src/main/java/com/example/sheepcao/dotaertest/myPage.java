@@ -1,5 +1,6 @@
 package com.example.sheepcao.dotaertest;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -62,8 +64,8 @@ import java.util.regex.Pattern;
 
 public class myPage extends AppCompatActivity {
 
+    Menu myMenu;
     String playerName = "";
-
 
 
     RequestQueue mQueue = null;
@@ -84,7 +86,7 @@ public class myPage extends AppCompatActivity {
     String mjScore = "";
     String ttScore = "";
 
-
+    TextView score_type = null;
     TextView score_label = null;
     TextView total_label = null;
     TextView win_rate = null;
@@ -109,7 +111,6 @@ public class myPage extends AppCompatActivity {
     TextView noteMenu = null;
 
 
-
     private ListView lv;
     private List<Map<String, Object>> data;
     MyAdapter adapter = null;
@@ -117,7 +118,6 @@ public class myPage extends AppCompatActivity {
     List<String> visitorList;
     List<String> contentList;
     List<String> timeList;
-
 
 
     @Override
@@ -145,7 +145,7 @@ public class myPage extends AppCompatActivity {
             }
         });
 
-
+        score_type = (TextView) findViewById(R.id.score_type);
         score_label = (TextView) findViewById(R.id.score_label);
         total_label = (TextView) findViewById(R.id.total_label);
         win_rate = (TextView) findViewById(R.id.win_rate);
@@ -167,7 +167,7 @@ public class myPage extends AppCompatActivity {
         ttMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView tv = (TextView)v;
+                TextView tv = (TextView) v;
                 try {
                     selectedItem(tv);
                 } catch (JSONException e) {
@@ -179,7 +179,7 @@ public class myPage extends AppCompatActivity {
         jjcMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView tv = (TextView)v;
+                TextView tv = (TextView) v;
                 try {
                     selectedItem(tv);
                 } catch (JSONException e) {
@@ -219,7 +219,6 @@ public class myPage extends AppCompatActivity {
         selectedButton.setTextColor(Color.parseColor("#C97311"));
 
 
-
         visitorList = new ArrayList<>();
         contentList = new ArrayList<>();
         timeList = new ArrayList<>();
@@ -231,13 +230,12 @@ public class myPage extends AppCompatActivity {
         lv.setAdapter(adapter);
 
 
+//        CustomProgressBar.showProgressBar(this, false, "Loading");
 
-        CustomProgressBar.showProgressBar(this, false, "Loading");
+        playerName = "lol";
 
-        playerName = "小奴";
-
-//        requestBasicInfo("小奴");
-        requestExtroInfoWithUser("宝贝拼吧");
+        requestBasicInfo(playerName);
+//        requestExtroInfoWithUser("宝贝拼吧");
 
     }
 
@@ -251,13 +249,30 @@ public class myPage extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
 
+
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        super.onCreateOptionsMenu(menu);
+        myMenu = menu;
+
         getMenuInflater().inflate(R.menu.menu_my_page, menu);
+        Button locButton = (Button) menu.findItem(R.id.action_binding).getActionView();
+        locButton.setBackgroundResource(R.drawable.nocolor);
+        locButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(myPage.this, confirmActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
+
+
         restoreActionBar();
+
         return true;
     }
 
@@ -273,8 +288,8 @@ public class myPage extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_binding) {
 //
-//            Intent intent = new Intent(myPage.this, confirmActivity.class);
-//            startActivityForResult(intent, 1);
+            Intent intent = new Intent(myPage.this, confirmActivity.class);
+            startActivityForResult(intent, 1);
 
             return true;
         } else if (id == android.R.id.home) {
@@ -319,14 +334,13 @@ public class myPage extends AppCompatActivity {
 
     private void setUpScorePage(TextView btn) throws JSONException {
 
-        if(btn==noteMenu)
-        {
-            View notePad = (View)findViewById(R.id.note_pad);
+        if (btn == noteMenu) {
+            View notePad = (View) findViewById(R.id.note_pad);
             notePad.setVisibility(View.VISIBLE);
 
             final EditText et = new EditText(myPage.this);
 
-            TextView addNote = (TextView)findViewById(R.id.add_note_button);
+            TextView addNote = (TextView) findViewById(R.id.add_note_button);
             addNote.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(myPage.this).setTitle("请输入您的留言").setView(et).setPositiveButton("确定", null).setNegativeButton("取消", null);
@@ -342,11 +356,11 @@ public class myPage extends AppCompatActivity {
 
                             String replyTo = "";
                             String[] replyArray = content.split("回复:");
-                            if (replyArray.length>1) {
+                            if (replyArray.length > 1) {
                                 replyTo = replyArray[1].split(",")[0];
                             }
 
-                            addNoteRequest(playerName,content,name,replyTo);
+                            addNoteRequest(playerName, content, name, replyTo);
                             et.setText("");
                             ((ViewGroup) et.getParent()).removeView(et);
 
@@ -369,66 +383,94 @@ public class myPage extends AppCompatActivity {
             });
             requestNotes(playerName);
             return;
-        }else
-        {
-            View notePad = (View)findViewById(R.id.note_pad);
+        } else {
+            View notePad = (View) findViewById(R.id.note_pad);
             notePad.setVisibility(View.GONE);
         }
 
         JSONObject tempDic = ttInfos;
-        if (btn == ttMenu)
-        {
+        if (btn == ttMenu) {
             tempDic = ttInfos;
             score_label.setText(ttScore);
-        } else  if (btn == jjcMenu)
-        {
+            score_type.setText("天梯积分");
+        } else if (btn == jjcMenu) {
             tempDic = jjcInfos;
             score_label.setText(jjcScore);
-        } else  if (btn == mjMenu)
-        {
+            score_type.setText("竞技场积分");
+
+        } else if (btn == mjMenu) {
             tempDic = mjInfos;
             score_label.setText(mjScore);
+            score_type.setText("名将等级");
+
         }
 
-        total_label.setText(tempDic.getInt("Total")+"");
-        win_rate.setText(tempDic.getString("R_Win"));
+        if (tempDic != null) {
 
-        mvp_label.setText(tempDic.getInt("MVP")+"");
-        fuhao_label.setText(tempDic.getInt("FuHao")+"");
-        podi_label.setText(tempDic.getInt("PoDi")+"");
-        pojun_label.setText(tempDic.getInt("PoJun")+"");
-        buwang_label.setText(tempDic.getInt("BuWang")+"");
-        pianjiang_label.setText(tempDic.getInt("PianJiang")+"");
-        yinghun_label.setText(tempDic.getInt("YingHun") + "");
+            total_label.setText(tempDic.getInt("Total") + "");
+            win_rate.setText(tempDic.getString("R_Win"));
 
-        double_kill.setText(tempDic.getInt("DoubleKill") + "");
-        triple_kill.setText(tempDic.getInt("TripleKill")+"");
+            mvp_label.setText(tempDic.getInt("MVP") + "");
+            fuhao_label.setText(tempDic.getInt("FuHao") + "");
+            podi_label.setText(tempDic.getInt("PoDi") + "");
+            pojun_label.setText(tempDic.getInt("PoJun") + "");
+            buwang_label.setText(tempDic.getInt("BuWang") + "");
+            pianjiang_label.setText(tempDic.getInt("PianJiang") + "");
+            yinghun_label.setText(tempDic.getInt("YingHun") + "");
 
-        String hero1 = tempDic.getString("AdeptHero1");
-        String hero2 = tempDic.getString("AdeptHero2");
-        String hero3 = tempDic.getString("AdeptHero3");
+            double_kill.setText(tempDic.getInt("DoubleKill") + "");
+            triple_kill.setText(tempDic.getInt("TripleKill") + "");
+
+            String hero1 = tempDic.getString("AdeptHero1");
+            String hero2 = tempDic.getString("AdeptHero2");
+            String hero3 = tempDic.getString("AdeptHero3");
 
 
-        ImageLoader.ImageListener listener = ImageLoader.getImageListener(hero_first, R.drawable.nocolor, R.drawable.nocolor);
-        String heroUrl = "http://i.5211game.com/img/dota/hero/" + hero1 + ".jpg";
-        imageLoader.get(heroUrl, listener);
+            if (hero1 != null) {
+                ImageLoader.ImageListener listener = ImageLoader.getImageListener(hero_first, R.drawable.nocolor, R.drawable.nocolor);
+                String heroUrl = "http://i.5211game.com/img/dota/hero/" + hero1 + ".jpg";
+                imageLoader.get(heroUrl, listener);
+            }
 
-        ImageLoader.ImageListener listener2 = ImageLoader.getImageListener(hero_second, R.drawable.nocolor, R.drawable.nocolor);
-        String heroUrl2 = "http://i.5211game.com/img/dota/hero/" + hero2 + ".jpg";
-        imageLoader.get(heroUrl2, listener2);
+            if (hero2 != null) {
+                ImageLoader.ImageListener listener2 = ImageLoader.getImageListener(hero_second, R.drawable.nocolor, R.drawable.nocolor);
+                String heroUrl2 = "http://i.5211game.com/img/dota/hero/" + hero2 + ".jpg";
+                imageLoader.get(heroUrl2, listener2);
+            }
 
-        ImageLoader.ImageListener listener3 = ImageLoader.getImageListener(hero_third, R.drawable.nocolor, R.drawable.nocolor);
-        String heroUrl3 = "http://i.5211game.com/img/dota/hero/" + hero3 + ".jpg";
-        imageLoader.get(heroUrl3, listener3);
+            if (hero3 != null) {
+                ImageLoader.ImageListener listener3 = ImageLoader.getImageListener(hero_third, R.drawable.nocolor, R.drawable.nocolor);
+                String heroUrl3 = "http://i.5211game.com/img/dota/hero/" + hero3 + ".jpg";
+                imageLoader.get(heroUrl3, listener3);
+            }
+        } else {
+
+            score_label.setText("0");
+            total_label.setText("0");
+            win_rate.setText("0");
+
+            mvp_label.setText("0");
+            fuhao_label.setText("0");
+            podi_label.setText("0");
+            pojun_label.setText("0");
+            buwang_label.setText("0");
+            pianjiang_label.setText("0");
+            yinghun_label.setText("0");
+
+            double_kill.setText("0");
+            triple_kill.setText("0");
+            hero_first.setImageResource(R.drawable.nocolor);
+            hero_second.setImageResource(R.drawable.nocolor);
+            hero_third.setImageResource(R.drawable.nocolor);
+
+        }
 
 
     }
 
-    private void addNoteRequest(final String username, final String content , final String visitor , final String replyTo)
-    {
+    private void addNoteRequest(final String username, final String content, final String visitor, final String replyTo) {
 
         CustomProgressBar.showProgressBar(this, false, "uploading");
-
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/note.php",
@@ -522,8 +564,7 @@ public class myPage extends AppCompatActivity {
     }
 
 
-    private void requestNotes(final String name)
-    {
+    private void requestNotes(final String name) {
         CustomProgressBar.showProgressBar(this, false, "Loading");
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/note.php",
                 new Response.Listener<String>() {
@@ -590,7 +631,6 @@ public class myPage extends AppCompatActivity {
         mQueue.add(stringRequest);
 
     }
-
 
 
     //ViewHolder静态类
@@ -675,10 +715,10 @@ public class myPage extends AppCompatActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            String time =(String) data.get(position).get("time");
-            time = time.substring(0, time.length()-3);
+            String time = (String) data.get(position).get("time");
+            time = time.substring(0, time.length() - 3);
 
-            holder.noteNumber.setText((position+1)+".");
+            holder.noteNumber.setText((position + 1) + ".");
 
             holder.usernameLabel.setText((String) data.get(position).get("visitor"));
             holder.timeLabel.setText(time);
@@ -689,7 +729,7 @@ public class myPage extends AppCompatActivity {
             String name = (String) data.get(position).get("visitor");
             String nameURLstring = "";
             try {
-                String strUTF8 = URLEncoder.encode((name+ ".png"), "UTF-8");
+                String strUTF8 = URLEncoder.encode((name + ".png"), "UTF-8");
                 nameURLstring = "http://cgx.nwpu.info/Sites/upload/" + strUTF8;
                 Log.v("nameURLstring", nameURLstring);
 
@@ -707,7 +747,30 @@ public class myPage extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.v("activity requestCode", requestCode + "<<<<<<<<<");
 
+        switch (requestCode) {
+            case (1): {
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
+
+//                    int tabIndex = data.getIntExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
+                    // TODO Switch tabs using the index.
+                } else if (resultCode == Activity.RESULT_OK) {
+                    Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
+
+//                    requestExtroInfoWithUser("不是故意咯");
+                    requestBasicInfo(playerName);
+
+                }
+                break;
+            }
+
+        }
+    }
 
 
     //request score procedure.........
@@ -715,8 +778,9 @@ public class myPage extends AppCompatActivity {
 
     private void requestBasicInfo(final String username) {
 
+        CustomProgressBar.showProgressBar(this, false, "Loading");
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/playerInfo.php",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/playerInfo.php",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) throws JSONException {
@@ -736,11 +800,16 @@ public class myPage extends AppCompatActivity {
                         TextView signature_label = (TextView) findViewById(R.id.signature_label);
                         TextView game_name = (TextView) findViewById(R.id.game_name);
                         ImageView gender_img = (ImageView) findViewById(R.id.gender_img);
-                        TextView norecord_label = (TextView) findViewById(R.id.noRecord_label);
+//                        TextView norecord_label = (TextView) findViewById(R.id.noRecord_label);
 
 
                         age_label.setText(age);
-                        signature_label.setText(signature);
+                        if (signature.equals("null")) {
+                            signature_label.setText("签名的力气都拿来打dota了!");
+
+                        } else {
+                            signature_label.setText(signature);
+                        }
                         game_name.setText(gameName);
 
                         if (sex.equals("male")) {
@@ -753,13 +822,30 @@ public class myPage extends AppCompatActivity {
 
 
                         if (isReviewed.equals("no")) {
-                            norecord_label.setVisibility(View.VISIBLE);
+//                            norecord_label.setVisibility(View.VISIBLE);
+                            Button locButton = (Button) myMenu.findItem(R.id.action_binding).getActionView();
+                            locButton.setText("战绩绑定");
+
+
                         } else {
-                            norecord_label.setVisibility(View.GONE);
+//                            norecord_label.setVisibility(View.GONE);
+                            Button locButton = (Button) myMenu.findItem(R.id.action_binding).getActionView();
+                            locButton.setText("绑定变更");
                         }
 
+                        Log.v("gamename", gameName);
 
-                        requestExtroInfoWithUser(username);
+                        if (gameName.equals("null"))
+                        {
+                            setUpScorePage(selectedButton);
+                            game_name.setText("暂未认证");
+                            CustomProgressBar.hideProgressBar();
+
+
+                        }else
+                        {
+                            requestExtroInfoWithUser(gameName);
+                        }
 
 
                     }
@@ -1255,13 +1341,31 @@ public class myPage extends AppCompatActivity {
 
                         JSONObject jObject = new JSONObject(response);
 
+//
+//                        mjInfos = jObject.getJSONObject("mjInfos");
+//                        ttInfos = jObject.getJSONObject("ttInfos");
+//                        jjcInfos = jObject.getJSONObject("jjcInfos");
+//
+//                        mjScore = mjInfos.getString("MingJiang");
+//                        ttScore = jObject.getInt("rating") + "";
+//                        jjcScore = jObject.getInt("jjcRating") + "";
 
-                        mjInfos = jObject.getJSONObject("mjInfos");
-                        ttInfos = jObject.getJSONObject("ttInfos");
-                        jjcInfos = jObject.getJSONObject("jjcInfos");
+//
+                        if (!jObject.getString("mjInfos").equals("null")) {
+                            mjInfos = jObject.getJSONObject("mjInfos");
+                            mjScore = mjInfos.getString("MingJiang");
 
-                        mjScore = mjInfos.getString("MingJiang");
+                        }
+                        if (!jObject.getString("ttInfos").equals("null")) {
+                            ttInfos = jObject.getJSONObject("ttInfos");
+
+                        }
+                        if (!jObject.getString("jjcInfos").equals("null")) {
+                            jjcInfos = jObject.getJSONObject("jjcInfos");
+                        }
+
                         ttScore = jObject.getInt("rating") + "";
+
                         jjcScore = jObject.getInt("jjcRating") + "";
 
 

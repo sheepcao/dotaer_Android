@@ -48,7 +48,7 @@
             android:process=":remote" />
 
         <meta-data
-            android:name="com.baidu.lbsapi.Ts2amouZ7yRx5FEmslGc4xDm"
+            android:name="com.baidu.lbsapi.API_KEY"
             android:value="Ts2amouZ7yRx5FEmslGc4xDm" />
 
         <meta-data android:name="api_key" android:value="Ts2amouZ7yRx5FEmslGc4xDm" />
@@ -71,7 +71,7 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:parentActivityName=".MainActivity"
-            android:windowSoftInputMode="adjustResize|stateVisible"></activity>
+            android:windowSoftInputMode="adjustResize|stateHidden"></activity>
 
         <activity
             android:name=".confirmActivity"

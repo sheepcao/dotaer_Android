@@ -123,6 +123,7 @@
                     android:paddingTop="3dp">
 
                     <TextView
+                        android:id="@+id/score_type"
                         android:layout_width="85dp"
                         android:layout_height="0dp"
                         android:layout_gravity="center_horizontal"
