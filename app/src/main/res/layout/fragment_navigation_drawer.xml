@@ -35,12 +35,6 @@
             app:riv_oval="true"
             app:riv_tile_mode="repeat" />
 
-        <!--<ImageView-->
-        <!--android:id="@+id/headImg_bg"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:scaleType="fitXY"-->
-        <!--android:src="@drawable/boy"/>-->
         <Button
             android:id="@+id/headBtn"
             android:layout_width="match_parent"

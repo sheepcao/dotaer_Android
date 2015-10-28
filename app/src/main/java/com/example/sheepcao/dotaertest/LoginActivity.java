@@ -119,6 +119,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.v("register", "register enter");
                 //添加注册界面 intent.
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -265,7 +267,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress() {
-        CustomProgressBar.showProgressBar(this, false, "正在登录");
+        CustomProgressBar.showProgressBar(this, false, "登录中");
 
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
@@ -291,7 +293,7 @@ public class LoginActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle("个人主页");
+        actionBar.setTitle("登 录");
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -407,6 +409,29 @@ public class LoginActivity extends AppCompatActivity {
         mQueue.add(stringRequest);
 
 
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.v("activity requestCode", requestCode + "<<<<<<<<<");
+
+        switch (requestCode) {
+            case (1): {
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
+
+                    // TODO Switch tabs using the index.
+                } else if (resultCode == Activity.RESULT_OK) {
+                    Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
+
+                }
+
+                break;
+            }
+
+        }
     }
 
 
