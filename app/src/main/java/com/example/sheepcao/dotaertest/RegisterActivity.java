@@ -3,6 +3,17 @@ package com.example.sheepcao.dotaertest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.net.http.AndroidHttpClient;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +33,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.MultipartRequest;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -29,11 +42,40 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Handler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,12 +100,38 @@ public class RegisterActivity extends AppCompatActivity {
 
     RequestQueue mQueue = null;
 
+    int serverResponseCode;
+
+
+//    HttpURLConnection connection = null;
+//    DataOutputStream outputStream = null;
+//    DataInputStream inputStream = null;
+//    String pathToOurFile = "/data/file_to_send.mp3";
+//    String urlServer = "http://10.0.2.2/~ericcao/AndroidImage.php";
+//    String lineEnd = "\r\n";
+//    String twoHyphens = "--";
+//    String boundary = "*****";
+//
+//    int bytesRead, bytesAvailable, bufferSize;
+//    byte[] buffer;
+//    int maxBufferSize = 100 * 1024 * 1024;
+//
+//    Bitmap bm;
+//    String otherPath;
+
+    String selectedPath1;
+    String compressedPath;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+
+//        UploadFile();
+
+//        uploadFiles();
 
         registerName = (EditText) findViewById(R.id.register_name);
         registerAge = (EditText) findViewById(R.id.register_age);
@@ -90,11 +158,9 @@ public class RegisterActivity extends AppCompatActivity {
                 //根据ID获取RadioButton的实例
                 RadioButton rb = (RadioButton) RegisterActivity.this.findViewById(radioButtonId);
                 //更新文本内容，以符合选中项
-                if (rb.getText().toString().equals("男"))
-                {
+                if (rb.getText().toString().equals("男")) {
                     gender = "male";
-                }else if (rb.getText().toString().equals("女"))
-                {
+                } else if (rb.getText().toString().equals("女")) {
                     gender = "female";
 
                 }
@@ -107,7 +173,19 @@ public class RegisterActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attemptRegister();
+                try {
+                    attemptRegister();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        headButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                openGallery();
             }
         });
 
@@ -115,7 +193,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    public void attemptRegister() {
+    public void attemptRegister() throws IOException {
 
         // Reset errors.
         registerName.setError(null);
@@ -165,8 +243,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
 
-        if (gender.equals("no"))
-        {
+        if (gender.equals("no")) {
             Toast.makeText(RegisterActivity.this, "请选择您的性别!", Toast.LENGTH_SHORT).show();
             return;
 
@@ -174,99 +251,386 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
 
+        if (cancel)
+
+        {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else
+
+        {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            showProgress();
 
 
-    if(cancel)
+/*  */
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/upload.php",
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) throws JSONException {
 
-    {
-        // There was an error; don't attempt login and focus the first
-        // form field with an error.
-        focusView.requestFocus();
-    }
-
-    else
-
-    {
-        // Show a progress spinner, and kick off a background task to
-        // perform the user login attempt.
-        showProgress();
+                            Log.d("TAG", response);
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/upload.php",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) throws JSONException {
+                            JSONObject jObject = new JSONObject(response);
 
-                        Log.d("TAG", response);
+                            String username = jObject.getString("username");
+                            String password = jObject.getString("password");
+                            String age = jObject.getString("age");
+                            String sex = jObject.getString("sex");
+                            String isReviewed = jObject.getString("isReviewed");
 
-//                        JSONObject jObject = new JSONObject(response);
-//
-//                        String username = jObject.getString("username");
-//                        String password = jObject.getString("password");
-//                        String age = jObject.getString("age");
-//                        String sex = jObject.getString("sex");
-//                        String isReviewed = jObject.getString("isReviewed");
-//
-//
-//                        SharedPreferences mSharedPreferences = getSharedPreferences("dotaerSharedPreferences", 0);
-//
-//
-//                        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-//                        mEditor.putString("username", username);
-//                        mEditor.putString("password", password);
-//                        mEditor.putString("age", age);
-//                        mEditor.putString("sex", sex);
-//                        mEditor.putString("isReviewed", isReviewed);
-//
-//                        mEditor.commit();
-//
-//                        CustomProgressBar.hideProgressBar();
-//
-//                        Log.v("login", "login OK-----------");
-//
-//
-//                        Intent intent = new Intent();
-//
-//                        myLogin.setResult(RESULT_OK, intent);
-//                        myLogin.finish();
 
+                            SharedPreferences mSharedPreferences = getSharedPreferences("dotaerSharedPreferences", 0);
+
+
+                            SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+                            mEditor.putString("username", username);
+                            mEditor.putString("password", password);
+                            mEditor.putString("age", age);
+                            mEditor.putString("sex", sex);
+                            mEditor.putString("isReviewed", isReviewed);
+                            mEditor.putString("newRegister", "yes");
+
+
+                            mEditor.commit();
+//
+                            CustomProgressBar.hideProgressBar();
+//
+                            Log.v("register", "register OK-----------");
+//
+//
+                            Intent intent = new Intent();
+
+                            RegisterActivity.this.setResult(RESULT_OK, intent);
+                            RegisterActivity.this.finish();
+
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    CustomProgressBar.hideProgressBar();
+
+                    if (error.networkResponse.statusCode == 417) {
+                        Toast.makeText(RegisterActivity.this, "用户名已存在", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(RegisterActivity.this, "登录请求失败，请稍后重试", Toast.LENGTH_SHORT).show();
 
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                CustomProgressBar.hideProgressBar();
-
-                if (error.networkResponse.statusCode == 417) {
-                    Toast.makeText(RegisterActivity.this, "用户名已存在", Toast.LENGTH_SHORT).show();
-
-                } else {
-                    Toast.makeText(RegisterActivity.this, "登录请求失败，请稍后重试", Toast.LENGTH_SHORT).show();
-
+                    Log.e("TAG", error.getMessage(), error);
                 }
-                Log.e("TAG", error.getMessage(), error);
-            }
-        }) {
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("tag", "register");
-                map.put("name", account);
-                map.put("password", password);
-                map.put("email", email);
-                map.put("age", age);
-                map.put("sex", gender);
+            }) {
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put("tag", "register");
+                    map.put("name", account);
+                    map.put("password", password);
+                    map.put("email", email);
+                    map.put("age", age);
+                    map.put("sex", gender);
 
 
-                return map;
-            }
-        };
+                    return map;
+                }
+            };
 
-        mQueue.add(stringRequest);
+            mQueue.add(stringRequest);
 
+
+        }
 
     }
 
-}
+
+    public void openGallery() {
+
+        Intent intent = new Intent();
+
+        intent.setType("image/*");
+
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+
+        startActivityForResult(intent, 1);
+
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+
+        if (resultCode == RESULT_OK) {
+            Uri selectedImageUri = data.getData();
+            if (requestCode == 1)
+
+            {
+
+                selectedPath1 = getPath(selectedImageUri);
+
+                Log.v("selectedPath1", selectedPath1);
+//                headImg.setImageBitmap(BitmapFactory.decodeFile(selectedPath1));
+
+                Bundle bundle = data.getExtras();
+                if (bundle != null) {
+                    Bitmap photo = (Bitmap) bundle.get("data"); //get bitmap
+                    headImg.setImageBitmap(photo);
+//                    uploadFiles();
+
+                    storeImage(photo);
+                    CustomProgressBar.showProgressBar(this, false, "上传中");
+                    (new MyTask()).execute("");
+
+                }
+
+
+            }
+
+
+        }
+
+    }
+
+    public String getPath(Uri uri) {
+
+        String[] projection = {MediaStore.Images.Media.DATA};
+
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+        cursor.moveToFirst();
+
+        return cursor.getString(column_index);
+
+    }
+
+
+//    private void uploadVolley()
+//    {
+//        MultipartRequest uploadRequest =
+//    }
+
+
+    private class MyTask extends AsyncTask<String, Integer, String> {
+        //onPreExecute方法用于在执行后台任务前做一些UI操作
+        @Override
+        protected void onPreExecute() {
+            Log.i("TAG", "onPreExecute() called");
+        }
+
+        //doInBackground方法内部执行后台任务,不可在此方法内修改UI
+        @Override
+        protected String doInBackground(String... params) {
+            Log.i("TAG", "doInBackground(Params... params) called");
+            uploadFiles();
+            return null;
+        }
+
+        //onProgressUpdate方法用于更新进度信息
+        @Override
+        protected void onProgressUpdate(Integer... progresses) {
+            Log.i("TAG", "onProgressUpdate(Progress... progresses) called");
+
+        }
+
+        //onPostExecute方法用于在执行完后台任务后更新UI,显示结果
+        @Override
+        protected void onPostExecute(String result) {
+            Log.i("TAG", "onPostExecute(Result result) called");
+            if (serverResponseCode != 200) {
+                Toast.makeText(RegisterActivity.this, "头像上传失败", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(RegisterActivity.this, "头像上传成功!", Toast.LENGTH_SHORT).show();
+
+
+                //test
+                Intent intent = new Intent();
+
+                RegisterActivity.this.setResult(RESULT_OK, intent);
+                RegisterActivity.this.finish();
+
+
+            }
+
+        }
+
+        //onCancelled方法用于在取消执行中的任务时更改UI
+        @Override
+        protected void onCancelled() {
+            Log.i("TAG", "onCancelled() called");
+
+        }
+    }
+
+
+    public void uploadFiles() {
+
+
+        HttpURLConnection connection = null;
+        DataOutputStream outputStream = null;
+        DataInputStream inputStream = null;
+        String pathToOurFile = compressedPath;
+//        String pathToOurFile = "file:///mnt/sdcard/.QQ/head/122559518.png";
+
+        String urlServer = "http://cgx.nwpu.info/Sites/AndroidImage.php";
+//        String urlServer = "http://www.baidu.com";
+
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+
+        String serverResponseMessage;
+
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 25 * 1024 * 1024;//25M
+
+        try {
+
+            Log.v("upload======", pathToOurFile);
+
+
+            FileInputStream fileInputStream = new FileInputStream(new File(pathToOurFile));
+
+            URL url = new URL(urlServer);
+
+            connection = (HttpURLConnection) url.openConnection();
+
+            // Allow Inputs &amp; Outputs.
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.setUseCaches(false);
+
+            // Set HTTP method to POST.
+            connection.setRequestMethod("POST");
+            Log.v("upload======", "11111");
+
+            connection.setRequestProperty("Connection", "Keep-Alive");
+            Log.v("upload======", "4454555");
+
+            connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+            Log.v("upload======", "1212");
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            Log.v("upload======", "333333");
+//
+            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+            outputStream.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + "sheepcaoTest.png" + "\"" + lineEnd);
+            outputStream.writeBytes(lineEnd);
+            Log.v("upload======", "444444");
+
+
+            bytesAvailable = fileInputStream.available();
+            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            buffer = new byte[bufferSize];
+
+            // Read file
+            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            Log.v("upload======bytesRead", bytesRead + "");
+
+            while (bytesRead > 0) {
+                outputStream.write(buffer, 0, bufferSize);
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            }
+
+            Log.v("upload======", "22222");
+
+            outputStream.writeBytes(lineEnd);
+            outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+            Log.v("upload======", "rrrrrr");
+
+            // Responses from the server (code and message)
+            serverResponseCode = connection.getResponseCode();
+            Log.v("upload....", serverResponseCode + "");
+
+            serverResponseMessage = connection.getResponseMessage();
+
+
+            CustomProgressBar.hideProgressBar();
+            Log.v("upload....", serverResponseCode + serverResponseMessage);
+
+            fileInputStream.close();
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception ex) {
+            //Exception handling
+            Log.v("EXXXXXXX", ex.toString());
+            CustomProgressBar.hideProgressBar();
+            Toast.makeText(RegisterActivity.this, "头像上传失败", Toast.LENGTH_SHORT).show();
+
+
+        }
+
+    } // End else block
+
+
+    private void storeImage(Bitmap image) {
+        File pictureFile = getOutputMediaFile();
+        if (pictureFile == null) {
+            Log.d("TAG",
+                    "Error creating media file, check storage permissions: ");// e.getMessage());
+            return;
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(pictureFile);
+
+
+            File file = new File(selectedPath1);
+//            long length = file.length()
+            int imageSize = image.getByteCount();
+            Log.d("imageSize", "imageSize: " + imageSize);
+            int rate = 100;
+            if (imageSize > 1024 * 300) {
+                rate = 100 * 1024 * 300 / imageSize;
+            }
+
+            image.compress(Bitmap.CompressFormat.PNG, rate, fos);
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.d("TAG", "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.d("TAG", "Error accessing file: " + e.getMessage());
+        }
+    }
+
+
+    private File getOutputMediaFile() {
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        String dirPath = "/";
+        String[] dirPathArray = selectedPath1.split("/");
+        for (int i = 0; i < dirPathArray.length - 1; i++) {
+            dirPath = dirPath + dirPathArray[i] + "/";
+        }
+        Log.v("dirPath", dirPath);
+
+        File mediaStorageDir = new File(dirPath);
+
+        // This location works best if you want the created images to be shared
+        // between applications and persist after your app has been uninstalled.
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
+        File mediaFile;
+        String mImageName = "MI_" + timeStamp + ".jpg";
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
+
+        compressedPath = mediaStorageDir.getPath() + File.separator + mImageName;
+        return mediaFile;
+    }
+
 
     public void showProgress() {
         CustomProgressBar.showProgressBar(this, false, "注册中");

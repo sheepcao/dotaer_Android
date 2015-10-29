@@ -46,19 +46,7 @@
                         app:riv_oval="true"
                         app:riv_tile_mode="repeat" />
 
-                    <Button
-                        android:id="@+id/headBtn_register"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@android:color/transparent"
-                        android:gravity="center_horizontal"
-                        android:paddingTop="15dp"
-                        android:scaleType="centerCrop"
-                        android:text="+"
-                        android:textColor="#dddddd"
-                        android:textSize="50sp"
 
-                        />
 
                     <TextView
                         android:id="@+id/upload_tip"
@@ -70,6 +58,20 @@
                         android:text="点击上传头像"
                         android:textColor="#dddddd"
                         android:textSize="13sp"
+
+                        />
+
+                    <Button
+                        android:id="@+id/headBtn_register"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:gravity="center_horizontal"
+                        android:paddingTop="15dp"
+                        android:scaleType="centerCrop"
+                        android:text="+"
+                        android:textColor="#dddddd"
+                        android:textSize="50sp"
 
                         />
 

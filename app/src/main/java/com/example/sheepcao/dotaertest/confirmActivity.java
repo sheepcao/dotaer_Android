@@ -115,6 +115,18 @@ public class confirmActivity extends AppCompatActivity {
                 return connection;
             }
         });
+
+
+
+        SharedPreferences mSharedPreferences = getSharedPreferences("dotaerSharedPreferences", 0);
+
+
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+
+        mEditor.putString("newRegister", "no");
+
+
+        mEditor.commit();
     }
 
 

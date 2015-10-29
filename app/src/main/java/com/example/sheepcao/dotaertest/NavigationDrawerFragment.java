@@ -1,5 +1,6 @@
 package com.example.sheepcao.dotaertest;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -548,6 +550,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 0) {

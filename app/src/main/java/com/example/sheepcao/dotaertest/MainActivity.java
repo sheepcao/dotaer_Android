@@ -811,15 +811,33 @@ public class MainActivity extends AppCompatActivity
                     Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
                     mNavigationDrawerFragment.makeGuest();
 
+                    searchPeople();
+
 //                    int tabIndex = data.getIntExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
                     // TODO Switch tabs using the index.
                 } else if (resultCode == Activity.RESULT_OK) {
                     Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
                     mNavigationDrawerFragment.findIdentity();
+                    SharedPreferences mSharedPreferences = this.getSharedPreferences("dotaerSharedPreferences", 0);
+                    String newRegister = mSharedPreferences.getString("newRegister", "no");
+
+
+
+
+                    if (newRegister.equals("yes")) {
+
+                        Intent intent = new Intent(MainActivity.this, confirmActivity.class);
+                        startActivityForResult(intent, 3);
+
+                    }else
+                    {
+                        searchPeople();
+
+                    }
+
 
                 }
 
-                searchPeople();
                 break;
             }
             case (2): {

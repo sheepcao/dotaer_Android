@@ -415,17 +415,21 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.v("activity requestCode", requestCode + "<<<<<<<<<");
+        Log.v("login requestCode", requestCode + "<<<<<<<<<");
 
         switch (requestCode) {
             case (1): {
                 if (resultCode == Activity.RESULT_CANCELED) {
-                    Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
+                    Log.v("login resultCode", resultCode + "<<<<<<<<<1");
 
                     // TODO Switch tabs using the index.
                 } else if (resultCode == Activity.RESULT_OK) {
-                    Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
+                    Log.v("login resultCode", resultCode + "<<<<<<<<<1");
 
+                    Intent intent = new Intent();
+
+                    myLogin.setResult(RESULT_OK, intent);
+                    myLogin.finish();
                 }
 
                 break;
