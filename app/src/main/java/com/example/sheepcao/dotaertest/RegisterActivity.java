@@ -103,21 +103,7 @@ public class RegisterActivity extends AppCompatActivity {
     int serverResponseCode;
 
 
-//    HttpURLConnection connection = null;
-//    DataOutputStream outputStream = null;
-//    DataInputStream inputStream = null;
-//    String pathToOurFile = "/data/file_to_send.mp3";
-//    String urlServer = "http://10.0.2.2/~ericcao/AndroidImage.php";
-//    String lineEnd = "\r\n";
-//    String twoHyphens = "--";
-//    String boundary = "*****";
-//
-//    int bytesRead, bytesAvailable, bufferSize;
-//    byte[] buffer;
-//    int maxBufferSize = 100 * 1024 * 1024;
-//
-//    Bitmap bm;
-//    String otherPath;
+
 
     String selectedPath1;
     String compressedPath;

@@ -58,6 +58,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -134,14 +136,14 @@ public class MainActivity extends AppCompatActivity
 
 //        initLocation();
 
-//        mLocClient = new LocationClient(this);
-//        mLocClient.registerLocationListener(this);
-//        LocationClientOption option = new LocationClientOption();
-//        option.setOpenGps(false);// 打开gps
-//        option.setCoorType("bd09ll"); // 设置坐标类型
-//        option.setScanSpan(10000);
-//        mLocClient.setLocOption(option);
-//        mLocClient.start();
+        mLocClient = new LocationClient(this);
+        mLocClient.registerLocationListener(this);
+        LocationClientOption option = new LocationClientOption();
+        option.setOpenGps(false);// 打开gps
+        option.setCoorType("bd09ll"); // 设置坐标类型
+        option.setScanSpan(1000);
+        mLocClient.setLocOption(option);
+        mLocClient.start();
 
 
         mQueue = Volley.newRequestQueue(this);
@@ -231,7 +233,7 @@ public class MainActivity extends AppCompatActivity
     {
         CustomProgressBar.showProgressBar(MainActivity.this, false, "登录中");
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/upload.php",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/upload.php",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) throws JSONException {
@@ -240,6 +242,7 @@ public class MainActivity extends AppCompatActivity
 
                         mNavigationDrawerFragment.findIdentity();
                         CustomProgressBar.hideProgressBar();
+
                         searchPeople();
 
 
@@ -460,8 +463,23 @@ public class MainActivity extends AppCompatActivity
 
             ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg, R.drawable.nocolor, R.drawable.nocolor);
 
+            String nameURLstring = "";
+            try {
+                String strUTF8 = URLEncoder.encode(( data.get(position).get("username") + ".png"), "UTF-8");
+                nameURLstring = "http://cgx.nwpu.info/Sites/upload/" + strUTF8;
+                Log.v("nameURLstring", nameURLstring);
 
-            imageLoader.get("http://cgx.nwpu.info/Sites/upload/" + data.get(position).get("username") + ".png", listener);
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+
+            imageLoader.get(nameURLstring, listener);
+
+
+
+
 
             return convertView;
         }
@@ -471,11 +489,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-
+        Intent intent;
         switch (position) {
             case 0:
 
-                Intent intent = new Intent(MainActivity.this, myPage.class);
+                intent = new Intent(MainActivity.this, myPage.class);
                 startActivityForResult(intent, 2);
 
                 Log.i("i", "=============================");
@@ -483,6 +501,13 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 1:
 
+                break;
+
+            case 2:
+                intent = new Intent(MainActivity.this, VideoActivity.class);
+                startActivityForResult(intent, 4);
+
+                Log.i("i", "=============================");
                 break;
             case 100:
                 Log.i("i", "=login page=");
@@ -587,7 +612,6 @@ public class MainActivity extends AppCompatActivity
 
     public void searchPeople() {
 
-        CustomProgressBar.showProgressBar(MainActivity.this, false, "搜索中");
 
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
@@ -598,104 +622,126 @@ public class MainActivity extends AppCompatActivity
 //        }, 8000);
 
 
-        if (lati < 0.00001 || lati > -0.00001) {
-            lati = 22.299439;
-        }
-        if (longi < 0.00001 || longi > -0.00001) {
-            longi = 114.173881;
-        }
+//        if (lati < 0.00001 || lati > -0.00001) {
+//            lati = 22.299439;
+//        }
+//        if (longi < 0.00001 || longi > -0.00001) {
+//            longi = 114.173881;
+//        }
 
-        Log.i("TAG", "searchDotaer");
+        if ((lati > 0.00001 || lati < -0.00001) &&(longi > 0.00001 || longi < -0.00001)) {
 
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/position.php",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) throws JSONException {
-
-                        Log.d("TAG", response);
+            CustomProgressBar.showProgressBar(MainActivity.this, false, "搜索中");
 
 
-
-                        pageNum.setText(pageIndex + 1 + "");
-
-                        JSONObject jObject = new JSONObject(response);
-
-                        if (jObject.getString("noRecord").equals("yes"))
-                        {
-                            Toast.makeText(MainActivity.this, "没有搜到玩家，请加大搜索半径!", Toast.LENGTH_SHORT).show();
-
-                        }else
-                        {
-                            JSONArray jArray = jObject.getJSONArray("username");
-                            JSONArray jArrayAge = jObject.getJSONArray("age");
-                            JSONArray jArrayGender = jObject.getJSONArray("sex");
-                            JSONArray jArrayDistance = jObject.getJSONArray("juli");
-
-                            usernameList.clear();
-                            ageList.clear();
-                            genderList.clear();
-                            distanceList.clear();
-
-                            if (jArray.length() >= 50) {
-                                pageDown.setEnabled(true);
-                            } else {
-                                pageDown.setEnabled(false);
-                            }
-
-
-                            for (int i = 0; i < jArray.length(); i++) {
-                                try {
-                                    String oneName = jArray.getString(i);
-                                    usernameList.add(oneName);
-
-                                    String oneAge = jArrayAge.getString(i);
-                                    ageList.add(oneAge);
-
-                                    String oneGender = jArrayGender.getString(i);
-                                    genderList.add(oneGender);
-
-                                    String oneDistance = jArrayDistance.getString(i);
-                                    distanceList.add(oneDistance);
-
-                                    Log.d("oneObject", oneName + "--" + oneAge + "--" + oneGender + "--" + oneDistance);
-                                } catch (JSONException e) {
-                                    // Oops
-                                }
-                            }
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/position.php",
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) throws JSONException {
 
                             Log.d("TAG", response);
-                            Log.d("usernameList", usernameList.toString());
-                            data = getData();
-                            adapter.notifyDataSetChanged();
+
+
+                            pageNum.setText(pageIndex + 1 + "");
+
+                            JSONObject jObject = new JSONObject(response);
+
+                            if (jObject.getString("noRecord").equals("yes"))
+                            {
+                                Toast.makeText(MainActivity.this, "没有搜到玩家，请加大搜索半径!", Toast.LENGTH_SHORT).show();
+
+                            }else
+                            {
+                                JSONArray jArray = jObject.getJSONArray("username");
+                                JSONArray jArrayAge = jObject.getJSONArray("age");
+                                JSONArray jArrayGender = jObject.getJSONArray("sex");
+                                JSONArray jArrayDistance = jObject.getJSONArray("juli");
+
+                                usernameList.clear();
+                                ageList.clear();
+                                genderList.clear();
+                                distanceList.clear();
+
+                                if (jArray.length() >= 50) {
+                                    pageDown.setEnabled(true);
+                                } else {
+                                    pageDown.setEnabled(false);
+                                }
+
+
+                                for (int i = 0; i < jArray.length(); i++) {
+                                    try {
+                                        String oneName = jArray.getString(i);
+                                        usernameList.add(oneName);
+
+                                        String oneAge = jArrayAge.getString(i);
+                                        ageList.add(oneAge);
+
+                                        String oneGender = jArrayGender.getString(i);
+                                        genderList.add(oneGender);
+
+                                        String oneDistance = jArrayDistance.getString(i);
+                                        distanceList.add(oneDistance);
+
+                                        Log.d("oneObject", oneName + "--" + oneAge + "--" + oneGender + "--" + oneDistance);
+                                    } catch (JSONException e) {
+                                        // Oops
+                                    }
+                                }
+
+                                Log.d("TAG", response);
+                                Log.d("usernameList", usernameList.toString());
+                                data = getData();
+                                adapter.notifyDataSetChanged();
+                            }
+
+
+
+                            CustomProgressBar.hideProgressBar();
+
+
                         }
-
-
-
-                        CustomProgressBar.hideProgressBar();
-
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
 //                CustomProgressBar.hideProgressBar();
 
-                Log.e("TAG", error.getMessage(), error);
-            }
-        }) {
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("tag", "getDistance");
-                map.put("lat", Double.toString(lati));
-                map.put("long", Double.toString(longi));
-                map.put("ratio", Double.toString(searchRadius));
-                map.put("page", Double.toString(pageIndex));
-                return map;
-            }
-        };
+                    Log.e("TAG", error.getMessage(), error);
+                    CustomProgressBar.hideProgressBar();
 
-        mQueue.add(stringRequest);
+                }
+            }) {
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put("tag", "getDistance");
+                    map.put("lat", Double.toString(lati));
+                    map.put("long", Double.toString(longi));
+                    map.put("ratio", Double.toString(searchRadius));
+                    map.put("page", Double.toString(pageIndex));
+                    return map;
+                }
+            };
+
+            mQueue.add(stringRequest);
+
+
+
+
+        }else
+        {
+            LocationClientOption option = new LocationClientOption();
+            option.setOpenGps(false);// 打开gps
+            option.setCoorType("bd09ll"); // 设置坐标类型
+            option.setScanSpan(1000);
+            mLocClient.setLocOption(option);
+            Toast.makeText(this, "获取位置失败，请重试", Toast.LENGTH_SHORT).show();
+            return;
+
+
+        }
+
+            Log.i("TAG", "searchDotaer");
+
 
 
     }
@@ -722,8 +768,19 @@ public class MainActivity extends AppCompatActivity
         sb.append("\nradius : ");
         sb.append(location.getRadius());
 
-        this.lati = location.getLatitude();
-        this.longi = location.getLongitude();
+        lati = location.getLatitude();
+        longi = location.getLongitude();
+
+        if ((lati > 0.00001 || lati < -0.00001) &&(longi > 0.00001 || longi < -0.00001)) {
+
+            LocationClientOption option = new LocationClientOption();
+            option.setOpenGps(false);// 打开gps
+            option.setCoorType("bd09ll"); // 设置坐标类型
+            option.setScanSpan(30000);
+            mLocClient.setLocOption(option);
+        }
+
+
 
         Log.v("la,long", lati + "...." + longi);
 //
@@ -810,8 +867,9 @@ public class MainActivity extends AppCompatActivity
                 if (resultCode == Activity.RESULT_CANCELED) {
                     Log.v("activity resultCode", resultCode + "<<<<<<<<<1");
                     mNavigationDrawerFragment.makeGuest();
+                    //eric:test video...
 
-                    searchPeople();
+//                    searchPeople();
 
 //                    int tabIndex = data.getIntExtra(PUBLIC_STATIC_STRING_IDENTIFIER);
                     // TODO Switch tabs using the index.

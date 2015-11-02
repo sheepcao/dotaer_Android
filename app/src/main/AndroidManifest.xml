@@ -4,9 +4,8 @@
 
     <!-- Push service 运行需要的权限 -->
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -76,11 +75,19 @@
         <activity
             android:name=".confirmActivity"
             android:label="@string/title_activity_confirm" />
+        <activity
+            android:name=".VideoActivity"
+            android:label="@string/title_activity_video"
+            android:screenOrientation="landscape"
+            />
+        <activity android:name=".RegisterActivity" >
+        </activity>
 
-        <!--<activity-->
-            <!--android:name=".RegisterActivity"-->
-            <!--android:label="@string/title_activity_register"-->
-            <!--android:parentActivityName=".LoginActivity" />-->
+        <!-- <activity -->
+        <!-- android:name=".RegisterActivity" -->
+        <!-- android:label="@string/title_activity_register" -->
+        <!-- android:parentActivityName=".LoginActivity" /> -->
+
 
         <!-- push service start -->
         <!-- 用于接收系统消息以保证PushService正常运行 -->
@@ -141,8 +148,8 @@
 
         <!-- push结束 -->
 
-        <activity android:name=".RegisterActivity" >
-        </activity>
+
+
     </application>
 
 </manifest>
