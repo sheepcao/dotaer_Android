@@ -23,12 +23,102 @@
     <string name="title_activity_video">视频解说</string>
 
 
-
-
     <string name="binding_score">战绩认证</string>
     <string name="action_search">小秘书</string>
     <string name="register_enter">还没圈子账号？快速注册<u>underline</u>.</string>
 
 
+    <string-array name="publiser">
+        　　
+        <item>伍声2009</item>
+        　　
+        <item>DOta情书</item>
+        　　
+        <item>卜严骏Pis</item>
+        　　
+        <item>dota第一视角直播录制</item>
+        　　
+        <item>GuAi小乖</item>
 
+        <item>superhebefans</item>
+        　　
+        <item>满楼都素我的人</item>
+        　　
+        <item>狗头神教牛蛙</item>
+        　　
+        <item>Esports海涛</item>
+        　　
+        <item>舞ル灬</item>
+
+        <item>Pc冷冷</item>
+        　　
+        <item>小爷不狂</item>
+        　　
+        <item>Kevinnnnnnnnnnn</item>
+        　　
+        <item>梅西❤Huang</item>
+        　　
+        <item>满楼水平</item>
+
+        <item>张登溶_nada</item>
+        　　
+        <item>Music咖啡</item>
+        　　
+        <item>天枫燚</item>
+        　　
+        <item>水一亦寒</item>
+        　　
+        <item>朴一生dota</item>
+        　　
+    </string-array>
+    <string-array name="publiser_name">
+        　　
+        <item>伍声2009</item>
+        　　
+        <item>情书</item>
+        　　
+        <item>卜严骏Pis</item>
+        　　
+        <item>第一视角直播</item>
+        　　
+        <item>小乖</item>
+
+        <item>傻黑欢乐</item>
+        　　
+        <item>小满</item>
+        　　
+        <item>牛蛙</item>
+        　　
+        <item>海涛</item>
+        　　
+        <item>舞儿</item>
+
+        <item>冷冷</item>
+        　　
+        <item>狂湿</item>
+        　　
+        <item>凯文</item>
+        　　
+        <item>梅西</item>
+        　　
+        <item>满楼水平</item>
+
+        <item>NADA</item>
+        　　
+        <item>咖啡Dota</item>
+        　　
+        <item>南风</item>
+        　　
+        <item>水一dota</item>
+        　　
+        <item>朴一生</item>
+        　　
+    </string-array>
+
+
+    <!--<integer-array name="publiser_view">-->
+        <!--<item>R.id.publisher</item>-->
+        <!--<item>R.id.publisher</item>-->
+        <!--<item>@drawable/img3</item>-->
+    <!--</integer-array>-->
 </resources>

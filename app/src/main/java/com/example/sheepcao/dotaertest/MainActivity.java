@@ -504,7 +504,7 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case 2:
-                intent = new Intent(MainActivity.this, VideoActivity.class);
+                intent = new Intent(MainActivity.this, VideoPublisherActivity.class);
                 startActivityForResult(intent, 4);
 
                 Log.i("i", "=============================");
