@@ -543,19 +543,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-//    public void onSectionAttached(int number) {
-//        switch (number) {
-//            case 1:
-//                mTitle = getString(R.string.title_section1);
-//                break;
-//            case 2:
-//                mTitle = getString(R.string.title_section2);
-//                break;
-//            case 3:
-//                mTitle = getString(R.string.title_section3);
-//                break;
-//        }
-//    }
+
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -613,21 +601,6 @@ public class MainActivity extends AppCompatActivity
     public void searchPeople() {
 
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                CustomProgressBar.hideProgressBar();
-//            }
-//        }, 8000);
-
-
-//        if (lati < 0.00001 || lati > -0.00001) {
-//            lati = 22.299439;
-//        }
-//        if (longi < 0.00001 || longi > -0.00001) {
-//            longi = 114.173881;
-//        }
 
         if ((lati > 0.00001 || lati < -0.00001) &&(longi > 0.00001 || longi < -0.00001)) {
 

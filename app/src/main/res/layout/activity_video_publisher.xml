@@ -9,413 +9,432 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.sheepcao.dotaertest.VideoPublisherActivity">
 
-    <ScrollView
-        android:id="@+id/login_form"
+    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="50dp">
-
-        <LinearLayout
-            android:id="@+id/publisher_form"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/publisher_row"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher0"
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher1"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/publisher_row2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher2"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher3"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/publisher_row3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher4"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher5"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/publisher_row4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher6"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher7"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/publisher_row5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher8"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher9"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/publisher_row6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher10"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher11"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/publisher_row7"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher12"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher13"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/publisher_row8"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher14"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher15"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/publisher_row9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher16"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher17"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/publisher_row10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher18"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-
-                <FrameLayout
-                    android:id="@+id/publisher19"
-
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="5.5" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="185dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-
-    </ScrollView>
+        android:layout_marginTop="50dp"
+        android:numColumns="2"
+        android:fadeScrollbars="true"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="20dp"
+        android:horizontalSpacing="20dp"
+        android:paddingRight="25dp"
+        android:paddingLeft="15dp"
+
+        >
+
+
+
+    </GridView>
+
+    <!--<ScrollView-->
+        <!--android:id="@+id/login_form"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_marginTop="50dp">-->
+
+        <!--<LinearLayout-->
+            <!--android:id="@+id/publisher_form"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:focusable="true"-->
+            <!--android:focusableInTouchMode="true"-->
+            <!--android:orientation="vertical">-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/publisher_row"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="20dp"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:orientation="horizontal">-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher0"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher1"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+            <!--</LinearLayout>-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/publisher_row2"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginTop="20dp">-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher2"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher3"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+            <!--</LinearLayout>-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/publisher_row3"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginTop="20dp">-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher4"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher5"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+            <!--</LinearLayout>-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/publisher_row4"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginTop="20dp">-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher6"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher7"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+            <!--</LinearLayout>-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/publisher_row5"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginTop="20dp">-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher8"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher9"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+            <!--</LinearLayout>-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/publisher_row6"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginTop="20dp">-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher10"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher11"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+            <!--</LinearLayout>-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/publisher_row7"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginTop="20dp">-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher12"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher13"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+            <!--</LinearLayout>-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/publisher_row8"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginTop="20dp">-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher14"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher15"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+            <!--</LinearLayout>-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/publisher_row9"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginTop="20dp">-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher16"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher17"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+            <!--</LinearLayout>-->
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/publisher_row10"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_marginTop="20dp">-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher18"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/publisher19"-->
+
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="5.5" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="185dp"-->
+                    <!--android:layout_weight="1" />-->
+            <!--</LinearLayout>-->
+
+        <!--</LinearLayout>-->
+
+
+    <!--</ScrollView>-->
 
 </RelativeLayout>

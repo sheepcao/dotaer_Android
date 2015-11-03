@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="true">
+    android:clickable="true"
+    android:onClick="clickPublisher">
 
     <View
         android:layout_width="match_parent"
@@ -13,13 +14,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:paddingBottom="10dp"
+        android:paddingTop="8dp">
         <com.makeramen.roundedimageview.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/headImg_publisher"
             android:layout_width="100dp"
             android:layout_height="100dp"
             app:riv_border_color="#111111"
-            app:riv_border_width="0.6dp"
+            app:riv_border_width="0.85dp"
             app:riv_mutate_background="true"
             app:riv_oval="true"
             app:riv_tile_mode="repeat"
@@ -33,7 +36,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:textStyle="bold"
-            android:textSize="14dp"/>
+            android:textSize="15dp"/>
 
         <TextView
             android:id="@+id/update_time"
