@@ -42,25 +42,70 @@
             android:textColor="#dddddd"
             android:textSize="12sp" />
 
-        <ImageView
-            android:id="@+id/gender_img"
-            android:layout_width="19dp"
-            android:layout_height="22dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="43dp"
-            android:layout_toLeftOf="@id/my_head"
-             />
+
 
         <TextView
             android:id="@+id/age_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="18dp"
-            android:layout_marginTop="47dp"
-            android:layout_toRightOf="@id/my_head"
-            android:text=""
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="33dp"
+            android:layout_toLeftOf="@id/my_head"
+            android:text="21岁"
             android:textColor="#dddddd" />
+        <ImageView
+            android:id="@+id/gender_img"
+            android:layout_width="19dp"
+            android:layout_height="22dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="30dp"
+            android:layout_toLeftOf="@id/age_label"
+            android:src="@drawable/male"
+            />
+        <Button
+            android:id="@+id/favor_button"
+            android:layout_width="45dp"
+            android:layout_height="24dp"
+            android:background="@drawable/round_shape_red"
+            android:textColor="#e6950a"
+            android:text="+关注"
+            android:layout_below="@id/gender_img"
+            android:layout_alignLeft="@id/gender_img"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
+            />
 
+        <ImageView
+            android:id="@+id/position_img"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="32dp"
+            android:layout_toRightOf="@id/my_head"
+            android:src="@drawable/position"
+            />
+
+        <TextView
+            android:id="@+id/distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="35dp"
+            android:layout_toRightOf="@id/position_img"
+            android:text="313KM"
+            android:textColor="#dddddd" />
+        <TextView
+            android:id="@+id/geo_label"
+            android:layout_width="82dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:layout_below="@id/position_img"
+            android:layout_alignLeft="@id/position_img"
+            android:text="北京市,朝阳区\n望京"
+            android:textSize="11sp"
+            android:textColor="#dddddd" />
 
     </RelativeLayout>
 

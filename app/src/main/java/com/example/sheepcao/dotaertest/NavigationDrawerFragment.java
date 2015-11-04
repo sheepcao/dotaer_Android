@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -118,6 +119,7 @@ public class NavigationDrawerFragment extends Fragment {
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
+//    private boolean isGuest;
 
     public NavigationDrawerFragment() {
     }
@@ -126,6 +128,8 @@ public class NavigationDrawerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mQueue = Volley.newRequestQueue(getActivity());
+
+//        isGuest = true;
 
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
@@ -194,10 +198,9 @@ public class NavigationDrawerFragment extends Fragment {
 
         Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.male);
         int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
-        Bitmap resizedBitmap=Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
+        Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
 
         headImage.setImageBitmap(resizedBitmap);
-
 
 
         headButton = (Button) sideBarView.findViewById(R.id.headBtn);
@@ -363,6 +366,35 @@ public class NavigationDrawerFragment extends Fragment {
 
         logOutButton.setText("登 录");
 
+
+        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+                getActionBar().getThemedContext(),
+                R.layout.menu_item,
+                android.R.id.text1,
+                new String[]{
+                        getString(R.string.title_section2),
+                        getString(R.string.title_section3),
+                        getString(R.string.title_section4),
+                        getString(R.string.title_section5)
+
+                }) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+
+                View view = super.getView(position, convertView, parent);
+                TextView text = (TextView) view.findViewById(android.R.id.text1);
+
+                if (position == 0) {
+                    text.setTextColor(Color.GRAY);
+                }else
+                    text.setTextColor(Color.WHITE);
+
+
+                return view;
+            }
+        });
+
+
     }
     public void findIdentity()
     {
@@ -371,6 +403,36 @@ public class NavigationDrawerFragment extends Fragment {
         headButton.setText("");
         headButton.setClickable(true);
         logOutButton.setText("注 销");
+
+
+
+        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+                getActionBar().getThemedContext(),
+                R.layout.menu_item,
+                android.R.id.text1,
+                new String[]{
+                        getString(R.string.title_section2),
+                        getString(R.string.title_section3),
+                        getString(R.string.title_section4),
+                        getString(R.string.title_section5)
+
+                }) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+
+                View view = super.getView(position, convertView, parent);
+                TextView text = (TextView) view.findViewById(android.R.id.text1);
+
+
+                    text.setTextColor(Color.WHITE);
+
+
+                return view;
+            }
+        });
+
+
+
 
         SharedPreferences mSharedPreferences = getActivity().getSharedPreferences("dotaerSharedPreferences", 0);
         String name = mSharedPreferences.getString("username","游客");
@@ -414,8 +476,8 @@ public class NavigationDrawerFragment extends Fragment {
                 if (response.getBitmap() != null) {
 
 
-                    Bitmap bmp= response.getBitmap();
-                    int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
+                    Bitmap bmp = response.getBitmap();
+                    int smallOne = bmp.getWidth() > bmp.getHeight() ? bmp.getHeight() : bmp.getWidth();
 
                     Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
                     headImage.setImageBitmap(resizedBitmap);

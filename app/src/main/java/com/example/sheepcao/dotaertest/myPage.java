@@ -39,6 +39,8 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.plus.model.people.Person;
+import com.makeramen.roundedimageview.RoundedDrawable;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.RequestBody;
@@ -134,16 +136,8 @@ public class myPage extends AppCompatActivity {
                 return connection;
             }
         });
-        imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
-            @Override
-            public void putBitmap(String url, Bitmap bitmap) {
-            }
+        imageLoader = VolleySingleton.getInstance().getImageLoader();
 
-            @Override
-            public Bitmap getBitmap(String url) {
-                return null;
-            }
-        });
 
         score_type = (TextView) findViewById(R.id.score_type);
         score_label = (TextView) findViewById(R.id.score_label);
@@ -231,8 +225,14 @@ public class myPage extends AppCompatActivity {
 
 
 //        CustomProgressBar.showProgressBar(this, false, "Loading");
+        SharedPreferences mSharedPreferences = this.getSharedPreferences("dotaerSharedPreferences", 0);
+        String name = mSharedPreferences.getString("username", "游客");
 
-        playerName = "lol";
+        if (name.equals("游客"))
+        {
+            return;
+        }
+        playerName = name;
 
         requestBasicInfo(playerName);
 //        requestExtroInfoWithUser("宝贝拼吧");
@@ -718,13 +718,14 @@ public class myPage extends AppCompatActivity {
             String time = (String) data.get(position).get("time");
             time = time.substring(0, time.length() - 3);
 
+            final ImageView headTemp = holder.headImg;
+
             holder.noteNumber.setText((position + 1) + ".");
 
             holder.usernameLabel.setText((String) data.get(position).get("visitor"));
             holder.timeLabel.setText(time);
             holder.noteText.setText((String) data.get(position).get("content"));
 
-            ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg, R.drawable.nocolor, R.drawable.nocolor);
 
             String name = (String) data.get(position).get("visitor");
             String nameURLstring = "";
@@ -739,7 +740,37 @@ public class myPage extends AppCompatActivity {
             }
 
 
-            imageLoader.get(nameURLstring, listener);
+
+
+            imageLoader.get(nameURLstring, new ImageLoader.ImageListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("Image Load", "Image Load Error: " + error.getMessage());
+                }
+
+                @Override
+                public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
+
+
+                    if (response.getBitmap() != null) {
+
+
+                        Bitmap bmp= response.getBitmap();
+                        int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
+
+                        Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
+//                        headTemp.setImageBitmap(resizedBitmap);
+                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 80, 80, false));
+
+
+                    } else  {
+
+                        headTemp.setImageResource(R.drawable.boysmall);
+                    }
+                }
+            });
+
 
             return convertView;
         }

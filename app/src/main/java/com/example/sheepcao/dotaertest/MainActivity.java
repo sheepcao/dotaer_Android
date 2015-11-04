@@ -521,14 +521,24 @@ public class MainActivity extends AppCompatActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         Intent intent;
+        SharedPreferences mSharedPreferences = this.getSharedPreferences("dotaerSharedPreferences", 0);
+        String name = mSharedPreferences.getString("username", "游客");
         switch (position) {
+
+
             case 0:
 
-                intent = new Intent(MainActivity.this, myPage.class);
-                startActivityForResult(intent, 2);
 
-                Log.i("i", "=============================");
 
+                if(name.equals("游客"))
+                {
+                    return;
+                }else {
+                    intent = new Intent(MainActivity.this, myPage.class);
+                    startActivityForResult(intent, 2);
+
+                    Log.i("i", "=============================");
+                }
                 break;
             case 1:
 
@@ -542,8 +552,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 100:
                 Log.i("i", "=login page=");
-                SharedPreferences mSharedPreferences = this.getSharedPreferences("dotaerSharedPreferences", 0);
-                String name = mSharedPreferences.getString("username", "游客");
+
 
                 if (name.equals("游客")) {
                     showLoginPage();
@@ -632,10 +641,9 @@ public class MainActivity extends AppCompatActivity
     public void searchPeople() {
 
 
-        lati =39.905206;
-        longi = 116.390356;
 
-        if ((lati > 0.00001 || lati < -0.00001) &&(longi > 0.00001 || longi < -0.00001)) {
+
+        if ((lati > 0.001 || lati < -0.00001) &&(longi > 0.001 || longi < -0.001)) {
 
             CustomProgressBar.showProgressBar(MainActivity.this, false, "搜索中");
 
