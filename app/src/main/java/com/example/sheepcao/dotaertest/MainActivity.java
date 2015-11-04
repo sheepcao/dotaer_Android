@@ -44,6 +44,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.baidu.android.pushservice.PushConstants;
@@ -53,6 +54,7 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -152,16 +154,19 @@ public class MainActivity extends AppCompatActivity
         genderList = new ArrayList<>();
         distanceList = new ArrayList<>();
 
-        imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
-            @Override
-            public void putBitmap(String url, Bitmap bitmap) {
-            }
+//        imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
+//            @Override
+//            public void putBitmap(String url, Bitmap bitmap) {
+//            }
+//
+//            @Override
+//            public Bitmap getBitmap(String url) {
+//                return null;
+//            }
+//        });
 
-            @Override
-            public Bitmap getBitmap(String url) {
-                return null;
-            }
-        });
+        imageLoader = VolleySingleton.getInstance().getImageLoader();
+
 
 
         lv = (ListView) findViewById(R.id.dotaerList);
@@ -252,7 +257,7 @@ public class MainActivity extends AppCompatActivity
             public void onErrorResponse(VolleyError error) {
                 CustomProgressBar.hideProgressBar();
 
-                if (error.networkResponse.statusCode == 417)
+                if (error.networkResponse!=null &&error.networkResponse.statusCode == 417)
                 {
                     Toast.makeText(MainActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
 
@@ -363,7 +368,7 @@ public class MainActivity extends AppCompatActivity
 
     //ViewHolder静态类
     static class ViewHolder {
-        public ImageView headImg;
+        public RoundedImageView headImg;
         public ImageView gender;
         public ImageView mapImg;
 
@@ -432,7 +437,7 @@ public class MainActivity extends AppCompatActivity
                 holder = new ViewHolder();
                 //根据自定义的Item布局加载布局
                 convertView = mInflater.inflate(R.layout.dotaer_item, null);
-                holder.headImg = (ImageView) convertView.findViewById(R.id.headImg);
+                holder.headImg = (RoundedImageView) convertView.findViewById(R.id.headImg);
                 holder.gender = (ImageView) convertView.findViewById(R.id.genderImg);
                 holder.username = (TextView) convertView.findViewById(R.id.usernameLabel);
                 holder.age = (TextView) convertView.findViewById(R.id.ageLabel);
@@ -461,7 +466,9 @@ public class MainActivity extends AppCompatActivity
             holder.mapImg.setBackgroundResource((Integer) data.get(position).get("map"));
             holder.distance.setText((String) data.get(position).get("distance"));
 
-            ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg, R.drawable.nocolor, R.drawable.nocolor);
+            final RoundedImageView headTemp = holder.headImg;
+
+//            ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg, R.drawable.nocolor, R.drawable.nocolor);
 
             String nameURLstring = "";
             try {
@@ -475,8 +482,32 @@ public class MainActivity extends AppCompatActivity
             }
 
 
-            imageLoader.get(nameURLstring, listener);
+            imageLoader.get(nameURLstring, new ImageLoader.ImageListener() {
 
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("Image Load", "Image Load Error: " + error.getMessage());
+                }
+
+                @Override
+                public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
+
+
+                    if (response.getBitmap() != null) {
+
+
+                        Bitmap bmp= response.getBitmap();
+                        int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
+
+                        Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
+                        headTemp.setImageBitmap(resizedBitmap);
+
+                    } else  {
+
+                        headTemp.setImageResource(R.drawable.boysmall);
+                    }
+                }
+            });
 
 
 
@@ -601,6 +632,8 @@ public class MainActivity extends AppCompatActivity
     public void searchPeople() {
 
 
+        lati =39.905206;
+        longi = 116.390356;
 
         if ((lati > 0.00001 || lati < -0.00001) &&(longi > 0.00001 || longi < -0.00001)) {
 

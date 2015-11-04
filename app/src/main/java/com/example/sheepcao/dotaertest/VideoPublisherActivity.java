@@ -45,7 +45,6 @@ import java.util.Objects;
 public class VideoPublisherActivity extends AppCompatActivity {
 
     RequestQueue mQueue = null;
-    ImageLoader imageLoader;
 
     private GridView gview;
     private List<Map<String, Object>> data_list;
@@ -67,18 +66,7 @@ public class VideoPublisherActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video_publisher);
 //        mQueue = VolleyToolboxExtension.newRequestQueue(getApplicationContext());
         mQueue = Volley.newRequestQueue(this);
-        imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
 
-            @Override
-            public Bitmap getBitmap(String url) {
-                return null;
-            }
-
-            @Override
-            public void putBitmap(String url, Bitmap bitmap) {
-
-            }
-        });
 
 
 //        publiserViewIDs = {R.id.publisher0, R.id.publisher1, R.id.publisher2, R.id.publisher3, R.id.publisher4, R.id.publisher5, R.id.publisher6, R.id.publisher7, R.id.publisher8, R.id.publisher9, R.id.publisher10, R.id.publisher11, R.id.publisher12, R.id.publisher13, R.id.publisher14, R.id.publisher15, R.id.publisher16, R.id.publisher17, R.id.publisher18, R.id.publisher19};
@@ -89,46 +77,7 @@ public class VideoPublisherActivity extends AppCompatActivity {
         update = new ArrayList<>();
         videos = new HashMap<String, Object>();
 
-//
-//        for (int i = 0;i<publiserViewIDs.length;i++)
-//        {
-//            LayoutInflater mInflater;
-//            mInflater = LayoutInflater.from(this);
-//            FrameLayout viewFrame = (FrameLayout)findViewById(publiserViewIDs[i]);
-//
-//            FrameLayout publisherButton;
-//            publisherButton = (FrameLayout)  mInflater.inflate(R.layout.publisher_layout, null);
-//            publisherButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Log.v("lll", "create one");
-//                }
-//            });
-//
-////            ViewHolder holder = new ViewHolder();
-//            RoundedImageView headImg = (RoundedImageView)publisherButton.findViewById(R.id.headImg_publisher);
-//            TextView name = (TextView)publisherButton.findViewById(R.id.name);
-//            TextView time = (TextView)publisherButton.findViewById(R.id.time);
-//
-//            Log.v("name", publiser_name[i]);
-//
-//            name.setText((String) publiser_name[i]);
-////            headImg.setImageDrawable(getResources().getDrawable(publiserIDs[i]));
-////            headImg.setImageResource(publiserIDs[i]);
-//
-////            ImageLoader.ImageListener listener = ImageLoader.getImageListener(headImg, R.drawable.nocolor, R.drawable.nocolor);
-//
-//            String nameURLstring = "";
-//
-//
-////            imageLoader.get
-//
-//
-//            viewFrame.addView(publisherButton);
-//
-//            requestPublisherVideos(publiser[i]);
-//
-//        }
+
         CustomProgressBar.showProgressBar(VideoPublisherActivity.this, false, "读取中");
 
         for (int i = 0; i < publiser.length; i++) {
@@ -151,6 +100,29 @@ public class VideoPublisherActivity extends AppCompatActivity {
 
         TextView name = (TextView) v.findViewById(R.id.name);
         Log.v("click", name.getText().toString());
+        String publisherName = name.getText().toString();
+
+        Intent intent=new Intent();
+        intent.setClass(VideoPublisherActivity.this, videoListActivity.class);
+//
+
+        Bundle mBundle = new Bundle();
+
+        String onePublisher = "";
+        for (int i = 0;i<publiser_name.length;i++)
+        {
+            if (publisherName.equals(publiser_name[i]))
+            {
+                onePublisher = publiser[i];
+            }
+        }
+        mBundle.putString("videos", videos.get(onePublisher).toString());
+        mBundle.putString("publisherName", publisherName);
+
+        intent.putExtras(mBundle);
+
+
+        startActivity(intent);
 
 
     }

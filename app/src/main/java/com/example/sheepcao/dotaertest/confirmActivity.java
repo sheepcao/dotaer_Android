@@ -830,7 +830,7 @@ public class confirmActivity extends AppCompatActivity {
         SharedPreferences mSharedPreferences = getApplication().getSharedPreferences("dotaerSharedPreferences", 0);
         final String username = mSharedPreferences.getString("username", "");
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/confirmLevel.php",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/confirmLevel.php",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) throws JSONException {

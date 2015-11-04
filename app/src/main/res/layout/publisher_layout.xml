@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
-    android:onClick="clickPublisher">
+    android:onClick="clickPublisher"
+    >
 
     <View
         android:layout_width="match_parent"

@@ -64,6 +64,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -384,27 +386,56 @@ public class NavigationDrawerFragment extends Fragment {
 
     private void loadHead(String name)
     {
-         imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
+        imageLoader = VolleySingleton.getInstance().getImageLoader();
+
+        String nameURLstring = "";
+        try {
+            String strUTF8 = URLEncoder.encode(name, "UTF-8");
+            nameURLstring = "http://cgx.nwpu.info/Sites/upload/" + strUTF8 + ".png";
+            Log.v("nameURLstring", nameURLstring);
+
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+
+        imageLoader.get(nameURLstring, new ImageLoader.ImageListener() {
+
             @Override
-            public void putBitmap(String url, Bitmap bitmap) {
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Image Load", "Image Load Error: " + error.getMessage());
             }
 
             @Override
-            public Bitmap getBitmap(String url) {
-                return null;
+            public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
+
+
+                if (response.getBitmap() != null) {
+
+
+                    Bitmap bmp= response.getBitmap();
+                    int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
+
+                    Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
+                    headImage.setImageBitmap(resizedBitmap);
+
+                } else  {
+
+                    headImage.setImageResource(R.drawable.boysmall);
+                }
             }
         });
-        ImageLoader.ImageListener listener = ImageLoader.getImageListener(headImage, R.drawable.nocolor, R.drawable.nocolor);
 
 
-        imageLoader.get("http://cgx.nwpu.info/Sites/upload/" + name + ".png", listener);
-        Log.v("head","http://cgx.nwpu.info/Sites/upload/" + name + ".png");
+
+
     }
 
 
     private void requestSignature(final String username)
     {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/signature.php",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/signature.php",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) throws JSONException {

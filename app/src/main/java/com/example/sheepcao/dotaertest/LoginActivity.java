@@ -50,6 +50,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,9 +90,6 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView = (EditText) findViewById(R.id.password);
 
 
-
-
-
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -101,9 +100,6 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-
-
-
 
 
         mQueue = Volley.newRequestQueue(this);
@@ -125,8 +121,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
-
-
 
 
     /**
@@ -176,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
             showProgress();
 
 
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/upload.php",
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/upload.php",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) throws JSONException {
@@ -221,14 +215,13 @@ public class LoginActivity extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                CustomProgressBar.hideProgressBar();
+                    CustomProgressBar.hideProgressBar();
 
-                    if (error.networkResponse.statusCode == 417)
-                    {
+
+                    if (error.networkResponse!=null&&error.networkResponse.statusCode == 417) {
                         Toast.makeText(LoginActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
 
-                    }else
-                    {
+                    } else {
                         Toast.makeText(LoginActivity.this, "登录请求失败，请稍后重试", Toast.LENGTH_SHORT).show();
 
                     }
@@ -312,6 +305,8 @@ public class LoginActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.visitor || id == android.R.id.home) {
 
+//            test();
+
             Log.v("back", "menu back-----------");
 
             uploadPushId();
@@ -330,6 +325,26 @@ public class LoginActivity extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
         }
 
+    }
+
+//
+    private void test() {
+
+
+        Intent intent=new Intent();
+        intent.setClass(LoginActivity.this, VideoActivity.class);
+//
+
+        Bundle mBundle = new Bundle();
+
+        String playURL = "http://pl.youku.com/playlist/m3u8?vid=341407959&ts=1446616315&ctype=12&token=7351&keyframe=1&sid=1446616315688122e9c41&ev=1&type=mp4&ep=cyaQHE%2BMUM0B4CXXgD8bZXnrJ3MOXP0O9xuFhttnCdQjS%2B2%2B&oip=1931342760";
+
+        mBundle.putString("playURL", playURL);
+
+        intent.putExtras(mBundle);
+
+
+        startActivity(intent);
     }
 
 
@@ -367,20 +382,17 @@ public class LoginActivity extends AppCompatActivity {
         if (name.equals("游客")) {
             name = "SystemAnonymous";
         }
-        if (!channelId.equals("none"))
-        {
-            channelId = "Android"+channelId;
-            startUploading(name,channelId);
+        if (!channelId.equals("none")) {
+            channelId = "Android" + channelId;
+            startUploading(name, channelId);
 
         }
 
 
-
     }
 
-    private void startUploading(final String name , final String channelId)
-    {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/deviceURL.php",
+    private void startUploading(final String name, final String channelId) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/deviceURL.php",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) throws JSONException {

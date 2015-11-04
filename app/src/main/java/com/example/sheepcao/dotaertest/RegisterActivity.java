@@ -252,7 +252,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
 /*  */
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://10.0.2.2/~ericcao/upload.php",
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/upload.php",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) throws JSONException {

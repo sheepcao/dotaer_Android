@@ -37,7 +37,7 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-    <application
+    <application android:name="com.example.sheepcao.dotaertest.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -148,6 +148,8 @@
         <!-- push结束 -->
 
         <activity android:name=".VideoPublisherActivity" >
+        </activity>
+        <activity android:name=".videoListActivity" >
         </activity>
     </application>
 
