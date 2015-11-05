@@ -670,8 +670,20 @@ public class playerPageActivity extends AppCompatActivity {
 
                 Log.e("TAG", error.getMessage(), error);
                 CustomProgressBar.hideProgressBar();
-                Toast.makeText(playerPageActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
 
+
+                if (error.networkResponse==null)
+                {
+                    Toast.makeText(playerPageActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+                if (error.networkResponse.statusCode == 417 ) {
+
+                    Toast.makeText(playerPageActivity.this, "暂无留言", Toast.LENGTH_SHORT).show();
+
+
+                }
 
             }
         }) {
@@ -1445,7 +1457,9 @@ public class playerPageActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Toast.makeText(playerPageActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
 
+                CustomProgressBar.hideProgressBar();
                 Log.e("TAG", error.getMessage(), error);
             }
         }) {
@@ -1524,7 +1538,9 @@ public class playerPageActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Toast.makeText(playerPageActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
 
+                CustomProgressBar.hideProgressBar();
                 Log.e("TAG", error.getMessage(), error);
             }
         }) {

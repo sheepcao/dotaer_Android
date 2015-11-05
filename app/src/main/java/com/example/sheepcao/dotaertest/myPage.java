@@ -603,8 +603,18 @@ public class myPage extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
 
                 Log.e("TAG", error.getMessage(), error);
-                CustomProgressBar.hideProgressBar();
-                Toast.makeText(myPage.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                if (error.networkResponse==null)
+                {
+                    Toast.makeText(myPage.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+                if (error.networkResponse.statusCode == 417 ) {
+
+                    Toast.makeText(myPage.this, "暂无留言", Toast.LENGTH_SHORT).show();
+
+
+                }
 
 
             }
@@ -1382,6 +1392,9 @@ public class myPage extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
+                Toast.makeText(myPage.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+
+                CustomProgressBar.hideProgressBar();
                 Log.e("TAG", error.getMessage(), error);
             }
         }) {
@@ -1418,21 +1431,9 @@ public class myPage extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) throws JSONException {
 
-//                        Log.d("Json string>>>>>", response);
-
 
                         JSONObject jObject = new JSONObject(response);
 
-//
-//                        mjInfos = jObject.getJSONObject("mjInfos");
-//                        ttInfos = jObject.getJSONObject("ttInfos");
-//                        jjcInfos = jObject.getJSONObject("jjcInfos");
-//
-//                        mjScore = mjInfos.getString("MingJiang");
-//                        ttScore = jObject.getInt("rating") + "";
-//                        jjcScore = jObject.getInt("jjcRating") + "";
-
-//
                         if (!jObject.getString("mjInfos").equals("null")) {
                             mjInfos = jObject.getJSONObject("mjInfos");
                             mjScore = mjInfos.getString("MingJiang");
@@ -1460,7 +1461,9 @@ public class myPage extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Toast.makeText(myPage.this, "网络请求失败", Toast.LENGTH_SHORT).show();
 
+                CustomProgressBar.hideProgressBar();
                 Log.e("TAG", error.getMessage(), error);
             }
         }) {
