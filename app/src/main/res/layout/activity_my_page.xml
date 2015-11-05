@@ -577,7 +577,22 @@
             </LinearLayout>
 
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/noRecord_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/main_back"
+            android:orientation="vertical"
+            android:visibility="gone">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="暂未认证"
+                android:textSize="18sp" />
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/note_pad"
             android:layout_width="match_parent"
@@ -625,6 +640,7 @@
                 android:paddingRight="10dp" />
 
         </LinearLayout>
+
     </FrameLayout>
 
 

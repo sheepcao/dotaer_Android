@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -49,11 +50,13 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
+//import com.baidu.location.Address;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.baidu.location.Poi;
+//import com.baidu.location.Poi;
+import com.baidu.mapapi.SDKInitializer;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.json.JSONArray;
@@ -100,6 +103,10 @@ public class MainActivity extends AppCompatActivity
     List<String> ageList;
     List<String> genderList;
     List<String> distanceList;
+    List<String> latiList;
+    List<String> longiList;
+    List<String> invisibleList;
+
 
     ImageLoader imageLoader;
 
@@ -120,6 +127,7 @@ public class MainActivity extends AppCompatActivity
 
         PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY, "Ts2amouZ7yRx5FEmslGc4xDm");
 
+        SDKInitializer.initialize(getApplicationContext());
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -142,6 +150,7 @@ public class MainActivity extends AppCompatActivity
         mLocClient.registerLocationListener(this);
         LocationClientOption option = new LocationClientOption();
         option.setOpenGps(false);// 打开gps
+        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
         option.setCoorType("bd09ll"); // 设置坐标类型
         option.setScanSpan(1000);
         mLocClient.setLocOption(option);
@@ -153,6 +162,10 @@ public class MainActivity extends AppCompatActivity
         ageList = new ArrayList<>();
         genderList = new ArrayList<>();
         distanceList = new ArrayList<>();
+        latiList = new ArrayList<>();
+        longiList = new ArrayList<>();
+        invisibleList = new ArrayList<>();
+
 
 //        imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
 //            @Override
@@ -174,6 +187,33 @@ public class MainActivity extends AppCompatActivity
         data = getData();
         adapter = new MyAdapter(this);
         lv.setAdapter(adapter);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> parent, View itemClicked, int
+                    position, long id) {
+
+                String playerName = (String) data.get(position).get("username");
+
+
+                Intent intent = new Intent(MainActivity.this, playerPageActivity.class);
+                Bundle mBundle = new Bundle();
+
+
+                mBundle.putString("playerName", playerName);
+                mBundle.putString("lati", latiList.get(position));
+                mBundle.putString("longi",longiList.get(position));
+                mBundle.putString("distance",distanceList.get(position));
+
+
+                intent.putExtras(mBundle);
+                startActivity(intent);
+
+
+            }
+        });
+
+
 
 
         SeekBar ratioBar = (SeekBar) findViewById(R.id.seekbar_ratio);
@@ -392,6 +432,9 @@ public class MainActivity extends AppCompatActivity
             map.put("username", usernameList.get(i));
             map.put("distance", distanceList.get(i) + "米");
             map.put("age", ageList.get(i));
+            map.put("lati", latiList.get(i));
+            map.put("longi", longiList.get(i));
+
 
             list.add(map);
         }
@@ -468,7 +511,6 @@ public class MainActivity extends AppCompatActivity
 
             final RoundedImageView headTemp = holder.headImg;
 
-//            ImageLoader.ImageListener listener = ImageLoader.getImageListener(holder.headImg, R.drawable.nocolor, R.drawable.nocolor);
 
             String nameURLstring = "";
             try {
@@ -500,7 +542,8 @@ public class MainActivity extends AppCompatActivity
                         int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
 
                         Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
-                        headTemp.setImageBitmap(resizedBitmap);
+                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 50, 50, false));
+//                        headTemp.setImageBitmap(resizedBitmap);
 
                     } else  {
 
@@ -670,11 +713,19 @@ public class MainActivity extends AppCompatActivity
                                 JSONArray jArrayAge = jObject.getJSONArray("age");
                                 JSONArray jArrayGender = jObject.getJSONArray("sex");
                                 JSONArray jArrayDistance = jObject.getJSONArray("juli");
+                                JSONArray jArraylati = jObject.getJSONArray("latitude");
+                                JSONArray jArraylongi = jObject.getJSONArray("longitude");
+                                JSONArray jArrayinvisible = jObject.getJSONArray("invisible");
+
 
                                 usernameList.clear();
                                 ageList.clear();
                                 genderList.clear();
                                 distanceList.clear();
+                                latiList.clear();
+                                longiList.clear();
+                                invisibleList.clear();
+
 
                                 if (jArray.length() >= 50) {
                                     pageDown.setEnabled(true);
@@ -685,6 +736,14 @@ public class MainActivity extends AppCompatActivity
 
                                 for (int i = 0; i < jArray.length(); i++) {
                                     try {
+
+                                        String oneInvisible = jArrayinvisible.getString(i);
+                                        if(oneInvisible.equals("yes"))
+                                        {
+                                            continue;
+                                        }
+
+
                                         String oneName = jArray.getString(i);
                                         usernameList.add(oneName);
 
@@ -696,6 +755,14 @@ public class MainActivity extends AppCompatActivity
 
                                         String oneDistance = jArrayDistance.getString(i);
                                         distanceList.add(oneDistance);
+
+                                        String oneLati = jArraylati.getString(i);
+                                        latiList.add(oneLati);
+
+                                        String oneLongi = jArraylongi.getString(i);
+                                        longiList.add(oneLongi);
+
+
 
                                         Log.d("oneObject", oneName + "--" + oneAge + "--" + oneGender + "--" + oneDistance);
                                     } catch (JSONException e) {
@@ -784,13 +851,23 @@ public class MainActivity extends AppCompatActivity
 
         lati = location.getLatitude();
         longi = location.getLongitude();
+//        BaiduAddress = location.getAddress();
 
-        if ((lati > 0.00001 || lati < -0.00001) &&(longi > 0.00001 || longi < -0.00001)) {
+
+
+        if ((lati > 0.001 || lati < -0.001) &&(longi > 0.001 || longi < -0.001)) {
 
             LocationClientOption option = new LocationClientOption();
             option.setOpenGps(false);// 打开gps
             option.setCoorType("bd09ll"); // 设置坐标类型
             option.setScanSpan(30000);
+            mLocClient.setLocOption(option);
+        }else
+        {
+            LocationClientOption option = new LocationClientOption();
+            option.setOpenGps(false);// 打开gps
+            option.setCoorType("bd09ll"); // 设置坐标类型
+            option.setScanSpan(1000);
             mLocClient.setLocOption(option);
         }
 
@@ -849,26 +926,26 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void initLocation() {
-
-        Log.i("BaiduLocation", "initLocation");
-
-        LocationClientOption option = new LocationClientOption();
-        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy
-        );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
-        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
-        int span = 0;
-        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
-        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
-        option.setOpenGps(true);//可选，默认false,设置是否使用gps
-        option.setLocationNotify(true);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
-        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
-        option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
-        option.setIgnoreKillProcess(false);//可选，默认false，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认杀死
-        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
-        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
-        mLocClient.setLocOption(option);
-    }
+//    private void initLocation() {
+//
+//        Log.i("BaiduLocation", "initLocation");
+//
+//        LocationClientOption option = new LocationClientOption();
+//        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy
+//        );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
+//        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
+//        int span = 0;
+//        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
+//        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
+//        option.setOpenGps(true);//可选，默认false,设置是否使用gps
+//        option.setLocationNotify(true);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
+//        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+//        option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+//        option.setIgnoreKillProcess(false);//可选，默认false，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认杀死
+//        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
+//        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
+//        mLocClient.setLocOption(option);
+//    }
 
 
     @Override

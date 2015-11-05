@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,18 +36,12 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.plus.model.people.Person;
-import com.makeramen.roundedimageview.RoundedDrawable;
 import com.makeramen.roundedimageview.RoundedImageView;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.RequestBody;
 
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -831,10 +823,11 @@ public class myPage extends AppCompatActivity {
                         TextView signature_label = (TextView) findViewById(R.id.signature_label);
                         TextView game_name = (TextView) findViewById(R.id.game_name);
                         ImageView gender_img = (ImageView) findViewById(R.id.gender_img);
-//                        TextView norecord_label = (TextView) findViewById(R.id.noRecord_label);
+                        final RoundedImageView headImg = (RoundedImageView) findViewById(R.id.my_head);
+                        View no_Reviewed = findViewById(R.id.noRecord_view);
 
 
-                        age_label.setText(age);
+                        age_label.setText(age+"岁");
                         if (signature.equals("null")) {
                             signature_label.setText("签名的力气都拿来打dota了!");
 
@@ -842,6 +835,49 @@ public class myPage extends AppCompatActivity {
                             signature_label.setText(signature);
                         }
                         game_name.setText(gameName);
+
+                        String name = playerName;
+                        String nameURLstring = "";
+                        try {
+                            String strUTF8 = URLEncoder.encode((name + ".png"), "UTF-8");
+                            nameURLstring = "http://cgx.nwpu.info/Sites/upload/" + strUTF8;
+                            Log.v("nameURLstring", nameURLstring);
+
+
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+                        imageLoader.get(nameURLstring, new ImageLoader.ImageListener() {
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.e("Image Load", "Image Load Error: " + error.getMessage());
+                            }
+
+                            @Override
+                            public void onResponse(ImageLoader.ImageContainer response, boolean arg1) {
+
+
+                                if (response.getBitmap() != null) {
+
+
+                                    Bitmap bmp = response.getBitmap();
+                                    int smallOne = bmp.getWidth() > bmp.getHeight() ? bmp.getHeight() : bmp.getWidth();
+
+                                    Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
+                                    headImg.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 45, 45, false));
+
+
+                                } else {
+
+                                    headImg.setImageResource(R.drawable.boysmall);
+                                }
+                            }
+                        });
 
                         if (sex.equals("male")) {
                             gender_img.setImageResource(R.drawable.male);
@@ -869,12 +905,14 @@ public class myPage extends AppCompatActivity {
                         if (gameName.equals("null"))
                         {
                             setUpScorePage(selectedButton);
-                            game_name.setText("暂未认证");
+                            no_Reviewed.setVisibility(View.VISIBLE);
                             CustomProgressBar.hideProgressBar();
 
 
                         }else
                         {
+                            no_Reviewed.setVisibility(View.GONE);
+
                             requestExtroInfoWithUser(gameName);
                         }
 
@@ -1077,7 +1115,13 @@ public class myPage extends AppCompatActivity {
                 String location = "";
                 String cookie_final = "";
 
+                if (error.networkResponse==null)
+                {
+                    Toast.makeText(myPage.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
 
+                    return;
+                }
                 if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
                     for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
 //                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
@@ -1229,7 +1273,14 @@ public class myPage extends AppCompatActivity {
 
                 String location = "";
                 String cookie_final = "";
-                if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
+                if (error.networkResponse==null)
+                {
+                    Toast.makeText(myPage.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
+
+                    return;
+                }
+                if (error.networkResponse!=null && error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
                     for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
 //                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
                         if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {
