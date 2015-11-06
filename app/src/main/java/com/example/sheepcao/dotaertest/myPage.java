@@ -217,14 +217,13 @@ public class myPage extends AppCompatActivity {
 
 
 //        CustomProgressBar.showProgressBar(this, false, "Loading");
-        SharedPreferences mSharedPreferences = this.getSharedPreferences("dotaerSharedPreferences", 0);
-        String name = mSharedPreferences.getString("username", "游客");
 
-        if (name.equals("游客"))
-        {
-            return;
-        }
-        playerName = name;
+        Bundle bundle = getIntent().getExtras();
+
+
+        playerName = (String) bundle
+                .get("myName");
+
 
         requestBasicInfo(playerName);
 //        requestExtroInfoWithUser("宝贝拼吧");

@@ -539,8 +539,7 @@ public class MainActivity extends AppCompatActivity
                         int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
 
                         Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
-                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 50, 50, false));
-//                        headTemp.setImageBitmap(resizedBitmap);
+                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 80, 80, false));
 
                     } else  {
 
@@ -574,7 +573,19 @@ public class MainActivity extends AppCompatActivity
                 {
                     return;
                 }else {
+
+
                     intent = new Intent(MainActivity.this, myPage.class);
+
+                    Bundle mBundle = new Bundle();
+
+
+                    mBundle.putString("myName", name);
+
+
+
+                    intent.putExtras(mBundle);
+
                     startActivityForResult(intent, 2);
 
                     Log.i("i", "=============================");
@@ -587,6 +598,12 @@ public class MainActivity extends AppCompatActivity
             case 2:
                 intent = new Intent(MainActivity.this, VideoPublisherActivity.class);
                 startActivityForResult(intent, 4);
+
+                Log.i("i", "=============================");
+                break;
+            case 3:
+                intent = new Intent(MainActivity.this, FavorActivity.class);
+                startActivity(intent);
 
                 Log.i("i", "=============================");
                 break;

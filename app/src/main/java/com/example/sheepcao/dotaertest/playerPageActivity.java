@@ -56,6 +56,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -214,9 +215,6 @@ public class playerPageActivity extends AppCompatActivity {
         });
 
 
-
-
-
         selectedButton = ttMenu;
         selectedButton.setBackgroundResource(R.drawable.list_button_press);
         selectedButton.setClickable(false);
@@ -246,17 +244,15 @@ public class playerPageActivity extends AppCompatActivity {
         distance = (String) bundle
                 .get("distance");
 
-        TextView distanceLabel = (TextView)findViewById(R.id.distance);
+        TextView distanceLabel = (TextView) findViewById(R.id.distance);
 
         int distanceData = Integer.parseInt(distance);
 
-        if (distanceData>1000)
-        {
-            distanceData = distanceData/1000;
-            distance = distanceData+"KM";
-        }else
-        {
-            distance = distance+"米";
+        if (distanceData > 1000) {
+            distanceData = distanceData / 1000;
+            distance = distanceData + "KM";
+        } else {
+            distance = distance + "米";
         }
 
         distanceLabel.setText(distance);
@@ -279,16 +275,15 @@ public class playerPageActivity extends AppCompatActivity {
                 if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
                     //没有找到检索结果
 
-                }else
-                {
+                } else {
                     String city = result.getAddressDetail().city;
                     String district = result.getAddressDetail().district;
                     String street = result.getAddressDetail().street;
 
-                    String geoInfo = city+","+district+"\n"+street;
+                    String geoInfo = city + "," + district + "\n" + street;
 
-                    Log.v("geoInfo",geoInfo);
-                    TextView geoLabel = (TextView)findViewById(R.id.geo_label);
+                    Log.v("geoInfo", geoInfo);
+                    TextView geoLabel = (TextView) findViewById(R.id.geo_label);
                     geoLabel.setText(geoInfo);
                 }
 
@@ -307,6 +302,10 @@ public class playerPageActivity extends AppCompatActivity {
         mSearch.setOnGetGeoCodeResultListener(mOnGetGeoCoderResultListener);
 
         requestBasicInfo(playerName);
+
+
+
+        checkFavor();
     }
 
 
@@ -328,7 +327,6 @@ public class playerPageActivity extends AppCompatActivity {
         myMenu = menu;
 
         getMenuInflater().inflate(R.menu.global, menu);
-
 
 
         restoreActionBar();
@@ -382,7 +380,6 @@ public class playerPageActivity extends AppCompatActivity {
 
 
     }
-
 
 
     private void setUpScorePage(TextView btn) throws JSONException {
@@ -617,6 +614,86 @@ public class playerPageActivity extends AppCompatActivity {
     }
 
 
+    public boolean saveArray(ArrayList<String> array, String arrayName, Context mContext) {
+        SharedPreferences prefs = mContext.getSharedPreferences("dotaerSharedPreferences", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(arrayName + "_size", array.size());
+        for (int i = 0; i < array.size(); i++)
+            editor.putString(arrayName + "_" + i, array.get(i));
+        return editor.commit();
+    }
+
+    public String[] loadArray(String arrayName, Context mContext) {
+        SharedPreferences prefs = mContext.getSharedPreferences("dotaerSharedPreferences", 0);
+        int size = prefs.getInt(arrayName + "_size", 0);
+        String array[] = new String[size];
+        for (int i = 0; i < size; i++)
+            array[i] = prefs.getString(arrayName + "_" + i, null);
+        return array;
+    }
+
+    public void favorClick(View v) {
+
+        Button btn = (Button)v;
+
+        if (btn.getText().toString().equals("已关注")) {
+            String[] favors = loadArray("favorArray", getApplicationContext());
+
+            ArrayList newfavor = new ArrayList();
+
+            for (int i = 0; i < favors.length; i++) {
+                if (!favors[i].equals(playerName)) {
+                    newfavor.add(favors[i]);
+                }
+
+            }
+
+            saveArray(newfavor, "favorArray", getApplicationContext());
+
+            btn.setText("+关注");
+            btn.setBackgroundResource(R.drawable.round_shape_red);
+
+
+        } else {
+            String[] favors = loadArray("favorArray", getApplicationContext());
+
+            ArrayList newfavor = new ArrayList();
+
+            for (int i = 0; i < favors.length; i++) {
+                newfavor.add(favors[i]);
+            }
+            newfavor.add(playerName);
+
+            saveArray(newfavor, "favorArray", getApplicationContext());
+
+            btn.setText("已关注");
+            btn.setBackgroundResource(R.drawable.round_shape_green);
+
+
+        }
+
+    }
+
+    private Boolean checkFavor()
+
+    {
+        String[] favors = loadArray("favorArray", getApplicationContext());
+
+        Button favorButton = (Button)findViewById(R.id.favor_button);
+
+        for (int i = 0; i < favors.length; i++) {
+            if (favors[i].equals(playerName)) {
+
+                favorButton.setText("已关注");
+                favorButton.setBackgroundResource(R.drawable.round_shape_green);
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+
     private void requestNotes(final String name) {
         CustomProgressBar.showProgressBar(this, false, "Loading");
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/note.php",
@@ -667,13 +744,12 @@ public class playerPageActivity extends AppCompatActivity {
                 CustomProgressBar.hideProgressBar();
 
 
-                if (error.networkResponse==null)
-                {
+                if (error.networkResponse == null) {
                     Toast.makeText(playerPageActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
 
                     return;
                 }
-                if (error.networkResponse.statusCode == 417 ) {
+                if (error.networkResponse.statusCode == 417) {
 
                     Toast.makeText(playerPageActivity.this, "暂无留言", Toast.LENGTH_SHORT).show();
 
@@ -897,8 +973,7 @@ public class playerPageActivity extends AppCompatActivity {
                         View no_Reviewed = findViewById(R.id.noRecord_view);
 
 
-
-                        TextView heroDetail = (TextView)findViewById(R.id.hero_detail);
+                        TextView heroDetail = (TextView) findViewById(R.id.hero_detail);
                         heroDetail.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -911,7 +986,7 @@ public class playerPageActivity extends AppCompatActivity {
                         });
 
 
-                        age_label.setText(age+"岁");
+                        age_label.setText(age + "岁");
                         if (signature.equals("null")) {
                             signature_label.setText("签名的力气都拿来打dota了!");
 
@@ -1199,8 +1274,7 @@ public class playerPageActivity extends AppCompatActivity {
                 String cookie_final = "";
 
 
-                if (error.networkResponse==null)
-                {
+                if (error.networkResponse == null) {
                     Toast.makeText(playerPageActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
 
                     CustomProgressBar.hideProgressBar();
@@ -1357,14 +1431,13 @@ public class playerPageActivity extends AppCompatActivity {
 
                 String location = "";
                 String cookie_final = "";
-                if (error.networkResponse==null)
-                {
+                if (error.networkResponse == null) {
                     Toast.makeText(playerPageActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
                     CustomProgressBar.hideProgressBar();
 
                     return;
                 }
-                if (error.networkResponse != null && error.networkResponse.statusCode == 302 ||error.networkResponse != null && error.networkResponse.statusCode == 301) {
+                if (error.networkResponse != null && error.networkResponse.statusCode == 302 || error.networkResponse != null && error.networkResponse.statusCode == 301) {
                     for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
 //                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
                         if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {

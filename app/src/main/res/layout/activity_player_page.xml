@@ -74,7 +74,8 @@
             android:background="@drawable/round_shape_red"
             android:text="+关注"
             android:textColor="#e6950a"
-            android:textSize="12.5sp" />
+            android:textSize="12.5sp"
+            android:onClick="favorClick"/>
 
         <ImageView
             android:id="@+id/position_img"
