@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:paddingLeft="10dp"
+    android:paddingRight="15dp">
+
+
+    <ImageView
+        android:id="@+id/hero_img"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_gravity="center"
+        android:src="@drawable/boysmall"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingTop="3dp"
+        android:gravity="right">
+
+        <TextView
+            android:id="@+id/total_game"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical|right"
+            android:gravity="right"
+            android:text="场次:"
+            android:textColor="#111111"
+            android:textSize="12.5sp"
+
+            />
+
+        <TextView
+            android:id="@+id/mvp_hero"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical|right"
+            android:gravity="right"
+
+            android:text="MVP:"
+            android:textColor="#111111"
+            android:textSize="12.5sp"
+
+
+            />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.8"
+        android:orientation="vertical"
+        android:paddingTop="3dp"
+        android:paddingLeft="3dp">
+
+        <TextView
+            android:id="@+id/total_game_data"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical|left"
+            android:gravity="left"
+            android:text="123"
+            android:textColor="#111111"
+            android:textSize="12.5sp"
+
+
+            />
+
+        <TextView
+            android:id="@+id/mvp_hero_data"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical|left"
+            android:gravity="left"
+
+            android:text="123"
+            android:textColor="#111111"
+            android:textSize="12.5sp"
+
+            />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingTop="3dp"
+        android:gravity="right">
+
+        <TextView
+            android:id="@+id/hero_win"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical|right"
+            android:gravity="right"
+            android:text="胜率:"
+            android:textColor="#111111"
+            android:textSize="12sp"
+            android:lines="1"
+
+
+            />
+
+        <TextView
+            android:id="@+id/hero_kill"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical|right"
+            android:gravity="right"
+
+            android:text="击杀:"
+            android:textColor="#111111"
+            android:textSize="12sp"
+            android:lines="1"
+
+            />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.4"
+        android:orientation="vertical"
+        android:paddingTop="3dp"
+        android:paddingLeft="3dp">
+
+        <TextView
+            android:id="@+id/hero_win_data"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical|left"
+            android:gravity="left"
+            android:text="58.23%"
+            android:textColor="#111111"
+            android:textSize="12.5sp"
+
+            />
+
+        <TextView
+            android:id="@+id/hero_kill_data"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical|left"
+            android:gravity="left"
+
+            android:text="123"
+            android:textColor="#111111"
+            android:textSize="12.5sp"
+
+            />
+
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/hero_score"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="30dp"
+        android:layout_marginTop="18dp"
+        android:layout_gravity="top|right"
+        android:gravity="right|top"
+        android:text="积分:"
+        android:textColor="#111111"
+        android:textSize="12sp"
+        android:lines="1"
+
+        />
+    <TextView
+        android:id="@+id/hero_score_data"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="30dp"
+        android:layout_marginTop="18dp"
+        android:layout_gravity="top|left"
+        android:gravity="left|top"
+        android:text="123"
+        android:textColor="#111111"
+
+        />
+
+</LinearLayout>

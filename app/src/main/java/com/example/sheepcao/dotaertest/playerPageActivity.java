@@ -214,6 +214,9 @@ public class playerPageActivity extends AppCompatActivity {
         });
 
 
+
+
+
         selectedButton = ttMenu;
         selectedButton.setBackgroundResource(R.drawable.list_button_press);
         selectedButton.setClickable(false);
@@ -325,15 +328,7 @@ public class playerPageActivity extends AppCompatActivity {
         myMenu = menu;
 
         getMenuInflater().inflate(R.menu.global, menu);
-//        Button locButton = (Button) menu.findItem(R.id.action_binding).getActionView();
-//        locButton.setBackgroundResource(R.drawable.nocolor);
-//        locButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(myPage.this, confirmActivity.class);
-//                startActivityForResult(intent, 1);
-//            }
-//        });
+
 
 
         restoreActionBar();
@@ -889,7 +884,7 @@ public class playerPageActivity extends AppCompatActivity {
 
                         String age = jObject.getString("age");
                         String sex = jObject.getString("sex");
-                        String gameName = jObject.getString("gameName");
+                        final String gameName = jObject.getString("gameName");
                         String signature = jObject.getString("content");
                         String isReviewed = jObject.getString("isReviewed");
 
@@ -901,6 +896,19 @@ public class playerPageActivity extends AppCompatActivity {
                         final RoundedImageView headImg = (RoundedImageView) findViewById(R.id.my_head);
                         View no_Reviewed = findViewById(R.id.noRecord_view);
 
+
+
+                        TextView heroDetail = (TextView)findViewById(R.id.hero_detail);
+                        heroDetail.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(playerPageActivity.this, scoreDetailActivity.class);
+                                Bundle mBundle = new Bundle();
+                                mBundle.putString("gameName", gameName);
+                                intent.putExtras(mBundle);
+                                startActivity(intent);
+                            }
+                        });
 
 
                         age_label.setText(age+"岁");

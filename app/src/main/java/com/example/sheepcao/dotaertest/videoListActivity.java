@@ -222,8 +222,18 @@ public class videoListActivity extends AppCompatActivity {
             map.put("title", videos.getJSONObject(i).getString("title"));
             String time = videos.getJSONObject(i).getString("published");
             String date = time.split(" ")[0];
+            date = "更新于\n"+date;
+
             map.put("time", date);
-            map.put("playCounts", videos.getJSONObject(i).getString("view_count"));
+            String playCount = videos.getJSONObject(i).getString("view_count");
+            int playCountData = Integer.parseInt(playCount);
+            if (playCountData>10000)
+            {
+                playCountData = playCountData/10000;
+                playCount = playCountData+"万";
+            }
+            playCount = "播放次数\n"+playCount;
+            map.put("playCounts",playCount );
 
             list.add(map);
         }
@@ -326,11 +336,6 @@ public class videoListActivity extends AppCompatActivity {
     }
 
 
-//    public void clickVideo(View v) {
-//
-//
-//
-//    }
 
 
     @Override

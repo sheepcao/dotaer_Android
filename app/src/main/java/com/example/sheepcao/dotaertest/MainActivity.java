@@ -167,16 +167,6 @@ public class MainActivity extends AppCompatActivity
         invisibleList = new ArrayList<>();
 
 
-//        imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
-//            @Override
-//            public void putBitmap(String url, Bitmap bitmap) {
-//            }
-//
-//            @Override
-//            public Bitmap getBitmap(String url) {
-//                return null;
-//            }
-//        });
 
         imageLoader = VolleySingleton.getInstance().getImageLoader();
 
@@ -662,15 +652,42 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_search) {
             Log.v("v", "main......................");
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("请输入11游戏ID进行查询").setView(new EditText(this)).setPositiveButton("搜索", null).setNegativeButton("取消", null);
+            final EditText gameNameText = new EditText(this);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("请输入11游戏ID进行查询").setView(gameNameText).setPositiveButton("搜索", null).setNegativeButton("取消", null);
             builder.setPositiveButton("搜索", new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // TODO Auto-generated method stub
-                    Toast.makeText(MainActivity.this, "我很喜欢海贼王", Toast.LENGTH_SHORT).show();
+                    if (gameNameText.getText()!=null && !gameNameText.getText().toString().trim().equals(""))
+                    {
+                        Intent intent = new Intent(MainActivity.this, scoreDetailActivity.class);
+                        Bundle mBundle = new Bundle();
+                        mBundle.putString("gameName", gameNameText.getText().toString());
+                        intent.putExtras(mBundle);
+                        startActivity(intent);
+
+                        ((ViewGroup) gameNameText.getParent()).removeView(gameNameText);
+
+
+                    }
+
+
 
                 }
+            });
+
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // TODO Auto-generated method stub
+
+
+                    ((ViewGroup) gameNameText.getParent()).removeView(gameNameText);
+
+                }
+
             });
             builder.show();
 

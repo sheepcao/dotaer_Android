@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_back"
+
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.sheepcao.dotaertest.scoreDetailActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2.9"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2"
+            android:orientation="vertical"
+            android:paddingTop="3dp">
+
+            <TextView
+                android:id="@+id/score_type"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#3d3e3e"
+                android:gravity="center"
+                android:text="天梯积分"
+                android:textColor="#cccccc"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:textSize="11.5sp"
+
+                />
+
+            <TextView
+                android:id="@+id/score_label"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/nocolor"
+                android:gravity="center"
+                android:text="0"
+
+                />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingTop="3dp"
+            android:layout_marginLeft="15dp">
+
+            <TextView
+                android:id="@+id/total"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#3d3e3e"
+                android:gravity="center"
+                android:text="总场次"
+                android:textColor="#cccccc"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:textSize="12sp"
+
+
+                />
+
+            <TextView
+                android:id="@+id/total_data"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/nocolor"
+                android:gravity="center"
+                android:text="0"
+
+                />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingTop="3dp"
+            android:layout_marginLeft="15dp">
+
+            <TextView
+                android:id="@+id/win"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#3d3e3e"
+                android:gravity="center"
+                android:text="胜率"
+                android:textColor="#cccccc"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:textSize="12sp"
+
+                />
+
+            <TextView
+                android:id="@+id/win_data"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/nocolor"
+                android:gravity="center"
+                android:text="0"
+
+                />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingTop="3dp"
+            android:layout_marginLeft="15dp">
+
+            <TextView
+                android:id="@+id/mvp"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#3d3e3e"
+                android:gravity="center"
+                android:text="MVP"
+                android:textColor="#cccccc"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:textSize="12sp"
+
+                />
+
+            <TextView
+                android:id="@+id/mvp_data"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/nocolor"
+                android:gravity="center"
+                android:text="0"
+
+                />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.3"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:background="@drawable/black_back_small">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="left|center_vertical"
+            android:text="战斗详情"
+            android:textSize="16.5sp"
+            android:textColor="#eeeeee"
+            android:paddingLeft="20dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="5dp">
+
+        <ListView
+            android:id="@+id/hero_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="15.0sp">
+        </ListView>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.83"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="#FF232323"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:id="@+id/tt_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@drawable/listbutton"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="天梯局"
+            android:textColor="#dddddd"
+            android:textSize="17sp"
+
+
+            />
+
+        <TextView
+            android:id="@+id/jjc_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/listbutton"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="竞技场"
+            android:textColor="#dddddd"
+            android:textSize="17sp"
+
+
+            />
+
+    </LinearLayout>
+
+</LinearLayout>
