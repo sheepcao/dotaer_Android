@@ -1,5 +1,6 @@
 <!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
@@ -34,11 +35,20 @@
         <!--android:paddingTop="0dp"-->
 
 
-        <TextView
-            android:id="@+id/section_label"
+        <!--<TextView-->
+        <!--android:id="@+id/section_label"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:text="啊锕锕锕锕锕锕锕锕锕锕锕锕锕锕锕锕" />-->
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:text="啊锕锕锕锕锕锕锕锕锕锕锕锕锕锕锕锕" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_gravity="center_horizontal"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/banner_ad_unit_id"></com.google.android.gms.ads.AdView>
+
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
@@ -61,37 +71,37 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
-                android:orientation="horizontal"
-               >
+                android:orientation="horizontal">
+
                 <Button
                     android:id="@+id/pageUp"
-                    android:layout_height="match_parent"
                     android:layout_width="60dp"
-                    android:text="上一页"
-                    android:textSize="12sp"
+                    android:layout_height="match_parent"
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/nocolor"
                     android:enabled="false"
-                    />
+                    android:text="上一页"
+                    android:textSize="12sp" />
+
                 <TextView
                     android:id="@+id/pageIndex"
-                    android:layout_height="match_parent"
                     android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:textSize="13sp"
 
                     />
+
                 <Button
                     android:id="@+id/pageDown"
-                    android:layout_height="match_parent"
                     android:layout_width="60dp"
-                    android:text="下一页"
-                    android:textSize="12sp"
+                    android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/nocolor"
                     android:enabled="false"
-                    />
+                    android:text="下一页"
+                    android:textSize="12sp" />
 
             </LinearLayout>
 

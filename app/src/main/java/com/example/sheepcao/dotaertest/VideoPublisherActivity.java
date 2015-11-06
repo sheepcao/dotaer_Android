@@ -28,6 +28,8 @@ import com.android.volley.VolleyToolboxExtension;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.json.JSONArray;
@@ -69,7 +71,6 @@ public class VideoPublisherActivity extends AppCompatActivity {
 
 
 
-//        publiserViewIDs = {R.id.publisher0, R.id.publisher1, R.id.publisher2, R.id.publisher3, R.id.publisher4, R.id.publisher5, R.id.publisher6, R.id.publisher7, R.id.publisher8, R.id.publisher9, R.id.publisher10, R.id.publisher11, R.id.publisher12, R.id.publisher13, R.id.publisher14, R.id.publisher15, R.id.publisher16, R.id.publisher17, R.id.publisher18, R.id.publisher19};
         publiserIDs = new int[]{R.drawable.publisher1, R.drawable.publisher2, R.drawable.publisher3, R.drawable.publisher4, R.drawable.publisher5, R.drawable.publisher6, R.drawable.publisher7, R.drawable.publisher8, R.drawable.publisher9, R.drawable.publisher10, R.drawable.publisher11, R.drawable.publisher12, R.drawable.publisher13, R.drawable.publisher14, R.drawable.publisher15, R.drawable.publisher16, R.drawable.publisher17, R.drawable.publisher18, R.drawable.publisher19, R.drawable.publisher20};
         Resources res = getResources();
         publiser_name = res.getStringArray(R.array.publiser_name);
@@ -92,6 +93,11 @@ public class VideoPublisherActivity extends AppCompatActivity {
         sim_adapter = new SimpleAdapter(this, data_list, R.layout.publisher_layout, from, to);
         gview.setAdapter(sim_adapter);
 
+
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
     }
 

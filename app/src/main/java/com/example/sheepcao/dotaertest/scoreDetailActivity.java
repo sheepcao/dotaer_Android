@@ -35,6 +35,8 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +44,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -176,6 +179,11 @@ public class scoreDetailActivity extends AppCompatActivity {
 //        data_list = getData();
         adapter = new MyAdapter(this);
         lv.setAdapter(adapter);
+
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
     }
 
@@ -1052,7 +1060,13 @@ public class scoreDetailActivity extends AppCompatActivity {
                 map.put("total",  oneHero.getString("total"));
                 map.put("mvp",  oneHero.getString("mvp"));
                 map.put("herokill",  oneHero.getString("herokill"));
-                map.put("r_win",  oneHero.getString("r_win"));
+                String rate = oneHero.getString("r_win");
+                String[] rateParts = rate.split(".");
+                if (rateParts.length>0)
+                {
+                    rate = rateParts[0]+"%";
+                }
+                map.put("r_win",rate);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1082,7 +1096,13 @@ public class scoreDetailActivity extends AppCompatActivity {
                 map.put("total",  oneHero.getString("total"));
                 map.put("mvp",  oneHero.getString("mvp"));
                 map.put("herokill",  oneHero.getString("herokill"));
-                map.put("r_win",  oneHero.getString("r_win"));
+                String rate = oneHero.getString("r_win");
+                String[] rateParts = rate.split(".");
+                if (rateParts.length>0)
+                {
+                    rate = rateParts[0]+"%";
+                }
+                map.put("r_win",rate);
 
             } catch (JSONException e) {
                 e.printStackTrace();

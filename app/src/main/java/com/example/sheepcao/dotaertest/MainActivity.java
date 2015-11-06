@@ -57,6 +57,8 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 //import com.baidu.location.Poi;
 import com.baidu.mapapi.SDKInitializer;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import org.json.JSONArray;
@@ -254,6 +256,11 @@ public class MainActivity extends AppCompatActivity
         {
             defaultLogin(name,password);
         }
+
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
 
     }
