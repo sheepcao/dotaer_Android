@@ -36,7 +36,7 @@ public class commentDetailActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
 
         String username = (String) bundle.get("username");
-        String contentBody = (String) bundle.get("content");
+        String contentBody = (String) bundle.get("comment");
         String time = (String) bundle.get("time");
 
         name.setText(username);
