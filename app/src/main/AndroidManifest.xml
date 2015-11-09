@@ -158,6 +158,10 @@
         </activity>
         <activity android:name=".FavorActivity" >
         </activity>
+        <activity android:name=".topicActivity" >
+        </activity>
+        <activity android:name=".commentDetailActivity" >
+        </activity>
     </application>
 
 </manifest>

@@ -593,6 +593,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 1:
 
+                intent = new Intent(MainActivity.this, topicActivity.class);
+                startActivity(intent);
+
                 break;
 
             case 2:
