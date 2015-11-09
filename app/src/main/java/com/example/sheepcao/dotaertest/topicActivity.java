@@ -62,6 +62,7 @@ public class topicActivity extends AppCompatActivity {
     List<String> usernameList;
     List<String> commentList;
     List<String> commentIDList;
+    List<String> commentTime;
 
     List<String> upList;
 
@@ -83,6 +84,8 @@ public class topicActivity extends AppCompatActivity {
         usernameList = new ArrayList<>();
         commentList = new ArrayList<>();
         commentIDList = new ArrayList<>();
+        commentTime = new ArrayList<>();
+
         upList = new ArrayList<>();
         lv = (ListView) findViewById(R.id.comment_list);
 
@@ -99,22 +102,24 @@ public class topicActivity extends AppCompatActivity {
 
             public void onItemClick(AdapterView<?> parent, View itemClicked, int
                     position, long id) {
-//
-//                String playerName = (String) data.get(position).get("username");
-//
-//
-//                Intent intent = new Intent(topicActivity.this, playerPageActivity.class);
-//                Bundle mBundle = new Bundle();
-//
-//
-//                mBundle.putString("playerName", playerName);
-//                mBundle.putString("lati", latiList.get(position));
-//                mBundle.putString("longi",longiList.get(position));
-//                mBundle.putString("distance",distanceList.get(position));
-//
-//
-//                intent.putExtras(mBundle);
-//                startActivity(intent);
+
+                String playerName = (String) data.get(position).get("username");
+                String content = (String) data.get(position).get("comment");
+                String time = (String) data.get(position).get("comment_time");
+
+
+                Intent intent = new Intent(topicActivity.this, commentDetailActivity.class);
+                Bundle mBundle = new Bundle();
+
+
+                mBundle.putString("username", playerName);
+                mBundle.putString("comment", content);
+                mBundle.putString("time", time);
+
+
+
+                intent.putExtras(mBundle);
+                startActivity(intent);
 
 
             }
@@ -193,6 +198,7 @@ public class topicActivity extends AppCompatActivity {
                         usernameList.clear();
                         commentList.clear();
                         commentIDList.clear();
+                        commentTime.clear();
                         upList.clear();
 
                         for (int i = 0; i < commentArray.length(); i++) {
@@ -200,6 +206,7 @@ public class topicActivity extends AppCompatActivity {
                             JSONObject oneItem = commentArray.getJSONObject(i);
                             usernameList.add(oneItem.getString("comment_user"));
                             commentIDList.add(oneItem.getString("comment_id"));
+                            commentTime.add(oneItem.getString("comment_time"));
                             commentList.add(oneItem.getString("comment_content"));
                             upList.add(oneItem.getString("upsCount"));
                         }
@@ -340,8 +347,10 @@ public class topicActivity extends AppCompatActivity {
                         upList.add("0");
                         JSONObject jsonOBJ = new JSONObject(response);
                         String commentID = jsonOBJ.getString("comment_id");
+                        String comment_time = jsonOBJ.getString("comment_time");
 
                         commentIDList.add(commentID);
+                        commentTime.add(comment_time);
 
                         data = getData();
                         adapter.notifyDataSetChanged();
@@ -447,6 +456,7 @@ public class topicActivity extends AppCompatActivity {
             map.put("comment", commentList.get(i));
             map.put("upCounts", "赞:" + upList.get(i));
             map.put("comment_id",commentIDList.get(i));
+            map.put("comment_time",commentTime.get(i));
 
 
             list.add(map);
