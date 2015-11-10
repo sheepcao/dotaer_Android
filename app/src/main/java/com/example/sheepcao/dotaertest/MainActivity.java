@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
+    Boolean loggedin = false;
+
     RequestQueue mQueue = null;
     TextView ratioText;
 
@@ -169,9 +171,7 @@ public class MainActivity extends AppCompatActivity
         invisibleList = new ArrayList<>();
 
 
-
         imageLoader = VolleySingleton.getInstance().getImageLoader();
-
 
 
         lv = (ListView) findViewById(R.id.dotaerList);
@@ -194,8 +194,8 @@ public class MainActivity extends AppCompatActivity
 
                 mBundle.putString("playerName", playerName);
                 mBundle.putString("lati", latiList.get(position));
-                mBundle.putString("longi",longiList.get(position));
-                mBundle.putString("distance",distanceList.get(position));
+                mBundle.putString("longi", longiList.get(position));
+                mBundle.putString("distance", distanceList.get(position));
 
 
                 intent.putExtras(mBundle);
@@ -204,8 +204,6 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-
-
 
 
         SeekBar ratioBar = (SeekBar) findViewById(R.id.seekbar_ratio);
@@ -252,9 +250,8 @@ public class MainActivity extends AppCompatActivity
         if (name.equals("游客")) {
             showLoginPage();
 
-        }else
-        {
-            defaultLogin(name,password);
+        } else {
+            defaultLogin(name, password);
         }
 
 
@@ -271,8 +268,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void defaultLogin(final String username, final String password)
-    {
+    private void defaultLogin(final String username, final String password) {
         CustomProgressBar.showProgressBar(MainActivity.this, false, "登录中");
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/upload.php",
@@ -281,6 +277,9 @@ public class MainActivity extends AppCompatActivity
                     public void onResponse(String response) throws JSONException {
 
                         Log.d("TAG", response);
+
+                        loggedin = true;
+                        uploadPosition();
 
                         mNavigationDrawerFragment.findIdentity();
                         CustomProgressBar.hideProgressBar();
@@ -294,12 +293,10 @@ public class MainActivity extends AppCompatActivity
             public void onErrorResponse(VolleyError error) {
                 CustomProgressBar.hideProgressBar();
 
-                if (error.networkResponse!=null &&error.networkResponse.statusCode == 417)
-                {
+                if (error.networkResponse != null && error.networkResponse.statusCode == 417) {
                     Toast.makeText(MainActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
 
-                }else
-                {
+                } else {
                     Toast.makeText(MainActivity.this, "登录请求失败，请稍后重试", Toast.LENGTH_SHORT).show();
 
                 }
@@ -511,7 +508,7 @@ public class MainActivity extends AppCompatActivity
 
             String nameURLstring = "";
             try {
-                String strUTF8 = URLEncoder.encode(( data.get(position).get("username") + ".png"), "UTF-8");
+                String strUTF8 = URLEncoder.encode((data.get(position).get("username") + ".png"), "UTF-8");
                 nameURLstring = "http://cgx.nwpu.info/Sites/upload/" + strUTF8;
                 Log.v("nameURLstring", nameURLstring);
 
@@ -535,20 +532,18 @@ public class MainActivity extends AppCompatActivity
                     if (response.getBitmap() != null) {
 
 
-                        Bitmap bmp= response.getBitmap();
-                        int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
+                        Bitmap bmp = response.getBitmap();
+                        int smallOne = bmp.getWidth() > bmp.getHeight() ? bmp.getHeight() : bmp.getWidth();
 
-                        Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
+                        Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
                         headTemp.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 80, 80, false));
 
-                    } else  {
+                    } else {
 
                         headTemp.setImageResource(R.drawable.boysmall);
                     }
                 }
             });
-
-
 
 
             return convertView;
@@ -568,11 +563,9 @@ public class MainActivity extends AppCompatActivity
             case 0:
 
 
-
-                if(name.equals("游客"))
-                {
+                if (name.equals("游客")) {
                     return;
-                }else {
+                } else {
 
 
                     intent = new Intent(MainActivity.this, myPage.class);
@@ -581,7 +574,6 @@ public class MainActivity extends AppCompatActivity
 
 
                     mBundle.putString("myName", name);
-
 
 
                     intent.putExtras(mBundle);
@@ -628,6 +620,7 @@ public class MainActivity extends AppCompatActivity
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            loggedin = false;
 
                             showLoginPage();
                         }
@@ -642,7 +635,6 @@ public class MainActivity extends AppCompatActivity
 
 
     }
-
 
 
     public void restoreActionBar() {
@@ -687,8 +679,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     // TODO Auto-generated method stub
-                    if (gameNameText.getText()!=null && !gameNameText.getText().toString().trim().equals(""))
-                    {
+                    if (gameNameText.getText() != null && !gameNameText.getText().toString().trim().equals("")) {
                         Intent intent = new Intent(MainActivity.this, scoreDetailActivity.class);
                         Bundle mBundle = new Bundle();
                         mBundle.putString("gameName", gameNameText.getText().toString());
@@ -699,7 +690,6 @@ public class MainActivity extends AppCompatActivity
 
 
                     }
-
 
 
                 }
@@ -728,9 +718,7 @@ public class MainActivity extends AppCompatActivity
     public void searchPeople() {
 
 
-
-
-        if ((lati > 0.001 || lati < -0.00001) &&(longi > 0.001 || longi < -0.001)) {
+        if ((lati > 0.001 || lati < -0.001) && (longi > 0.001 || longi < -0.001)) {
 
             CustomProgressBar.showProgressBar(MainActivity.this, false, "搜索中");
 
@@ -747,12 +735,10 @@ public class MainActivity extends AppCompatActivity
 
                             JSONObject jObject = new JSONObject(response);
 
-                            if (jObject.getString("noRecord").equals("yes"))
-                            {
+                            if (jObject.getString("noRecord").equals("yes")) {
                                 Toast.makeText(MainActivity.this, "没有搜到玩家，请加大搜索半径!", Toast.LENGTH_SHORT).show();
 
-                            }else
-                            {
+                            } else {
                                 JSONArray jArray = jObject.getJSONArray("username");
                                 JSONArray jArrayAge = jObject.getJSONArray("age");
                                 JSONArray jArrayGender = jObject.getJSONArray("sex");
@@ -782,8 +768,7 @@ public class MainActivity extends AppCompatActivity
                                     try {
 
                                         String oneInvisible = jArrayinvisible.getString(i);
-                                        if(oneInvisible.equals("yes"))
-                                        {
+                                        if (oneInvisible.equals("yes")) {
                                             continue;
                                         }
 
@@ -807,7 +792,6 @@ public class MainActivity extends AppCompatActivity
                                         longiList.add(oneLongi);
 
 
-
                                         Log.d("oneObject", oneName + "--" + oneAge + "--" + oneGender + "--" + oneDistance);
                                     } catch (JSONException e) {
                                         // Oops
@@ -819,7 +803,6 @@ public class MainActivity extends AppCompatActivity
                                 data = getData();
                                 adapter.notifyDataSetChanged();
                             }
-
 
 
                             CustomProgressBar.hideProgressBar();
@@ -850,10 +833,7 @@ public class MainActivity extends AppCompatActivity
             mQueue.add(stringRequest);
 
 
-
-
-        }else
-        {
+        } else {
             LocationClientOption option = new LocationClientOption();
             option.setOpenGps(false);// 打开gps
             option.setCoorType("bd09ll"); // 设置坐标类型
@@ -865,8 +845,7 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-            Log.i("TAG", "searchDotaer");
-
+        Log.i("TAG", "searchDotaer");
 
 
     }
@@ -898,23 +877,26 @@ public class MainActivity extends AppCompatActivity
 //        BaiduAddress = location.getAddress();
 
 
-
-        if ((lati > 0.001 || lati < -0.001) &&(longi > 0.001 || longi < -0.001)) {
+        if ((lati > 0.001 || lati < -0.001) && (longi > 0.001 || longi < -0.001)) {
 
             LocationClientOption option = new LocationClientOption();
             option.setOpenGps(false);// 打开gps
             option.setCoorType("bd09ll"); // 设置坐标类型
-            option.setScanSpan(30000);
+            option.setScanSpan(50000);
             mLocClient.setLocOption(option);
-        }else
-        {
+
+            if (loggedin)
+            {
+                uploadPosition();
+            }
+
+        } else {
             LocationClientOption option = new LocationClientOption();
             option.setOpenGps(false);// 打开gps
             option.setCoorType("bd09ll"); // 设置坐标类型
             option.setScanSpan(1000);
             mLocClient.setLocOption(option);
         }
-
 
 
         Log.v("la,long", lati + "...." + longi);
@@ -1015,15 +997,15 @@ public class MainActivity extends AppCompatActivity
                     String newRegister = mSharedPreferences.getString("newRegister", "no");
 
 
-
+                    loggedin = true;
+                    uploadPosition();
 
                     if (newRegister.equals("yes")) {
 
                         Intent intent = new Intent(MainActivity.this, confirmActivity.class);
                         startActivityForResult(intent, 3);
 
-                    }else
-                    {
+                    } else {
                         searchPeople();
 
                     }
@@ -1044,6 +1026,83 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
         }
+    }
+
+
+    private void uploadPosition() {
+
+        SharedPreferences mSharedPreferences = this.getSharedPreferences("dotaerSharedPreferences", 0);
+        final String username = mSharedPreferences.getString("username", "游客000");
+        final String age = mSharedPreferences.getString("age", "0");
+        final String sex = mSharedPreferences.getString("sex", "male");
+        final String isReviewed = mSharedPreferences.getString("isReviewed", "no");
+        final String invisible = "no";
+        final String myLati = lati + "";
+        final String myLongi = longi + "";
+
+
+        if ((lati > 0.001 || lati < -0.001) && (longi > 0.001 || longi < -0.001)) {
+
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/position.php",
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) throws JSONException {
+
+                            Log.d("TAG", response);
+
+                            JSONObject jObject = new JSONObject(response);
+
+                            String username = jObject.getString("username");
+                            String age = jObject.getString("age");
+                            String sex = jObject.getString("sex");
+                            String isReviewed = jObject.getString("isReviewed");
+                            String latitude = jObject.getString("latitude");
+                            String longitude = jObject.getString("longitude");
+
+
+                          Log.v("position uploaded:",username+"-"+"-"+age+"-"+sex+"-"+isReviewed+"-"+latitude+"-"+longitude);
+
+                            CustomProgressBar.hideProgressBar();
+
+                            Log.v("login", "login OK-----------");
+
+
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    CustomProgressBar.hideProgressBar();
+
+
+                    Log.v("position uploaded:","位置上传失败！！");
+
+
+                    Log.e("TAG", error.getMessage(), error);
+                }
+            }) {
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put("tag", "uploadPosition");
+                    map.put("name", username);
+                    map.put("lat",myLati);
+                    map.put("long",myLongi);
+                    map.put("invisible",invisible);
+                    map.put("isReviewed",isReviewed);
+                    map.put("age",age);
+                    map.put("sex",sex);
+                    map.put("TTscore","999");
+
+
+                    return map;
+                }
+            };
+
+
+            mQueue.add(stringRequest);
+        }
+
     }
 
 }

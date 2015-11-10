@@ -60,6 +60,7 @@ public class myPage extends AppCompatActivity {
 
     Menu myMenu;
     String playerName = "";
+    String pageTitle="个人主页";
 
 
     RequestQueue mQueue = null;
@@ -218,15 +219,23 @@ public class myPage extends AppCompatActivity {
 
 //        CustomProgressBar.showProgressBar(this, false, "Loading");
 
+
+        SharedPreferences mSharedPreferences = this.getSharedPreferences("dotaerSharedPreferences", 0);
+        String name = mSharedPreferences.getString("username", "游客");
+
         Bundle bundle = getIntent().getExtras();
 
 
         playerName = (String) bundle
                 .get("myName");
 
+        if (!playerName.equals(name))
+        {
+            pageTitle = playerName;
+        }
+
 
         requestBasicInfo(playerName);
-//        requestExtroInfoWithUser("宝贝拼吧");
 
     }
 
@@ -235,7 +244,7 @@ public class myPage extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle("个人主页");
+        actionBar.setTitle(pageTitle);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -757,11 +766,11 @@ public class myPage extends AppCompatActivity {
 
 
                         Bitmap bmp= response.getBitmap();
-                        int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
-
-                        Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
-//                        headTemp.setImageBitmap(resizedBitmap);
-                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 80, 80, false));
+//                        int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
+//
+//                        Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
+////                        headTemp.setImageBitmap(resizedBitmap);
+                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(bmp, 50, 50, false));
 
 
                     } else  {

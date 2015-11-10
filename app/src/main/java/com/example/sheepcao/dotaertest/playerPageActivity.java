@@ -313,7 +313,7 @@ public class playerPageActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle("个人主页");
+        actionBar.setTitle(playerName);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -898,9 +898,9 @@ public class playerPageActivity extends AppCompatActivity {
                         Bitmap bmp = response.getBitmap();
                         int smallOne = bmp.getWidth() > bmp.getHeight() ? bmp.getHeight() : bmp.getWidth();
 
-                        Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
+//                        Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
 //                        headTemp.setImageBitmap(resizedBitmap);
-                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 45, 45, false));
+                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(bmp, 45, 45, false));
 
 
                     } else {

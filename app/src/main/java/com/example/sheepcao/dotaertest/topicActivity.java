@@ -149,7 +149,6 @@ public class topicActivity extends AppCompatActivity {
                         dayTopic = topicDay;
                         requestComment(topicDay);
 
-                        CustomProgressBar.hideProgressBar();
 
 
                     }
@@ -573,10 +572,10 @@ public class topicActivity extends AppCompatActivity {
 
 
                         Bitmap bmp = response.getBitmap();
-                        int smallOne = bmp.getWidth() > bmp.getHeight() ? bmp.getHeight() : bmp.getWidth();
-
-                        Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
-                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 80, 80, false));
+//                        int smallOne = bmp.getWidth() > bmp.getHeight() ? bmp.getHeight() : bmp.getWidth();
+//
+//                        Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
+                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(bmp, 80, 80, false));
 
                     } else {
 
