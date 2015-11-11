@@ -146,10 +146,10 @@ public class confirmActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-//        final String account = mEmailView.getText().toString();
-//        final String password = mPasswordView.getText().toString();
-        final String account = "不是故意咯";
-        final String password = "xuechan99";
+        final String account = mEmailView.getText().toString();
+        final String password = mPasswordView.getText().toString();
+//        final String account = "不是故意咯";
+//        final String password = "xuechan99";
 
 
         YYaccount = account;
@@ -292,6 +292,7 @@ public class confirmActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 CustomProgressBar.hideProgressBar();
+                Toast.makeText(confirmActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
 
                 Log.e("TAG", error.getMessage(), error);
             }
@@ -443,7 +444,13 @@ public class confirmActivity extends AppCompatActivity {
 
                 String location = "";
                 String cookie_final = "";
+                if (error.networkResponse==null)
+                {
+                    Toast.makeText(confirmActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
 
+                    return;
+                }
 
                 if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
                     for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
@@ -623,6 +630,14 @@ public class confirmActivity extends AppCompatActivity {
 
                 String location = "";
                 String cookie_final = "";
+
+                if (error.networkResponse==null)
+                {
+                    Toast.makeText(confirmActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
+
+                    return;
+                }
                 if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
                     for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
 //                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());

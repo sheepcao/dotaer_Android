@@ -1032,7 +1032,7 @@ public class playerPageActivity extends AppCompatActivity {
 
                                     Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
 //                        headTemp.setImageBitmap(resizedBitmap);
-                                    headImg.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 80, 80, false));
+                                    headImg.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 120, 120, false));
 
 
                                 } else {
@@ -1051,17 +1051,7 @@ public class playerPageActivity extends AppCompatActivity {
                         }
 
 
-//                        if (isReviewed.equals("no")) {
-////                            norecord_label.setVisibility(View.VISIBLE);
-//                            Button locButton = (Button) myMenu.findItem(R.id.action_binding).getActionView();
-//                            locButton.setText("战绩绑定");
-//
-//
-//                        } else {
-////                            norecord_label.setVisibility(View.GONE);
-//                            Button locButton = (Button) myMenu.findItem(R.id.action_binding).getActionView();
-//                            locButton.setText("绑定变更");
-//                        }
+
 
                         Log.v("gamename", gameName);
 
@@ -1088,6 +1078,8 @@ public class playerPageActivity extends AppCompatActivity {
 
                 Log.e("TAG", error.getMessage(), error);
                 CustomProgressBar.hideProgressBar();
+                Toast.makeText(playerPageActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+
 
             }
         }) {
@@ -1129,6 +1121,7 @@ public class playerPageActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 CustomProgressBar.hideProgressBar();
+                Toast.makeText(playerPageActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
 
                 Log.e("TAG", error.getMessage(), error);
             }

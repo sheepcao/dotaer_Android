@@ -847,7 +847,7 @@ public class MainActivity extends AppCompatActivity
 
         } else {
             LocationClientOption option = new LocationClientOption();
-            option.setOpenGps(false);// 打开gps
+            option.setOpenGps(true);// 打开gps
             option.setCoorType("bd09ll"); // 设置坐标类型
             option.setScanSpan(1000);
             mLocClient.setLocOption(option);
@@ -1102,7 +1102,6 @@ public class MainActivity extends AppCompatActivity
 
                           Log.v("position uploaded:",username+"-"+"-"+age+"-"+sex+"-"+isReviewed+"-"+latitude+"-"+longitude);
 
-                            CustomProgressBar.hideProgressBar();
 
                             Log.v("login", "login OK-----------");
 
@@ -1112,7 +1111,6 @@ public class MainActivity extends AppCompatActivity
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    CustomProgressBar.hideProgressBar();
 
 
                     Log.v("position uploaded:","位置上传失败！！");

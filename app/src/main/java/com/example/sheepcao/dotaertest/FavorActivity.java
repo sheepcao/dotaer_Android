@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -58,6 +59,28 @@ public class FavorActivity extends AppCompatActivity {
         data_list = getData();
         adapter = new MyAdapter(this);
         lv.setAdapter(adapter);
+
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            public void onItemClick(AdapterView<?> parent, View itemClicked, int
+                    position, long id) {
+
+                String playerName = (String) data_list.get(position).get("name");
+
+
+                Intent intent = new Intent(FavorActivity.this, myPage.class);
+                Bundle mBundle = new Bundle();
+
+
+                mBundle.putString("myName", playerName);
+
+                intent.putExtras(mBundle);
+                startActivity(intent);
+
+
+            }
+        });
     }
 
     static class ViewHolder {

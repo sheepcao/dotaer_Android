@@ -259,17 +259,34 @@ public class myPage extends AppCompatActivity {
         super.onCreateOptionsMenu(menu);
         myMenu = menu;
 
-        getMenuInflater().inflate(R.menu.menu_my_page, menu);
-        Button locButton = (Button) menu.findItem(R.id.action_binding).getActionView();
-        locButton.setBackgroundResource(R.drawable.nocolor);
-        locButton.setTextColor(Color.parseColor("#eeeeee"));
-        locButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(myPage.this, confirmActivity.class);
-                startActivityForResult(intent, 1);
-            }
-        });
+        SharedPreferences mSharedPreferences = this.getSharedPreferences("dotaerSharedPreferences", 0);
+        String name = mSharedPreferences.getString("username", "游客");
+
+
+        if (!playerName.equals(name))
+        {
+            getMenuInflater().inflate(R.menu.global, menu);
+        }else
+        {
+            getMenuInflater().inflate(R.menu.menu_my_page, menu);
+            Button locButton = (Button) menu.findItem(R.id.action_binding).getActionView();
+            locButton.setBackgroundResource(R.drawable.nocolor);
+            locButton.setTextColor(Color.parseColor("#eeeeee"));
+            locButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(myPage.this, confirmActivity.class);
+                    Bundle mBundle = new Bundle();
+                    mBundle.putString("username", playerName);
+                    intent.putExtras(mBundle);
+                    startActivityForResult(intent, 1);
+
+                }
+            });
+        }
+
+
+
 
 
         restoreActionBar();
@@ -288,12 +305,15 @@ public class myPage extends AppCompatActivity {
         Log.v("option", id + "----home id:" + android.R.id.home);
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_binding) {
-//
+        Log.v("action_binding", id + "----action_binding id:" + android.R.id.home);
+
             Intent intent = new Intent(myPage.this, confirmActivity.class);
             Bundle mBundle = new Bundle();
             mBundle.putString("username", playerName);
             intent.putExtras(mBundle);
             startActivityForResult(intent, 1);
+
+
 
             return true;
         } else if (id == android.R.id.home) {
@@ -906,7 +926,7 @@ public class myPage extends AppCompatActivity {
                                     int smallOne = bmp.getWidth() > bmp.getHeight() ? bmp.getHeight() : bmp.getWidth();
 
                                     Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
-                                    headImg.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 45, 45, false));
+                                    headImg.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 120, 120, false));
 
 
                                 } else {
@@ -925,17 +945,25 @@ public class myPage extends AppCompatActivity {
                         }
 
 
-                        if (isReviewed.equals("no")) {
+                        SharedPreferences mSharedPreferences = myPage.this.getSharedPreferences("dotaerSharedPreferences", 0);
+                        String username = mSharedPreferences.getString("username", "游客");
+
+
+                        if (playerName.equals(username)) {
+                            if (isReviewed.equals("no")) {
 //                            norecord_label.setVisibility(View.VISIBLE);
-                            Button locButton = (Button) myMenu.findItem(R.id.action_binding).getActionView();
-                            locButton.setText("战绩绑定");
+                                Button locButton = (Button) myMenu.findItem(R.id.action_binding).getActionView();
+                                locButton.setText("战绩绑定");
 
 
-                        } else {
+                            } else {
 //                            norecord_label.setVisibility(View.GONE);
-                            Button locButton = (Button) myMenu.findItem(R.id.action_binding).getActionView();
-                            locButton.setText("绑定变更");
+                                Button locButton = (Button) myMenu.findItem(R.id.action_binding).getActionView();
+                                locButton.setText("绑定变更");
+                            }
+
                         }
+
 
                         Log.v("gamename", gameName);
 
@@ -961,7 +989,10 @@ public class myPage extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
 
                 Log.e("TAG", error.getMessage(), error);
+
                 CustomProgressBar.hideProgressBar();
+                Toast.makeText(myPage.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+
 
             }
         }) {
@@ -1003,6 +1034,7 @@ public class myPage extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 CustomProgressBar.hideProgressBar();
+                Toast.makeText(myPage.this, "网络请求失败", Toast.LENGTH_SHORT).show();
 
                 Log.e("TAG", error.getMessage(), error);
             }
