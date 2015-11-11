@@ -105,6 +105,7 @@
     <orderEntry type="library" exported="" name="httpcore-4.4.3" level="project" />
     <orderEntry type="library" exported="" name="okio-1.6.0" level="project" />
     <orderEntry type="library" exported="" name="okhttp-urlconnection-2.5.0" level="project" />
+    <orderEntry type="library" exported="" name="analytics-5.6.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-8.3.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.0.1" level="project" />
     <orderEntry type="library" exported="" name="org.apache.http.legacy-android-23" level="project" />

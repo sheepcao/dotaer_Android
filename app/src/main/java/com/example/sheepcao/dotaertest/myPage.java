@@ -262,6 +262,7 @@ public class myPage extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_my_page, menu);
         Button locButton = (Button) menu.findItem(R.id.action_binding).getActionView();
         locButton.setBackgroundResource(R.drawable.nocolor);
+        locButton.setTextColor(Color.parseColor("#eeeeee"));
         locButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -289,6 +290,9 @@ public class myPage extends AppCompatActivity {
         if (id == R.id.action_binding) {
 //
             Intent intent = new Intent(myPage.this, confirmActivity.class);
+            Bundle mBundle = new Bundle();
+            mBundle.putString("username", playerName);
+            intent.putExtras(mBundle);
             startActivityForResult(intent, 1);
 
             return true;

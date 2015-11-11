@@ -15,6 +15,8 @@ import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.VideoView;
 
+import com.umeng.analytics.MobclickAgent;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,6 +47,10 @@ public class VideoActivity extends AppCompatActivity {
         vid.setVideoURI(vidUri);
         vid.setMediaController(new MediaController(this));
         vid.start();
+
+        MobclickAgent.onEvent(this, "videoPlay");
+
+
     }
 
 
@@ -61,7 +67,7 @@ public class VideoActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle("返回");
+        actionBar.setTitle("");
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -120,5 +126,13 @@ public class VideoActivity extends AppCompatActivity {
 
     }
 
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);       //统计时长
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
 }

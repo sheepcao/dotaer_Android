@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -60,6 +62,7 @@ import com.baidu.mapapi.SDKInitializer;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -424,7 +427,14 @@ public class MainActivity extends AppCompatActivity
 
             map.put("gender", genderList.get(i));
             map.put("username", usernameList.get(i));
-            map.put("distance", distanceList.get(i) + "米");
+            int distance = Integer.parseInt(distanceList.get(i));
+            if(distance>1000)
+            {
+                map.put("distance", distance/1000 + "KM");
+            }else
+            {
+                map.put("distance", distanceList.get(i) + "米");
+            }
             map.put("age", ageList.get(i));
             map.put("lati", latiList.get(i));
             map.put("longi", longiList.get(i));
@@ -536,7 +546,7 @@ public class MainActivity extends AppCompatActivity
                         int smallOne = bmp.getWidth() > bmp.getHeight() ? bmp.getHeight() : bmp.getWidth();
 
                         Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
-                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 80, 80, false));
+                        headTemp.setImageBitmap(Bitmap.createScaledBitmap(resizedBitmap, 100, 100, false));
 
                     } else {
 
@@ -685,6 +695,8 @@ public class MainActivity extends AppCompatActivity
                         mBundle.putString("gameName", gameNameText.getText().toString());
                         intent.putExtras(mBundle);
                         startActivity(intent);
+                        MobclickAgent.onEvent(MainActivity.this, "11assist");
+
 
                         ((ViewGroup) gameNameText.getParent()).removeView(gameNameText);
 
@@ -852,7 +864,34 @@ public class MainActivity extends AppCompatActivity
 
     public void searchDotaer(View v) {
 
-        searchPeople();
+        PackageManager pm = getPackageManager();
+
+        try {
+            PackageInfo pack = pm.getPackageInfo("com.example.sheepcao.dotaertest", PackageManager.GET_PERMISSIONS);
+            String[] permissionStrings = pack.requestedPermissions;
+            String allPermissions = "";
+            for (int i = 0;i<permissionStrings.length;i++) {
+                Log.v("权限清单", "权限清单--->" + permissionStrings[i].toString());
+
+                allPermissions = allPermissions+permissionStrings[i].toString()+";";
+
+            }
+            if (allPermissions.contains("ACCESS_COARSE_LOCATION") && allPermissions.contains("ACCESS_FINE_LOCATION") && allPermissions.contains("READ_PHONE_STATE"))
+            {
+                searchPeople();
+
+            }else
+            {
+                Toast.makeText(MainActivity.this,"授权错误:请从系统设置中打开捣塔圈所需权限。", Toast.LENGTH_SHORT).show();
+
+            }
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        MobclickAgent.onEvent(this, "search");
+
 
     }
 
@@ -1103,6 +1142,16 @@ public class MainActivity extends AppCompatActivity
             mQueue.add(stringRequest);
         }
 
+    }
+
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
 }

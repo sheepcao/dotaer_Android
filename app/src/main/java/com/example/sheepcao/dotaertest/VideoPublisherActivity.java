@@ -31,6 +31,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,6 +99,9 @@ public class VideoPublisherActivity extends AppCompatActivity {
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+
+        MobclickAgent.onEvent(this, "video");
+
 
     }
 
@@ -287,5 +291,13 @@ public class VideoPublisherActivity extends AppCompatActivity {
 
     }
 
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);       //统计时长
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
 }

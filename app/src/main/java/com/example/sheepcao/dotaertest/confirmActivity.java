@@ -31,6 +31,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,16 +71,11 @@ public class confirmActivity extends AppCompatActivity {
     String ratingCookie = "";
 
 
-    JSONObject mjInfos = null;
-    JSONObject ttInfos = null;
-    JSONObject jjcInfos = null;
 
-    String jjcScore = "";
-    String mjScore = "";
-    String ttScore = "";
 
-    String YYaccount="";
+    String YYaccount = "";
     String YYpassword = "";
+    String playerName = "";
 
     confirmActivity myConfirm = this;
 
@@ -117,6 +113,14 @@ public class confirmActivity extends AppCompatActivity {
         });
 
 
+        Bundle bundle = getIntent().getExtras();
+
+        Log.v("playerName", (String) bundle
+                .get("username"));
+
+        playerName = (String) bundle
+                .get("username");
+
 
         SharedPreferences mSharedPreferences = getSharedPreferences("dotaerSharedPreferences", 0);
 
@@ -124,7 +128,6 @@ public class confirmActivity extends AppCompatActivity {
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
 
         mEditor.putString("newRegister", "no");
-
 
         mEditor.commit();
     }
@@ -145,7 +148,7 @@ public class confirmActivity extends AppCompatActivity {
         // Store values at the time of the login attempt.
 //        final String account = mEmailView.getText().toString();
 //        final String password = mPasswordView.getText().toString();
-        final String account ="不是故意咯";
+        final String account = "不是故意咯";
         final String password = "xuechan99";
 
 
@@ -846,6 +849,8 @@ public class confirmActivity extends AppCompatActivity {
                         CustomProgressBar.hideProgressBar();
                         Toast.makeText(confirmActivity.this, "恭喜,战绩绑定成功!", Toast.LENGTH_SHORT).show();
 
+                        MobclickAgent.onEvent(confirmActivity.this, "confirm_score");
+
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -856,8 +861,6 @@ public class confirmActivity extends AppCompatActivity {
                                 myConfirm.finish();
                             }
                         }, 1000);
-
-
 
 
                     }
@@ -872,7 +875,7 @@ public class confirmActivity extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("tag", "confirmLevel");
-                map.put("username", "lol");
+                map.put("username", playerName);
                 map.put("gameID", userID);
                 map.put("gameName", YYaccount);
                 map.put("password", YYpassword);
@@ -883,6 +886,18 @@ public class confirmActivity extends AppCompatActivity {
         };
         mQueue.add(stringRequest);
     }
+
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
 
 }
 

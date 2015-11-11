@@ -45,6 +45,7 @@ import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.umeng.analytics.MobclickAgent;
 
 
 import org.json.JSONArray;
@@ -306,6 +307,10 @@ public class playerPageActivity extends AppCompatActivity {
 
 
         checkFavor();
+
+
+        MobclickAgent.onEvent(this, "player_detail");
+
     }
 
 
@@ -1649,6 +1654,17 @@ public class playerPageActivity extends AppCompatActivity {
 
         };
         mQueue.add(stringRequest);
+    }
+
+
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
 }

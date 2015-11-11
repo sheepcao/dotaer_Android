@@ -34,6 +34,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,7 +118,6 @@ public class topicActivity extends AppCompatActivity {
                 mBundle.putString("time", time);
 
 
-
                 intent.putExtras(mBundle);
                 startActivity(intent);
 
@@ -130,6 +130,8 @@ public class topicActivity extends AppCompatActivity {
 
 
         requestTopic();
+        MobclickAgent.onEvent(this, "topic");
+
     }
 
 
@@ -663,5 +665,12 @@ public class topicActivity extends AppCompatActivity {
 
     }
 
-
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);       //统计时长
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }

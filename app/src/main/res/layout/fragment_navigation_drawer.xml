@@ -107,7 +107,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="25dp"
         android:background="#00000000"
-        android:text="V1.0"
+        android:text="V2.0"
         android:textColor="#FFFFFF"
         android:textSize="12sp"
         android:gravity="right"

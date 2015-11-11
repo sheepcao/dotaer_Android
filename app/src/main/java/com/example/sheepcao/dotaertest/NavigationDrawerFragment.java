@@ -59,6 +59,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -479,10 +480,10 @@ public class NavigationDrawerFragment extends Fragment {
                     Bitmap bmp = response.getBitmap();
                     int smallOne = bmp.getWidth() > bmp.getHeight() ? bmp.getHeight() : bmp.getWidth();
 
-                    Bitmap resizedBitmap=Bitmap.createBitmap(bmp,(bmp.getWidth()-smallOne)/2,(bmp.getHeight()-smallOne)/2, smallOne, smallOne);
+                    Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
                     headImage.setImageBitmap(resizedBitmap);
 
-                } else  {
+                } else {
 
                     headImage.setImageResource(R.drawable.boysmall);
                 }
@@ -672,5 +673,14 @@ public class NavigationDrawerFragment extends Fragment {
         void onNavigationDrawerItemSelected(int position);
     }
 
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("sideBar"); //统计页面
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("sideBar");
+    }
 
 }

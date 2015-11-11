@@ -54,33 +54,56 @@
         <meta-data
             android:name="api_key"
             android:value="Ts2amouZ7yRx5FEmslGc4xDm" />
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="56429f9f67e58ea3cd00464f" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="Channel ID" />
+
 
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:name=".splashActivity"
+            android:configChanges="keyboardHidden"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+
+        </activity>
         <activity
             android:name=".myPage"
             android:label="@string/title_activity_my_page"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".confirmActivity"
-            android:label="@string/title_activity_confirm" />
+            android:label="@string/title_activity_confirm"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VideoActivity"
             android:label="@string/title_activity_video"
             android:screenOrientation="landscape" />
-        <activity android:name=".RegisterActivity" >
+        <activity
+            android:name=".RegisterActivity"
+            android:screenOrientation="portrait" >
         </activity>
 
         <!-- <activity -->
@@ -148,20 +171,35 @@
 
         <!-- push结束 -->
 
-        <activity android:name=".VideoPublisherActivity" >
+        <activity
+            android:name=".VideoPublisherActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".videoListActivity" >
+        <activity
+            android:name=".videoListActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".playerPageActivity" >
+        <activity
+            android:name=".playerPageActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".scoreDetailActivity" >
+        <activity
+            android:name=".scoreDetailActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".FavorActivity" >
+        <activity
+            android:name=".FavorActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".topicActivity" >
+        <activity
+            android:name=".topicActivity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".commentDetailActivity" >
+        <activity
+            android:name=".commentDetailActivity"
+            android:screenOrientation="portrait" >
         </activity>
+
     </application>
 
 </manifest>
