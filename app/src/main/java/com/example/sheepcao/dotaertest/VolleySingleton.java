@@ -12,18 +12,32 @@ public class VolleySingleton {
     private static VolleySingleton mInstance = null;
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
+    private ImageLoader imageLoaderOne;
 
+
+    private ImageLoader.ImageCache imageCache;
+    private LruCache<String, Bitmap> mCache;
     private VolleySingleton(){
         mRequestQueue = Volley.newRequestQueue(MyApplication.getAppContext());
-        mImageLoader = new ImageLoader(this.mRequestQueue, new ImageLoader.ImageCache() {
-            private final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(10);
+        mCache = new LruCache<String, Bitmap>(5*1024);
+
+        imageCache = new ImageLoader.ImageCache() {
             public void putBitmap(String url, Bitmap bitmap) {
                 mCache.put(url, bitmap);
             }
             public Bitmap getBitmap(String url) {
                 return mCache.get(url);
             }
-        });
+        };
+        mImageLoader = new ImageLoader(this.mRequestQueue,imageCache );
+
+        imageLoaderOne = new ImageLoader(this.mRequestQueue,new ImageLoader.ImageCache() {
+            public void putBitmap(String url, Bitmap bitmap) {
+            }
+            public Bitmap getBitmap(String url) {
+                return null;
+            }
+        } );
     }
 
     public static VolleySingleton getInstance(){
@@ -40,5 +54,25 @@ public class VolleySingleton {
     public ImageLoader getImageLoader(){
         return this.mImageLoader;
     }
+
+    public ImageLoader getImageLoaderOne(){
+        return this.imageLoaderOne;
+    }
+
+    public void clearCache(){
+        mCache.evictAll();
+
+
+    }
+
+    public void instead(String url,Bitmap image){
+        mCache.put(url, image);
+
+    }
+//
+//    public void removeOne(String url){
+//        mCache.put(url, null);
+//
+//    }
 
 }

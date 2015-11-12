@@ -164,7 +164,9 @@ public class MainActivity extends AppCompatActivity
         mLocClient.start();
 
 
-        mQueue = Volley.newRequestQueue(this);
+//        mQueue = Volley.newRequestQueue(this);
+        mQueue = VolleySingleton.getInstance().getRequestQueue();
+
         usernameList = new ArrayList<>();
         ageList = new ArrayList<>();
         genderList = new ArrayList<>();
@@ -1041,7 +1043,15 @@ public class MainActivity extends AppCompatActivity
 
                     if (newRegister.equals("yes")) {
 
+//                        Intent intent = new Intent(MainActivity.this, confirmActivity.class);
+//                        startActivityForResult(intent, 3);
+
+                        String name = mSharedPreferences.getString("username", "游客");
+
                         Intent intent = new Intent(MainActivity.this, confirmActivity.class);
+                        Bundle mBundle = new Bundle();
+                        mBundle.putString("username", name);
+                        intent.putExtras(mBundle);
                         startActivityForResult(intent, 3);
 
                     } else {

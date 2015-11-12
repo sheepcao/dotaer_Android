@@ -81,7 +81,7 @@
                     android:background="@drawable/nocolor"
                     android:enabled="false"
                     android:text="上一页"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/pageIndex"
@@ -89,7 +89,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:textSize="13sp"
+                    android:textSize="15sp"
 
                     />
 
@@ -101,7 +101,7 @@
                     android:background="@drawable/nocolor"
                     android:enabled="false"
                     android:text="下一页"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
 
             </LinearLayout>
 

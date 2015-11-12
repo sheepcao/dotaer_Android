@@ -1,76 +1,68 @@
 package com.android.volley.toolbox;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
-
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Found here: http://stackoverflow.com/questions/16797468/how-to-send-a-multipart-form-data-post-in-android-with-volley
- */
-public class MultipartRequest extends Request<JSONObject> {
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.json.JSONException;
 
-    private MultipartEntity entity = new MultipartEntity();
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyLog;
 
-    private static final String FILE_PART_NAME = "Upload";
+public class MultipartRequest extends Request<String> {
 
-    private final Response.Listener<JSONObject> mListener;
+// private MultipartEntity entity = new MultipartEntity();
+
+    MultipartEntityBuilder entity = MultipartEntityBuilder.create();
+    HttpEntity httpentity;
+    private static final String FILE_PART_NAME = "111111file";
+
+    private final Response.Listener<String> mListener;
     private final File mFilePart;
-    private final Map<String, String> mParameters;
-//    private final String mSessionCookies;
+    private final Map<String, String> mStringPart;
 
-    public MultipartRequest(String url, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener,
-                            File file, Map<String, String> parameters) {
+    public MultipartRequest(String url,
+                            Response.Listener<String> listener, Response.ErrorListener errorListener, File file,
+                            Map<String, String> mStringPart) {
         super(Method.POST, url, errorListener);
 
         mListener = listener;
         mFilePart = file;
-        mParameters = parameters;
-//        mSessionCookies = sessionCookies;
+        this.mStringPart = mStringPart;
+        entity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
         buildMultipartEntity();
-
     }
 
-    private void buildMultipartEntity(){
-        for (Map.Entry<String, String> entry: mParameters.entrySet()) {
-            try {
-                entity.addPart(entry.getKey(), new StringBody(entry.getValue(), Charset.forName("UTF-8")));
-            } catch (UnsupportedEncodingException e) {
-                VolleyLog.e("UnsupportedEncodingException");
-            }
-        }
+    public void addStringBody(String param, String value) {
+        mStringPart.put(param, value);
+    }
 
-        if (mFilePart != null)
-            entity.addPart(FILE_PART_NAME, new FileBody(mFilePart));
+    private void buildMultipartEntity() {
+        entity.addPart(FILE_PART_NAME, new FileBody(mFilePart));
+        for (Map.Entry<String, String> entry : mStringPart.entrySet()) {
+            entity.addTextBody(entry.getKey(), entry.getValue());
+        }
     }
 
     @Override
     public String getBodyContentType() {
-        return entity.getContentType().getValue();
+        return httpentity.getContentType().getValue();
     }
 
     @Override
     public byte[] getBody() throws AuthFailureError {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
-            entity.writeTo(bos);
+            httpentity = entity.build();
+            httpentity.writeTo(bos);
         } catch (IOException e) {
             VolleyLog.e("IOException writing to ByteArrayOutputStream");
         }
@@ -78,32 +70,18 @@ public class MultipartRequest extends Request<JSONObject> {
     }
 
     @Override
-    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+        String parsed;
         try {
-            String jsonString =
-                    new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-            return Response.success(new JSONObject(jsonString),
-                    HttpHeaderParser.parseCacheHeaders(response));
+            parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
         } catch (UnsupportedEncodingException e) {
-            return Response.error(new ParseError(e));
-        } catch (JSONException je) {
-            return Response.error(new ParseError(je));
+            parsed = new String(response.data);
         }
+        return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
     }
 
     @Override
-    protected void deliverResponse(JSONObject response) {
-        try {
-            mListener.onResponse(response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public Map<String, String> getHeaders() throws AuthFailureError {
-        Map<String, String> headers = new HashMap<String, String>();
-//        headers.put("Cookie", mSessionCookies);
-        return headers;
+    protected void deliverResponse(String response) throws JSONException {
+        mListener.onResponse(response);
     }
 }

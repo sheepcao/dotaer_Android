@@ -33,12 +33,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.MultipartRequest;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.MultipartRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
@@ -69,9 +69,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -98,12 +100,12 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     private String gender = "no";
+    private String regName = "";
+    Bitmap smallHead=null;
 
     RequestQueue mQueue = null;
 
     int serverResponseCode;
-
-
 
 
     String selectedPath1;
@@ -251,6 +253,7 @@ public class RegisterActivity extends AppCompatActivity {
             // perform the user login attempt.
             showProgress();
 
+//            CustomProgressBar.showProgressBar(RegisterActivity.this, false, "上传中");
 
 /*  */
             StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/upload.php",
@@ -270,6 +273,11 @@ public class RegisterActivity extends AppCompatActivity {
                             String isReviewed = jObject.getString("isReviewed");
 
 
+                            regName = username;
+//                            (new MyTask()).execute("");
+
+
+
                             SharedPreferences mSharedPreferences = getSharedPreferences("dotaerSharedPreferences", 0);
 
 
@@ -283,16 +291,66 @@ public class RegisterActivity extends AppCompatActivity {
 
 
                             mEditor.commit();
+
+
+
+                            File uploadFile = storeImage(smallHead);
+
+                            Log.v("length", uploadFile.length() + "");
+
+
+
+                            String boundary = "*****";
+
+                            CustomProgressBar.showProgressBar(RegisterActivity.this, false, "上传中");
+
+                            Map<String, String> bodyMap = new HashMap<String, String>();
+                            bodyMap.put("Connection", "Keep-Alive");
+                            bodyMap.put("Content-Type", "multipart/form-data;charset=utf-8;boundary=" + boundary);
+
+
+
+
+
+                            MultipartRequest stringRequest = new MultipartRequest("http://cgx.nwpu.info/Sites/AndroidImage.php",
+                                    new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) throws JSONException {
+                                            Log.v("response", response);
+
+
+                                        }
+
+
+                                    }, new Response.ErrorListener() {
+
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+
+                                    Log.e("TAG", error.getMessage(), error);
+
+                                }
+                            }, uploadFile, bodyMap);
+
+                            mQueue.add(stringRequest);
+
 //
-                            CustomProgressBar.hideProgressBar();
 //
                             Log.v("register", "register OK-----------");
 //
-//
-                            Intent intent = new Intent();
+                            new android.os.Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    CustomProgressBar.hideProgressBar();
 
-                            RegisterActivity.this.setResult(RESULT_OK, intent);
-                            RegisterActivity.this.finish();
+                                    Intent intent = new Intent();
+
+                                    RegisterActivity.this.setResult(RESULT_OK, intent);
+                                    RegisterActivity.this.finish();
+
+                                }
+                            }, 1100);
+//
 
 
                         }
@@ -345,39 +403,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-
-        if (resultCode == RESULT_OK) {
-            Uri selectedImageUri = data.getData();
-            if (requestCode == 1)
-
-            {
-
-                selectedPath1 = getPath(selectedImageUri);
-
-                Log.v("selectedPath1", selectedPath1);
-//                headImg.setImageBitmap(BitmapFactory.decodeFile(selectedPath1));
-
-                Bundle bundle = data.getExtras();
-                if (bundle != null) {
-                    Bitmap photo = (Bitmap) bundle.get("data"); //get bitmap
-                    headImg.setImageBitmap(photo);
-//                    uploadFiles();
-
-                    storeImage(photo);
-                    CustomProgressBar.showProgressBar(this, false, "上传中");
-                    (new MyTask()).execute("");
-
-                }
-
-
-            }
-
-
-        }
-
-    }
 
     public String getPath(Uri uri) {
 
@@ -394,10 +419,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-//    private void uploadVolley()
-//    {
-//        MultipartRequest uploadRequest =
-//    }
 
 
     private class MyTask extends AsyncTask<String, Integer, String> {
@@ -505,7 +526,7 @@ public class RegisterActivity extends AppCompatActivity {
             Log.v("upload======", "333333");
 //
             outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-            outputStream.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + "sheepcaoTest.png" + "\"" + lineEnd);
+            outputStream.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + regName +".png" + "\"" + lineEnd);
             outputStream.writeBytes(lineEnd);
             Log.v("upload======", "444444");
 
@@ -557,33 +578,44 @@ public class RegisterActivity extends AppCompatActivity {
     } // End else block
 
 
-    private void storeImage(Bitmap image) {
+
+    private File storeImage(Bitmap image) {
         File pictureFile = getOutputMediaFile();
         if (pictureFile == null) {
             Log.d("TAG",
                     "Error creating media file, check storage permissions: ");// e.getMessage());
-            return;
+            return null;
         }
         try {
             FileOutputStream fos = new FileOutputStream(pictureFile);
 
 
-            File file = new File(selectedPath1);
-//            long length = file.length()
             int imageSize = image.getByteCount();
             Log.d("imageSize", "imageSize: " + imageSize);
             int rate = 100;
-            if (imageSize > 1024 * 300) {
-                rate = 100 * 1024 * 300 / imageSize;
+            if (imageSize > 1024 * 100) {
+                rate = 100 * 1024 * 100 /(3* imageSize);
             }
 
-            image.compress(Bitmap.CompressFormat.PNG, rate, fos);
+
+
+            if(selectedPath1.contains(".png"))
+            {
+                image.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+            }else
+            {
+                image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            }
             fos.close();
+
+
         } catch (FileNotFoundException e) {
             Log.d("TAG", "File not found: " + e.getMessage());
         } catch (IOException e) {
             Log.d("TAG", "Error accessing file: " + e.getMessage());
         }
+        return pictureFile;
     }
 
 
@@ -609,13 +641,71 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
         // Create a media file name
-        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
+//        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
+//
+        try {
+            String strUTF8 = URLEncoder.encode(regName, "UTF-8");
+            regName = strUTF8;
+            Log.v("regName", regName);
+
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+
+
         File mediaFile;
-        String mImageName = "MI_" + timeStamp + ".jpg";
+        String mImageName = regName + ".png";
+
+
+//        mImageName = "333小.png";
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
 
         compressedPath = mediaStorageDir.getPath() + File.separator + mImageName;
         return mediaFile;
+    }
+
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+
+        if (resultCode == -1) {
+            Uri selectedImageUri = data.getData();
+            if (requestCode == 1)
+
+            {
+
+                selectedPath1 = getPath(selectedImageUri);
+
+                Log.v("selectedPath1", selectedPath1);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                int smallOne = bitmap.getWidth() > bitmap.getHeight() ? bitmap.getHeight() : bitmap.getWidth();
+
+                Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, (bitmap.getWidth() - smallOne) / 2, (bitmap.getHeight() - smallOne) / 2, smallOne, smallOne);
+                smallHead = Bitmap.createScaledBitmap(resizedBitmap, 200, 200, false);
+                headImg.setImageBitmap(smallHead);
+
+                uploadTip.setVisibility(View.INVISIBLE);
+                headButton.setText("");
+
+
+
+//                (new MyTask()).execute("");
+
+
+
+
+            }
+
+
+        }
+
     }
 
 
@@ -717,10 +807,18 @@ public class RegisterActivity extends AppCompatActivity {
         super.onResume();
         MobclickAgent.onResume(this);       //统计时长
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
     }
 
+
+
+    public void checkAgreement(View v)
+    {
+        Intent intent = new Intent(RegisterActivity.this, agreementActivity.class);
+        startActivity(intent);
+    }
 
 }

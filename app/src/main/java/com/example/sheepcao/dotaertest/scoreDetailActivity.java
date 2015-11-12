@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -787,7 +788,23 @@ public class scoreDetailActivity extends AppCompatActivity {
                             if (resultArray.length > 1) {
                                 userID = resultArray[1].split(",YY.d.k")[0];
                                 if (userID.equals("YY.d.u")) {
-                                    userID = "443732422";
+
+
+                                    if (gameName.equals("不是故意咯")) {
+                                        userID = "443732422";
+                                    }else
+                                    {
+                                        Toast.makeText(scoreDetailActivity.this, "11账号输入有误", Toast.LENGTH_SHORT).show();
+
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                CustomProgressBar.hideProgressBar();
+
+                                                scoreDetailActivity.this.finish();
+                                            }
+                                        }, 1200);
+                                    }
                                 }
                             }
 

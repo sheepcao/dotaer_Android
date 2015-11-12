@@ -65,6 +65,8 @@ public class myPage extends AppCompatActivity {
 
     RequestQueue mQueue = null;
     ImageLoader imageLoader;
+    ImageLoader imageLoaderOne;
+
 
     String requestCookie = "";
     String searchCookie = "";
@@ -131,6 +133,7 @@ public class myPage extends AppCompatActivity {
         });
         imageLoader = VolleySingleton.getInstance().getImageLoader();
 
+        imageLoaderOne =  VolleySingleton.getInstance().getImageLoaderOne();
 
         score_type = (TextView) findViewById(R.id.score_type);
         score_label = (TextView) findViewById(R.id.score_label);
@@ -908,7 +911,7 @@ public class myPage extends AppCompatActivity {
 
 
 
-                        imageLoader.get(nameURLstring, new ImageLoader.ImageListener() {
+                        imageLoaderOne.get(nameURLstring, new ImageLoader.ImageListener() {
 
                             @Override
                             public void onErrorResponse(VolleyError error) {

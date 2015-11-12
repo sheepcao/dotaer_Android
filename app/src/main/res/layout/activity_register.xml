@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="300dp"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
     android:paddingTop="20dp"
-    tools:context="com.example.sheepcao.dotaertest.RegisterActivity">
+    tools:context="com.example.sheepcao.dotaertest.RegisterActivity"
+    android:background="@drawable/main_back">
 
     <ScrollView
         android:id="@+id/register_form"
@@ -225,6 +228,8 @@
                 android:text="点击提交表示同意《捣塔圈用户协议》"
                 android:textSize="11sp"
                 android:textColor="#587bce"
+                android:clickable="true"
+                android:onClick="checkAgreement"
                 />
         </LinearLayout>
     </ScrollView>

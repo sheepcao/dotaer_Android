@@ -514,22 +514,24 @@ public class topicActivity extends AppCompatActivity {
                 holder.headImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
 
-                holder.upButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        CustomProgressBar.showProgressBar(topicActivity.this, false, "读取中");
 
-                        String commentID = (String) data.get(positionIndex).get("comment_id");
-                        requestUps(commentID);
-
-                    }
-                });
 
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
+
+            holder.upButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CustomProgressBar.showProgressBar(topicActivity.this, false, "读取中");
+
+                    String commentID = (String) data.get(positionIndex).get("comment_id");
+                    requestUps(commentID);
+
+                }
+            });
 
             holder.username.setText((String) data.get(position).get("username"));
             holder.comment.setText((String) data.get(position).get("comment"));

@@ -7,13 +7,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -56,18 +59,33 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.MultipartRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.umeng.analytics.MobclickAgent;
 
+import org.apache.http.entity.mime.content.StringBody;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,6 +133,15 @@ public class NavigationDrawerFragment extends Fragment {
     private TextView nameLabel;
     RequestQueue mQueue = null;
 
+
+    private String regName = "";
+
+    int serverResponseCode;
+
+
+    String selectedPath1;
+    String compressedPath;
+
     ImageLoader imageLoader;
 
     private int mCurrentSelectedPosition = 0;
@@ -128,8 +155,8 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mQueue = Volley.newRequestQueue(getActivity());
-
+//        mQueue = Volley.newRequestQueue(getActivity());
+        mQueue = VolleySingleton.getInstance().getRequestQueue();
 //        isGuest = true;
 
 
@@ -191,14 +218,14 @@ public class NavigationDrawerFragment extends Fragment {
         Log.v("show", "onCreateView");
         final EditText et = new EditText(getActivity());
 
-        nameLabel = (TextView)sideBarView.findViewById(R.id.nameLabel);
+        nameLabel = (TextView) sideBarView.findViewById(R.id.nameLabel);
 
 
-        headImage = (RoundedImageView)sideBarView.findViewById(R.id.headImg_bg);
+        headImage = (RoundedImageView) sideBarView.findViewById(R.id.headImg_bg);
         headImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-        Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.male);
-        int smallOne = bmp.getWidth()>bmp.getHeight()?bmp.getHeight():bmp.getWidth();
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.male);
+        int smallOne = bmp.getWidth() > bmp.getHeight() ? bmp.getHeight() : bmp.getWidth();
         Bitmap resizedBitmap = Bitmap.createBitmap(bmp, (bmp.getWidth() - smallOne) / 2, (bmp.getHeight() - smallOne) / 2, smallOne, smallOne);
 
         headImage.setImageBitmap(resizedBitmap);
@@ -208,8 +235,8 @@ public class NavigationDrawerFragment extends Fragment {
 //        headButton.setImageResource(R.drawable.boy);
         headButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-//                getImageFromAlbum();
                 Log.v("show", "head button -----");
+                openGallery();
 
             }
         });
@@ -226,6 +253,7 @@ public class NavigationDrawerFragment extends Fragment {
                         // TODO Auto-generated method stub
 
                         signatureView.setText(et.getText());
+                        pushSignature(et.getText().toString());
 
                         ((ViewGroup) et.getParent()).removeView(et);
 
@@ -263,7 +291,7 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
 
-        logOutButton = (Button)sideBarView.findViewById(R.id.logout_button);
+        logOutButton = (Button) sideBarView.findViewById(R.id.logout_button);
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,6 +303,423 @@ public class NavigationDrawerFragment extends Fragment {
 
     }
 
+    private void pushSignature(final String signature) {
+
+        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences("dotaerSharedPreferences", 0);
+        final String name = mSharedPreferences.getString("username", "游客");
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/signature.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("deivce added", response);
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                CustomProgressBar.hideProgressBar();
+
+                Log.e("TAG", error.getMessage(), error);
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("tag", "signature");
+                map.put("content", signature);
+                map.put("username", name);
+
+                return map;
+            }
+        };
+        mQueue.add(stringRequest);
+
+    }
+
+
+    public void openGallery() {
+
+        Intent intent = new Intent();
+
+        intent.setType("image/*");
+
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+
+        startActivityForResult(intent, 1);
+
+    }
+
+
+    public String getPath(Uri uri) {
+
+        String[] projection = {MediaStore.Images.Media.DATA};
+
+        Cursor cursor = getActivity().managedQuery(uri, projection, null, null, null);
+
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+        cursor.moveToFirst();
+
+        return cursor.getString(column_index);
+
+    }
+
+
+    private class MyTask extends AsyncTask<String, Integer, String> {
+        //onPreExecute方法用于在执行后台任务前做一些UI操作
+        @Override
+        protected void onPreExecute() {
+            Log.i("TAG", "onPreExecute() called");
+        }
+
+        //doInBackground方法内部执行后台任务,不可在此方法内修改UI
+        @Override
+        protected String doInBackground(String... params) {
+            Log.i("TAG", "doInBackground(Params... params) called");
+            uploadFiles();
+            return null;
+        }
+
+        //onProgressUpdate方法用于更新进度信息
+        @Override
+        protected void onProgressUpdate(Integer... progresses) {
+            Log.i("TAG", "onProgressUpdate(Progress... progresses) called");
+
+        }
+
+        //onPostExecute方法用于在执行完后台任务后更新UI,显示结果
+        @Override
+        protected void onPostExecute(String result) {
+            Log.i("TAG", "onPostExecute(Result result) called");
+            if (serverResponseCode != 200) {
+                Toast.makeText(getActivity(), "头像上传失败", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(getActivity(), "头像上传成功!", Toast.LENGTH_SHORT).show();
+
+
+            }
+
+        }
+
+        //onCancelled方法用于在取消执行中的任务时更改UI
+        @Override
+        protected void onCancelled() {
+            Log.i("TAG", "onCancelled() called");
+
+        }
+    }
+
+
+    public void uploadFiles() {
+
+
+        HttpURLConnection connection = null;
+        DataOutputStream outputStream = null;
+        DataInputStream inputStream = null;
+        String pathToOurFile = compressedPath;
+//        String pathToOurFile = "file:///mnt/sdcard/.QQ/head/122559518.png";
+
+        String urlServer = "http://cgx.nwpu.info/Sites/AndroidImage.php";
+//        String urlServer = "http://www.baidu.com";
+
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+
+        String serverResponseMessage;
+
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 25 * 1024 * 1024;//25M
+
+        try {
+
+            Log.v("upload======", pathToOurFile);
+
+
+            FileInputStream fileInputStream = new FileInputStream(new File(pathToOurFile));
+
+            URL url = new URL(urlServer);
+
+            connection = (HttpURLConnection) url.openConnection();
+
+            // Allow Inputs &amp; Outputs.
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.setUseCaches(false);
+
+            // Set HTTP method to POST.
+            connection.setRequestMethod("POST");
+            Log.v("upload======", "11111");
+
+            connection.setRequestProperty("Connection", "Keep-Alive");
+            Log.v("upload======", "4454555");
+
+            connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+            Log.v("upload======", "1212");
+
+            outputStream = new DataOutputStream(connection.getOutputStream());
+            Log.v("upload======", "333333");
+
+            try {
+                String strUTF8 = URLEncoder.encode((regName + ".png"), "UTF-8");
+                regName = strUTF8;
+                Log.v("regName", regName);
+
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            Log.v("test............", "Content-Disposition: form-data; name=\"111111file\";filename=\"" + regName + "\"" + lineEnd);
+
+            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+            outputStream.writeBytes("Content-Disposition: form-data; name=\"111111file\";filename=\"" + regName + "\"" + lineEnd);
+            outputStream.writeBytes(lineEnd);
+            Log.v("upload======", "444444");
+
+
+            bytesAvailable = fileInputStream.available();
+            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            buffer = new byte[bufferSize];
+
+            // Read file
+            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            Log.v("upload======bytesRead", bytesRead + "");
+
+            while (bytesRead > 0) {
+                outputStream.write(buffer, 0, bufferSize);
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            }
+
+            Log.v("upload======", "22222");
+
+            outputStream.writeBytes(lineEnd);
+            outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+            Log.v("upload======", "rrrrrr");
+
+            // Responses from the server (code and message)
+            serverResponseCode = connection.getResponseCode();
+            Log.v("upload....", serverResponseCode + "");
+
+            serverResponseMessage = connection.getResponseMessage();
+
+
+            CustomProgressBar.hideProgressBar();
+            Log.v("upload....", serverResponseCode + serverResponseMessage);
+
+            fileInputStream.close();
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception ex) {
+            //Exception handling
+            Log.v("EXXXXXXX", ex.toString());
+            CustomProgressBar.hideProgressBar();
+
+
+        }
+
+    }
+
+
+    private File storeImage(Bitmap image) {
+        File pictureFile = getOutputMediaFile();
+        if (pictureFile == null) {
+            Log.d("TAG",
+                    "Error creating media file, check storage permissions: ");// e.getMessage());
+            return null;
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(pictureFile);
+
+
+            int imageSize = image.getByteCount();
+            Log.d("imageSize", "imageSize: " + imageSize);
+            int rate = 100;
+            if (imageSize > 1024 * 100) {
+                rate = 100 * 1024 * 100 /(3* imageSize);
+            }
+
+
+
+            if(selectedPath1.contains(".png"))
+            {
+                image.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+            }else
+            {
+                image.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            }
+            fos.close();
+
+
+        } catch (FileNotFoundException e) {
+            Log.d("TAG", "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.d("TAG", "Error accessing file: " + e.getMessage());
+        }
+        return pictureFile;
+    }
+
+
+    private File getOutputMediaFile() {
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        String dirPath = "/";
+        String[] dirPathArray = selectedPath1.split("/");
+        for (int i = 0; i < dirPathArray.length - 1; i++) {
+            dirPath = dirPath + dirPathArray[i] + "/";
+        }
+        Log.v("dirPath", dirPath);
+
+        File mediaStorageDir = new File(dirPath);
+
+        // This location works best if you want the created images to be shared
+        // between applications and persist after your app has been uninstalled.
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        // Create a media file name
+//        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
+//
+        try {
+            String strUTF8 = URLEncoder.encode(regName, "UTF-8");
+            regName = strUTF8;
+            Log.v("regName", regName);
+
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+//        regName = chineseToUnicode(regName);
+//        Log.v("regName", regName);
+
+
+//        try {
+//            regName = new String(regName.getBytes(), "GBK");
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//
+//                Log.v("regName", regName);
+
+        File mediaFile;
+        String mImageName = regName + ".png";
+
+
+//        mImageName = "333小.png";
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
+
+        compressedPath = mediaStorageDir.getPath() + File.separator + mImageName;
+        return mediaFile;
+    }
+
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+
+        if (resultCode == -1) {
+            Uri selectedImageUri = data.getData();
+            if (requestCode == 1)
+
+            {
+
+                selectedPath1 = getPath(selectedImageUri);
+
+                Log.v("selectedPath1", selectedPath1);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImageUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                int smallOne = bitmap.getWidth() > bitmap.getHeight() ? bitmap.getHeight() : bitmap.getWidth();
+
+                Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, (bitmap.getWidth() - smallOne) / 2, (bitmap.getHeight() - smallOne) / 2, smallOne, smallOne);
+                Bitmap smallHead = Bitmap.createScaledBitmap(resizedBitmap, 200, 200, false);
+                headImage.setImageBitmap(smallHead);
+
+                final Bitmap cacheImage = resizedBitmap;
+
+                SharedPreferences mSharedPreferences = getActivity().getSharedPreferences("dotaerSharedPreferences", 0);
+                String name = mSharedPreferences.getString("username", "游客");
+
+
+                regName = name;
+                File uploadFile = storeImage(smallHead);
+
+                Log.v("length", uploadFile.length() + "");
+
+
+
+                String boundary = "*****";
+
+                CustomProgressBar.showProgressBar(getActivity(), false, "上传中");
+
+                Map<String, String> bodyMap = new HashMap<String, String>();
+                bodyMap.put("Connection", "Keep-Alive");
+                bodyMap.put("Content-Type", "multipart/form-data;charset=utf-8;boundary=" + boundary);
+
+
+                String nameURLstring = "";
+                try {
+                    String strUTF8 = URLEncoder.encode(name, "UTF-8");
+                    nameURLstring = "http://cgx.nwpu.info/Sites/upload/" + strUTF8 + ".png";
+                    Log.v("nameURLstring", nameURLstring);
+
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                final String url = nameURLstring;
+
+                MultipartRequest stringRequest = new MultipartRequest("http://cgx.nwpu.info/Sites/AndroidImage.php",
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) throws JSONException {
+                                Log.v("response", response);
+                                VolleySingleton.getInstance().instead(url,cacheImage);
+                                CustomProgressBar.hideProgressBar();
+
+                            }
+
+
+                        }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        Log.e("TAG", error.getMessage(), error);
+                        CustomProgressBar.hideProgressBar();
+
+                    }
+                }, uploadFile, bodyMap);
+
+                mQueue.add(stringRequest);
+
+//                (new MyTask()).execute("");
+
+
+
+
+            }
+
+
+        }
+
+    }
 
     public boolean isDrawerOpen() {
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
@@ -298,7 +743,6 @@ public class NavigationDrawerFragment extends Fragment {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-
 
 
         // ActionBarDrawerToggle ties together the the proper interactions
@@ -357,8 +801,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    public void makeGuest()
-    {
+    public void makeGuest() {
         nameLabel.setText("");
         headImage.setVisibility(View.INVISIBLE);
         signatureView.setVisibility(View.INVISIBLE);
@@ -387,7 +830,7 @@ public class NavigationDrawerFragment extends Fragment {
 
                 if (position == 0) {
                     text.setTextColor(Color.GRAY);
-                }else
+                } else
                     text.setTextColor(Color.WHITE);
 
 
@@ -397,14 +840,13 @@ public class NavigationDrawerFragment extends Fragment {
 
 
     }
-    public void findIdentity()
-    {
+
+    public void findIdentity() {
         headImage.setVisibility(View.VISIBLE);
         signatureView.setVisibility(View.VISIBLE);
         headButton.setText("");
         headButton.setClickable(true);
         logOutButton.setText("注 销");
-
 
 
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
@@ -425,7 +867,7 @@ public class NavigationDrawerFragment extends Fragment {
                 TextView text = (TextView) view.findViewById(android.R.id.text1);
 
 
-                    text.setTextColor(Color.WHITE);
+                text.setTextColor(Color.WHITE);
 
 
                 return view;
@@ -433,13 +875,10 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
 
-
-
         SharedPreferences mSharedPreferences = getActivity().getSharedPreferences("dotaerSharedPreferences", 0);
-        String name = mSharedPreferences.getString("username","游客");
+        String name = mSharedPreferences.getString("username", "游客");
 
-        if(!name.equals("游客"))
-        {
+        if (!name.equals("游客")) {
             nameLabel.setText(name);
             requestSignature(name);
             loadHead(name);
@@ -447,9 +886,11 @@ public class NavigationDrawerFragment extends Fragment {
 
     }
 
-    private void loadHead(String name)
-    {
-        imageLoader = VolleySingleton.getInstance().getImageLoader();
+    private void loadHead(String name) {
+        imageLoader = VolleySingleton.getInstance().getImageLoaderOne();
+
+
+
 
         String nameURLstring = "";
         try {
@@ -491,26 +932,21 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
 
-
-
     }
 
 
-    private void requestSignature(final String username)
-    {
+    private void requestSignature(final String username) {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://cgx.nwpu.info/Sites/signature.php",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) throws JSONException {
 
-                        Log.d("TAG", response);
+                        Log.d("TAG SIgnature", response);
 
                         JSONObject jObject = new JSONObject(response);
                         String content = jObject.getString("content");
 
                         signatureView.setText(content);
-
-
 
 
                     }
@@ -520,6 +956,7 @@ public class NavigationDrawerFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
 
                 Log.e("TAG", error.getMessage(), error);
+                signatureView.setText("签名的力气都拿来打dota了!");
 
 
             }
@@ -528,7 +965,6 @@ public class NavigationDrawerFragment extends Fragment {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("tag", "getSignature");
                 map.put("username", username);
-
 
 
                 return map;
@@ -541,7 +977,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void selectItem(int position) {
-        if (position<99) {
+        if (position < 99) {
             mCurrentSelectedPosition = position;
             if (mDrawerListView != null) {
                 mDrawerListView.setItemChecked(position, true);
@@ -552,8 +988,7 @@ public class NavigationDrawerFragment extends Fragment {
             if (mCallbacks != null) {
                 mCallbacks.onNavigationDrawerItemSelected(position);
             }
-        }else
-        {
+        } else {
             if (mDrawerLayout != null) {
                 mDrawerLayout.closeDrawer(mFragmentContainerView);
             }
@@ -644,23 +1079,23 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 0) {
-            Uri uri = data.getData();
-            //to do find the path of pic by uri
-            if (uri == null) {
-                //use bundle to get data
-                Bundle bundle = data.getExtras();
-                if (bundle != null) {
-                    Bitmap photo = (Bitmap) bundle.get("data"); //get bitmap
-                    headButton.setBackground(new BitmapDrawable(photo));
-                }
-
-            }
-        }
-    }
+//    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (requestCode == 0) {
+//            Uri uri = data.getData();
+//            //to do find the path of pic by uri
+//            if (uri == null) {
+//                //use bundle to get data
+//                Bundle bundle = data.getExtras();
+//                if (bundle != null) {
+//                    Bitmap photo = (Bitmap) bundle.get("data"); //get bitmap
+//                    headButton.setBackground(new BitmapDrawable(photo));
+//                }
+//
+//            }
+//        }
+//    }
 
 
     /**
@@ -678,6 +1113,7 @@ public class NavigationDrawerFragment extends Fragment {
         super.onResume();
         MobclickAgent.onPageStart("sideBar"); //统计页面
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("sideBar");
