@@ -1,58 +1,136 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:gravity="center_horizontal"
-    android:orientation="vertical" android:paddingBottom="@dimen/activity_vertical_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_back"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/main_back"
     tools:context="com.example.sheepcao.dotaertest.confirmActivity">
 
     <!-- Login progress -->
-    <ProgressBar android:id="@+id/login_progress_confirm" style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp" android:visibility="gone" />
+    <ProgressBar
+        android:id="@+id/login_progress_confirm"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
 
-    <ScrollView android:id="@+id/login_form" android:layout_width="250dp"
-        android:layout_height="260dp"
-        >
+    <ScrollView
+        android:id="@+id/login_form"
+        android:layout_width="250dp"
+        android:layout_height="260dp">
 
-        <LinearLayout android:id="@+id/email_login_form_confirm" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/email_login_form_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <EditText android:id="@+id/account_confirm" android:layout_width="220dp"
+            <EditText
+                android:id="@+id/account_confirm"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:gravity="center"
                 android:layout_marginTop="10dp"
-                android:layout_height="wrap_content" android:hint="请输入11游戏账号"
-                android:textColor="#dddddd"
-                android:inputType="textPersonName" android:maxLines="1"
-                android:singleLine="true" />
+                android:gravity="center"
+                android:hint="请输入11游戏账号"
+                android:inputType="textPersonName"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="#dddddd" />
 
-            <EditText android:id="@+id/password_confirm" android:layout_width="220dp"
+            <EditText
+                android:id="@+id/password_confirm"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
-                android:layout_height="wrap_content" android:hint="请输入11账号的密码"
+                android:hint="请输入11账号的密码"
                 android:inputType="textPassword"
-                android:textColor="#dddddd"
-                android:maxLines="1" android:singleLine="true" />
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="#dddddd" />
 
-            <Button android:id="@+id/email_sign_in_button_confirm" style="?android:textAppearanceSmall"
-                android:layout_width="160dp" android:layout_height="wrap_content"
+            <LinearLayout
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/code_field"
+                    android:layout_width="130dp"
+                    android:layout_height="30dp"
+                    android:clickable="true"
+                    android:textColor="#00090b"
+                    android:textStyle="bold" />
+
+                <RelativeLayout
+                    android:layout_width="78dp"
+                    android:layout_height="27dp"
+                    android:layout_marginLeft="12dp"
+                    android:gravity="center"
+
+                    >
+                    <Button
+                        android:id="@+id/code_image_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/darker_gray"
+                        android:clickable="true"
+                        android:text=""
+                        android:textColor="#041115"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/loading_image"
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_marginLeft="25dp"
+                        android:background="#0095a1b6"
+                        android:src="@drawable/loading"
+                        android:visibility="visible"
+
+                         />
+
+                </RelativeLayout>
+
+
+
+
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/email_sign_in_button_confirm"
+                style="?android:textAppearanceSmall"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp" android:text="认 证"
+                android:layout_marginTop="20dp"
+                android:text="认 证"
                 android:textStyle="bold" />
 
-            <TextView android:id="@+id/hint_text_confirm" style="?android:textAppearanceMedium"
-                android:layout_width="240dp" android:layout_height="wrap_content"
+            <TextView
+                android:id="@+id/hint_text_confirm"
+                style="?android:textAppearanceMedium"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
                 android:gravity="center"
                 android:paddingRight="15dp"
-                android:textSize="12sp"
-                android:layout_marginTop="30dp"
-                android:layout_gravity="center_horizontal"
-                android:textStyle="italic"
+                android:text="请输入您的11平台账号绑定战绩"
                 android:textColor="#000000"
-                android:text="请输入您的11平台账号绑定战绩"/>
+                android:textSize="12sp"
+                android:textStyle="italic" />
 
         </LinearLayout>
     </ScrollView>

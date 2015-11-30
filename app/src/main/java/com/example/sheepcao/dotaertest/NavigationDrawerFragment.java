@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -640,7 +641,18 @@ public class NavigationDrawerFragment extends Fragment {
                 Log.v("selectedPath1", selectedPath1);
                 Bitmap bitmap = null;
                 try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImageUri);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 4;
+
+                    AssetFileDescriptor fileDescriptor =null;
+                    fileDescriptor =
+                            getActivity().getContentResolver().openAssetFileDescriptor( selectedImageUri, "r");
+
+                    bitmap
+                            = BitmapFactory.decodeFileDescriptor(
+                            fileDescriptor.getFileDescriptor(), null, options);
+
+//                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImageUri);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

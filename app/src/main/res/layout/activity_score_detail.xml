@@ -210,52 +210,52 @@
 
 
     </FrameLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1.83"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:background="#FF232323"
-        android:orientation="horizontal"
-        >
+<!--    <LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="1.83"-->
+        <!--android:paddingLeft="20dp"-->
+        <!--android:paddingRight="20dp"-->
+        <!--android:paddingTop="5dp"-->
+        <!--android:paddingBottom="5dp"-->
+        <!--android:background="#FF232323"-->
+        <!--android:orientation="horizontal"-->
+        <!-->-->
 
-        <TextView
-            android:id="@+id/tt_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:background="@drawable/listbutton"
-            android:clickable="true"
-            android:gravity="center"
-            android:text="天梯局"
-            android:textColor="#dddddd"
-            android:textSize="17sp"
-
-
-            />
-
-        <TextView
-            android:id="@+id/jjc_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="50dp"
-            android:layout_weight="1"
-            android:background="@drawable/listbutton"
-            android:clickable="true"
-            android:gravity="center"
-            android:text="竞技场"
-            android:textColor="#dddddd"
-            android:textSize="17sp"
+        <!--<TextView-->
+            <!--android:id="@+id/tt_button"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_gravity="center_vertical"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@drawable/listbutton"-->
+            <!--android:clickable="true"-->
+            <!--android:gravity="center"-->
+            <!--android:text="天梯局"-->
+            <!--android:textColor="#dddddd"-->
+            <!--android:textSize="17sp"-->
 
 
-            />
+            <!--/>-->
 
-    </LinearLayout>
+        <!--<TextView-->
+            <!--android:id="@+id/jjc_button"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+
+            <!--android:layout_gravity="center_vertical"-->
+            <!--android:layout_marginLeft="50dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@drawable/listbutton"-->
+            <!--android:clickable="true"-->
+            <!--android:gravity="center"-->
+            <!--android:text="竞技场"-->
+            <!--android:textColor="#dddddd"-->
+            <!--android:textSize="17sp"-->
+
+
+            <!--/>-->
+
+    <!--</LinearLayout>-->
 
 </LinearLayout>

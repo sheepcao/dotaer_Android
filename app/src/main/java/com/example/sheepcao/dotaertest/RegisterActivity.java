@@ -3,6 +3,7 @@ package com.example.sheepcao.dotaertest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -293,6 +294,17 @@ public class RegisterActivity extends AppCompatActivity {
                             mEditor.commit();
 
 
+                            if(smallHead == null)
+                            {
+                                CustomProgressBar.hideProgressBar();
+
+                                Intent intent = new Intent();
+
+                                RegisterActivity.this.setResult(RESULT_OK, intent);
+                                RegisterActivity.this.finish();
+                                return;
+
+                            }
 
                             File uploadFile = storeImage(smallHead);
 
@@ -681,7 +693,31 @@ public class RegisterActivity extends AppCompatActivity {
                 Log.v("selectedPath1", selectedPath1);
                 Bitmap bitmap = null;
                 try {
-                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 4;
+
+                    AssetFileDescriptor fileDescriptor =null;
+                    fileDescriptor =
+                            this.getContentResolver().openAssetFileDescriptor( selectedImageUri, "r");
+
+                    bitmap
+                            = BitmapFactory.decodeFileDescriptor(
+                            fileDescriptor.getFileDescriptor(), null, options);
+
+
+//                    AssetFileDescriptor fileDescriptor =null;
+//                    fileDescriptor =
+//                            this.getContentResolver().openAssetFileDescriptor(selectedImageUri, "r");
+//
+//                    BitmapFactory.Options options = new BitmapFactory.Options();
+//                    options.inJustDecodeBounds = true;
+//                    bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(), null, options);
+//                    int imageHeight = options.outHeight;
+//                    int imageWidth = options.outWidth;
+//                    String imageType = options.outMimeType;
+
+//                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

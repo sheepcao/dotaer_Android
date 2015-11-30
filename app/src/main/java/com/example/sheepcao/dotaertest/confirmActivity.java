@@ -3,6 +3,8 @@ package com.example.sheepcao.dotaertest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,8 +19,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +34,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
@@ -60,9 +66,19 @@ public class confirmActivity extends AppCompatActivity {
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
+    EditText validCodeField;
+    ImageView loadingImage;
+
     private View mProgressView;
     private View mLoginFormView;
     RequestQueue mQueue = null;
+    ImageLoader imageLoaderOne;
+
+
+    private String VIEWSTATEGENERATOR;
+    private String VIEWSTATE;
+    private String EVENTVALIDATION;
+    private String yaoyaoURL;
 
 
     String requestCookie = "";
@@ -90,8 +106,26 @@ public class confirmActivity extends AppCompatActivity {
 
         mPasswordView = (EditText) findViewById(R.id.password_confirm);
 
+        validCodeField = (EditText) findViewById(R.id.code_field);
+        final Button codeImageButton = (Button) findViewById(R.id.code_image_btn);
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button_confirm);
+        loadingImage = (ImageView)findViewById(R.id.loading_image);
+        RotateAnimation rotateAnimation = new RotateAnimation(0, 360,
+                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setRepeatCount(Animation.INFINITE);
+        loadingImage.setAnimation(rotateAnimation);
+        loadingImage.startAnimation(rotateAnimation);
+
+        final Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button_confirm);
+        codeImageButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                refreshYaoYaoCode(codeImageButton, mEmailSignInButton);
+
+            }
+        });
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,6 +136,7 @@ public class confirmActivity extends AppCompatActivity {
         mLoginFormView = findViewById(R.id.email_login_form_confirm);
         mProgressView = findViewById(R.id.login_progress_confirm);
 
+
         mQueue = Volley.newRequestQueue(this, new HurlStack() {
             @Override
             protected HttpURLConnection createConnection(URL url) throws IOException {
@@ -111,6 +146,8 @@ public class confirmActivity extends AppCompatActivity {
                 return connection;
             }
         });
+        imageLoaderOne = VolleySingleton.getInstance().getImageLoaderOne();
+        yaoyaoExtroInfo(codeImageButton,mEmailSignInButton);
 
 
         Bundle bundle = getIntent().getExtras();
@@ -132,6 +169,84 @@ public class confirmActivity extends AppCompatActivity {
         mEditor.commit();
     }
 
+
+
+    public void yaoyaoExtroInfo(final Button codeButton, final Button submitButton) {
+
+        CustomProgressBar.showProgressBar(confirmActivity.this, false, "获取中");
+
+
+        RequestExtras extras = new RequestExtras(mQueue, imageLoaderOne);
+        extras.setRequestCompelted(new RequestExtras.requestCallBack() {
+            @Override
+            public void onCompleteRequest(String theURL, String mVIEWSTATEGENERATOR, String mVIEWSTATE, String mEVENTVALIDATION) {
+
+                Log.v("callBack!!", theURL + "----\n" + mVIEWSTATEGENERATOR + "----\n" + mVIEWSTATE + "----\n" + mEVENTVALIDATION + "----\n");
+                VIEWSTATEGENERATOR = mVIEWSTATEGENERATOR;
+                VIEWSTATE = mVIEWSTATE;
+                EVENTVALIDATION = mEVENTVALIDATION;
+                yaoyaoURL = theURL;
+
+                if (theURL.equals("0")) {
+                    CustomProgressBar.hideProgressBar();
+                }
+            }
+
+            @Override
+            public void onCompleteValidCode(Bitmap codeImage) {
+                if (codeImage == null) {
+                    codeButton.setText("刷新");
+                } else {
+                    submitButton.setEnabled(true);
+                    codeButton.setBackgroundDrawable(new BitmapDrawable(codeImage));
+                    codeButton.setText("");
+                }
+                CustomProgressBar.hideProgressBar();
+
+            }
+
+            @Override
+            public void onCompleteCookie(String cookies) {
+                requestCookie = cookies;
+            }
+        });
+        extras.startRequest();
+    }
+
+
+    public void refreshYaoYaoCode(final Button codeButton, final Button submitButton) {
+
+        CustomProgressBar.showProgressBar(confirmActivity.this, false, "获取中");
+
+        RequestExtras extras = new RequestExtras(mQueue, imageLoaderOne);
+        extras.setRequestCompelted(new RequestExtras.requestCallBack() {
+            @Override
+            public void onCompleteRequest(String theURL, String mVIEWSTATEGENERATOR, String mVIEWSTATE, String mEVENTVALIDATION) {
+
+            }
+
+            @Override
+            public void onCompleteValidCode(Bitmap codeImage) {
+                if (codeImage == null) {
+                    codeButton.setText("刷新");
+                    codeButton.setBackgroundResource(R.drawable.nocolor);
+
+                } else {
+                    submitButton.setEnabled(true);
+                    codeButton.setBackgroundDrawable(new BitmapDrawable(codeImage));
+                    codeButton.setText("");
+                }
+                CustomProgressBar.hideProgressBar();
+
+            }
+
+            @Override
+            public void onCompleteCookie(String cookies) {
+
+            }
+        });
+        extras.startRequestValidCode();
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.

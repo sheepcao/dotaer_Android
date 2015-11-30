@@ -263,13 +263,6 @@ public class LoginActivity extends AppCompatActivity {
     public void showProgress() {
         CustomProgressBar.showProgressBar(this, false, "登录中");
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                CustomProgressBar.hideProgressBar();
-//            }
-//        }, 3000);
     }
 
 
@@ -303,7 +296,6 @@ public class LoginActivity extends AppCompatActivity {
 
 
         Log.v("option", id + "----home id:" + android.R.id.home);
-        //noinspection SimplifiableIfStatement
         if (id == R.id.visitor || id == android.R.id.home) {
 
 //            test();
@@ -314,9 +306,6 @@ public class LoginActivity extends AppCompatActivity {
 
 
             Intent intent = new Intent();
-            //把返回数据存入Intent
-//        intent.putExtra(BACK_CODE, BACK_CODE_NO);
-            //设置返回数据
 
             this.setResult(RESULT_CANCELED, intent);
 

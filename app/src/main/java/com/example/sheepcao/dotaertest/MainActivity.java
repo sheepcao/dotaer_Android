@@ -2,6 +2,7 @@ package com.example.sheepcao.dotaertest;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,10 +42,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
@@ -68,7 +71,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,6 +82,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, BDLocationListener, OnSeekBarChangeListener {
@@ -88,6 +96,8 @@ public class MainActivity extends AppCompatActivity
     Boolean loggedin = false;
 
     RequestQueue mQueue = null;
+    RequestQueue customQueue = null;
+
     TextView ratioText;
 
     Button pageUp;
@@ -116,7 +126,7 @@ public class MainActivity extends AppCompatActivity
 
 
     ImageLoader imageLoader;
-
+    ImageLoader imageLoaderOne;
 
     private int pageIndex = 0;
 
@@ -124,6 +134,17 @@ public class MainActivity extends AppCompatActivity
     private double longi = 0.0;
     //    private int ratio = 100000;
     private int searchRadius = 0;
+
+
+    private String VIEWSTATEGENERATOR;
+    private String VIEWSTATE;
+    private String EVENTVALIDATION;
+    private String yaoyaoURL;
+
+    String requestCookie = "";
+    String searchCookie = "";
+    String redirectCookie = "";
+    String ratingCookie = "";
 
 
     @Override
@@ -164,7 +185,6 @@ public class MainActivity extends AppCompatActivity
         mLocClient.start();
 
 
-//        mQueue = Volley.newRequestQueue(this);
         mQueue = VolleySingleton.getInstance().getRequestQueue();
 
         usernameList = new ArrayList<>();
@@ -177,6 +197,18 @@ public class MainActivity extends AppCompatActivity
 
 
         imageLoader = VolleySingleton.getInstance().getImageLoader();
+        imageLoaderOne = VolleySingleton.getInstance().getImageLoaderOne();
+
+
+        customQueue = Volley.newRequestQueue(this, new HurlStack() {
+            @Override
+            protected HttpURLConnection createConnection(URL url) throws IOException {
+                HttpURLConnection connection = super.createConnection(url);
+                connection.setInstanceFollowRedirects(false);
+
+                return connection;
+            }
+        });
 
 
         lv = (ListView) findViewById(R.id.dotaerList);
@@ -252,11 +284,21 @@ public class MainActivity extends AppCompatActivity
         String name = mSharedPreferences.getString("username", "游客");
         String password = mSharedPreferences.getString("password", "");
 
+
         if (name.equals("游客")) {
             showLoginPage();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    showValidCode();
+                }
+            }, 1200);
 
         } else {
             defaultLogin(name, password);
+            showValidCode();
+
         }
 
 
@@ -265,6 +307,392 @@ public class MainActivity extends AppCompatActivity
         mAdView.loadAd(adRequest);
 
 
+    }
+
+    public void yaoyaoExtroInfo(final Button codeButton, final Button submitButton) {
+
+        CustomProgressBar.showProgressBar(MainActivity.this, false, "获取中");
+
+
+        RequestExtras extras = new RequestExtras(customQueue, imageLoaderOne);
+        extras.setRequestCompelted(new RequestExtras.requestCallBack() {
+            @Override
+            public void onCompleteRequest(String theURL, String mVIEWSTATEGENERATOR, String mVIEWSTATE, String mEVENTVALIDATION) {
+
+                Log.v("callBack!!", theURL + "----\n" + mVIEWSTATEGENERATOR + "----\n" + mVIEWSTATE + "----\n" + mEVENTVALIDATION + "----\n");
+                VIEWSTATEGENERATOR = mVIEWSTATEGENERATOR;
+                VIEWSTATE = mVIEWSTATE;
+                EVENTVALIDATION = mEVENTVALIDATION;
+                yaoyaoURL = theURL;
+
+                if (theURL.equals("0")) {
+                    CustomProgressBar.hideProgressBar();
+                }
+            }
+
+            @Override
+            public void onCompleteValidCode(Bitmap codeImage) {
+                if (codeImage == null) {
+                    codeButton.setText("刷新");
+                } else {
+                    submitButton.setEnabled(true);
+                    codeButton.setBackgroundDrawable(new BitmapDrawable(codeImage));
+                    codeButton.setText("");
+                }
+                CustomProgressBar.hideProgressBar();
+
+            }
+
+            @Override
+            public void onCompleteCookie(String cookies) {
+                requestCookie = cookies;
+            }
+        });
+        extras.startRequest();
+    }
+
+    public void refreshYaoYaoCode(final Button codeButton, final Button submitButton) {
+
+        CustomProgressBar.showProgressBar(MainActivity.this, false, "获取中");
+
+        RequestExtras extras = new RequestExtras(customQueue, imageLoaderOne);
+        extras.setRequestCompelted(new RequestExtras.requestCallBack() {
+            @Override
+            public void onCompleteRequest(String theURL, String mVIEWSTATEGENERATOR, String mVIEWSTATE, String mEVENTVALIDATION) {
+
+            }
+
+            @Override
+            public void onCompleteValidCode(Bitmap codeImage) {
+                if (codeImage == null) {
+                    codeButton.setText("刷新");
+                    codeButton.setBackgroundResource(R.drawable.nocolor);
+
+                } else {
+                    submitButton.setEnabled(true);
+                    codeButton.setBackgroundDrawable(new BitmapDrawable(codeImage));
+                    codeButton.setText("");
+                }
+                CustomProgressBar.hideProgressBar();
+
+            }
+
+            @Override
+            public void onCompleteCookie(String cookies) {
+
+            }
+        });
+        extras.startRequestValidCode();
+    }
+
+    public void showValidCode() {
+
+        LayoutInflater factory = LayoutInflater.from(this);
+        final View codeDialogView = factory.inflate(
+                R.layout.valid_code_layout, null);
+        final AlertDialog deleteDialog = new AlertDialog.Builder(this).create();
+        deleteDialog.setView(codeDialogView);
+
+        deleteDialog.setCanceledOnTouchOutside(false);
+
+        final EditText codeField = (EditText) codeDialogView.findViewById(R.id.code_field);
+
+        codeDialogView.findViewById(R.id.submit_btn).setEnabled(false);
+        codeDialogView.findViewById(R.id.submit_btn).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Log.v("code submit", "code submit");
+
+                submitYaoYaoLogin(deleteDialog, (Button) codeDialogView.findViewById(R.id.code_image_btn), (Button) codeDialogView.findViewById(R.id.submit_btn),
+                        yaoyaoURL, VIEWSTATEGENERATOR, VIEWSTATE, EVENTVALIDATION, codeField.getText().toString(), "不是故意咯", "xuechan99");
+
+
+            }
+        });
+
+        codeDialogView.findViewById(R.id.code_image_btn).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                refreshYaoYaoCode((Button) codeDialogView.findViewById(R.id.code_image_btn), (Button) codeDialogView.findViewById(R.id.submit_btn));
+
+            }
+        });
+
+
+        deleteDialog.show();
+        deleteDialog.getWindow().setLayout(460, 350);
+
+        yaoyaoExtroInfo((Button) codeDialogView.findViewById(R.id.code_image_btn), (Button) codeDialogView.findViewById(R.id.submit_btn));
+
+
+    }
+
+    public void submitYaoYaoLogin(final AlertDialog deleteDialog, final Button submitBtn, final Button codeButton, String destURL, final String mVIEWSTATEGENERATOR, final String mVIEWSTATE, final String mEVENTVALIDATION, final String validCode, final String username, final String password) {
+
+        CustomProgressBar.showProgressBar(MainActivity.this, false, "验证中");
+
+
+        final String infoURLstring = "http://passport.5211game.com" + destURL;
+
+        if (destURL==null||destURL.equals("0") || mVIEWSTATEGENERATOR.equals("0") || mVIEWSTATE.equals("0") || mEVENTVALIDATION.equals("0")) {
+            yaoyaoExtroInfo(codeButton, submitBtn);
+            Toast.makeText(MainActivity.this, "验证失败，请重试", Toast.LENGTH_SHORT).show();
+
+        }
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, infoURLstring,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("On11Login", response);
+                        CustomProgressBar.hideProgressBar();
+
+                        String gamerID = pickUserID(response);
+
+                        if (gamerID.equals("")) {
+
+                            Toast.makeText(MainActivity.this, "验证失败，请重试", Toast.LENGTH_SHORT).show();
+                            refreshYaoYaoCode(codeButton, submitBtn);
+
+
+                        } else {
+                            deleteDialog.dismiss();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                CustomProgressBar.hideProgressBar();
+
+
+                String location = "";
+                String cookie_final = "";
+                if (error.networkResponse == null) {
+                    Toast.makeText(MainActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
+
+                    return;
+                }
+
+                if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
+                    for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
+//                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
+
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {
+                            String cookieTemp = error.networkResponse.apacheHeaders[i].getValue();
+
+                            String[] cookieparts = cookieTemp.split(";");
+                            for (int j = 0; j < cookieparts.length; j++) {
+                                if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=")) {
+                                    if (cookie_final.equals("")) {
+                                        cookie_final = cookieparts[j];
+
+                                    } else {
+                                        cookie_final = cookie_final + ";" + cookieparts[j];
+                                    }
+                                }
+                            }
+
+
+                        }
+
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Location")) {
+                            location = error.networkResponse.apacheHeaders[i].getValue();
+                            String[] subUrl = location.split("st=");
+
+                            if (subUrl.length > 0) {
+                                location = "http://app.5211game.com/sso/login/?returnurl=http%3a%2f%2fscore.5211game.com%2fRecordCenter%2f&st=" + subUrl[1];
+                            }
+
+
+                        }
+
+                    }
+
+
+                }
+
+//
+                searchCookie = cookie_final;
+                cookie_final = searchCookie + ";" + requestCookie;
+
+//
+                redirectWithCookie(cookie_final, location, infoURLstring, deleteDialog);
+
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0");
+                params.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                params.put("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
+                params.put("Referer", infoURLstring);
+                params.put("Cache-Control", "max-age=0");
+                params.put("Origin", "http://passport.5211game.com");
+                params.put("Upgrade-Insecure-Requests", "1");
+                params.put("Cookie", requestCookie);
+
+                return params;
+            }
+
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("__VIEWSTATE", mVIEWSTATE);
+                map.put("__VIEWSTATEGENERATOR", mVIEWSTATEGENERATOR);
+                map.put("__EVENTVALIDATION", mEVENTVALIDATION);
+                map.put("txtAccountName", username);
+                map.put("txtPassWord", password);
+                map.put("txtValidateCode", validCode);
+                map.put("ImgButtonLogin.x", "65");
+                map.put("ImgButtonLogin.y", "13");
+
+
+                return map;
+            }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                return super.parseNetworkResponse(response);
+            }
+        };
+
+
+        customQueue.add(stringRequest);
+    }
+
+
+    private void redirectWithCookie(final String cookie, final String loc, final String Referer, final AlertDialog deleteDialog) {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, loc,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("redirect done", response);
+
+                        for (int i = 0; i < response.length(); i += 1024) {
+                            if (i + 1024 < response.length())
+                                Log.d("redirect done", response.substring(i, i + 1024));
+                            else
+                                Log.d("redirect done", response.substring(i, response.length()));
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("TAG Redirect", error.getMessage(), error);
+//                String hostString = "";
+//                if (loc.startsWith("http://")) {
+//                    hostString = "http://" + loc.substring(7).split("/")[0];
+//                } else if (loc.startsWith("https://")) {
+//                    hostString = "https://" + loc.substring(8).split("/")[0];
+//                }
+
+
+                String location = "";
+                String cookie_final = "";
+
+                if (error.networkResponse == null) {
+                    Toast.makeText(MainActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
+
+                    return;
+                }
+                if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
+                    for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
+//                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {
+                            String cookieTemp = error.networkResponse.apacheHeaders[i].getValue();
+                            String[] cookieparts = cookieTemp.split(";");
+                            for (int j = 0; j < cookieparts.length; j++) {
+                                if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=") && !cookieparts[j].toLowerCase().contains("httponly")) {
+                                    if (cookie_final.equals("")) {
+                                        cookie_final = cookieparts[j];
+
+                                    } else {
+                                        cookie_final = cookie_final + ";" + cookieparts[j];
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+                redirectCookie = cookie_final;
+                cookie_final = searchCookie + ";" + redirectCookie;
+                ratingCookie = cookie_final;
+                Log.v("coooooo", ratingCookie);
+
+                SharedPreferences mSharedPreferences = MyApplication.getAppContext().getSharedPreferences("dotaerSharedPreferences", 0);
+                SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+                mEditor.putString("secondCookie", ratingCookie);
+                mEditor.commit();
+
+                CustomProgressBar.hideProgressBar();
+
+                deleteDialog.dismiss();
+
+
+            }
+
+
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0");
+                params.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                params.put("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
+                params.put("Referer", Referer);
+
+
+                Log.v("cookie redict", cookie);
+                params.put("Cookie", cookie);
+
+                return params;
+            }
+
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                return super.parseNetworkResponse(response);
+            }
+
+        };
+
+        customQueue.add(stringRequest);
+    }
+
+
+    public String pickUserID(String fullText) {
+        String userID = "";
+        Pattern p = Pattern.compile("UserId = \"(.+)\"");
+        Matcher m = p.matcher(fullText);
+
+        if (m.find()) { //注意这里，是while不是if
+            String xxx = m.group();
+
+
+            String[] aa = xxx.split("UserId = \"");
+
+            if (aa.length > 1) {
+
+                String[] bb = aa[1].split("\"");
+                userID = bb[0];
+
+            }
+
+        }
+        return userID;
     }
 
     public void showLoginPage() {
@@ -430,11 +858,9 @@ public class MainActivity extends AppCompatActivity
             map.put("gender", genderList.get(i));
             map.put("username", usernameList.get(i));
             int distance = Integer.parseInt(distanceList.get(i));
-            if(distance>1000)
-            {
-                map.put("distance", distance/1000 + "KM");
-            }else
-            {
+            if (distance > 1000) {
+                map.put("distance", distance / 1000 + "KM");
+            } else {
                 map.put("distance", distanceList.get(i) + "米");
             }
             map.put("age", ageList.get(i));
@@ -872,19 +1298,17 @@ public class MainActivity extends AppCompatActivity
             PackageInfo pack = pm.getPackageInfo("com.example.sheepcao.dotaertest", PackageManager.GET_PERMISSIONS);
             String[] permissionStrings = pack.requestedPermissions;
             String allPermissions = "";
-            for (int i = 0;i<permissionStrings.length;i++) {
+            for (int i = 0; i < permissionStrings.length; i++) {
                 Log.v("权限清单", "权限清单--->" + permissionStrings[i].toString());
 
-                allPermissions = allPermissions+permissionStrings[i].toString()+";";
+                allPermissions = allPermissions + permissionStrings[i].toString() + ";";
 
             }
-            if (allPermissions.contains("ACCESS_COARSE_LOCATION") && allPermissions.contains("ACCESS_FINE_LOCATION") && allPermissions.contains("READ_PHONE_STATE"))
-            {
+            if (allPermissions.contains("ACCESS_COARSE_LOCATION") && allPermissions.contains("ACCESS_FINE_LOCATION") && allPermissions.contains("READ_PHONE_STATE")) {
                 searchPeople();
 
-            }else
-            {
-                Toast.makeText(MainActivity.this,"授权错误:请从系统设置中打开捣塔圈所需权限。", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "授权错误:请从系统设置中打开捣塔圈所需权限。", Toast.LENGTH_SHORT).show();
 
             }
 
@@ -926,8 +1350,7 @@ public class MainActivity extends AppCompatActivity
             option.setScanSpan(50000);
             mLocClient.setLocOption(option);
 
-            if (loggedin)
-            {
+            if (loggedin) {
                 uploadPosition();
             }
 
@@ -1110,11 +1533,10 @@ public class MainActivity extends AppCompatActivity
                             String longitude = jObject.getString("longitude");
 
 
-                          Log.v("position uploaded:",username+"-"+"-"+age+"-"+sex+"-"+isReviewed+"-"+latitude+"-"+longitude);
+                            Log.v("position uploaded:", username + "-" + "-" + age + "-" + sex + "-" + isReviewed + "-" + latitude + "-" + longitude);
 
 
                             Log.v("login", "login OK-----------");
-
 
 
                         }
@@ -1123,7 +1545,7 @@ public class MainActivity extends AppCompatActivity
                 public void onErrorResponse(VolleyError error) {
 
 
-                    Log.v("position uploaded:","位置上传失败！！");
+                    Log.v("position uploaded:", "位置上传失败！！");
 
 
                     Log.e("TAG", error.getMessage(), error);
@@ -1133,13 +1555,13 @@ public class MainActivity extends AppCompatActivity
                     Map<String, String> map = new HashMap<String, String>();
                     map.put("tag", "uploadPosition");
                     map.put("name", username);
-                    map.put("lat",myLati);
-                    map.put("long",myLongi);
-                    map.put("invisible",invisible);
-                    map.put("isReviewed",isReviewed);
-                    map.put("age",age);
-                    map.put("sex",sex);
-                    map.put("TTscore","999");
+                    map.put("lat", myLati);
+                    map.put("long", myLongi);
+                    map.put("invisible", invisible);
+                    map.put("isReviewed", isReviewed);
+                    map.put("age", age);
+                    map.put("sex", sex);
+                    map.put("TTscore", "999");
 
 
                     return map;
@@ -1157,6 +1579,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         MobclickAgent.onResume(this);
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
