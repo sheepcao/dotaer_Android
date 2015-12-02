@@ -416,6 +416,8 @@ public class RequestExtras {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("Image Load", "Image Load Error: " + error.getMessage());
+                callBack.onCompleteValidCode(null);
+
             }
 
             @Override
@@ -429,9 +431,6 @@ public class RequestExtras {
                     callBack.onCompleteValidCode(bmp);
 
 
-                } else {
-
-                    callBack.onCompleteValidCode(null);
                 }
             }
         });

@@ -1,6 +1,7 @@
 package com.example.sheepcao.dotaertest;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -15,11 +16,13 @@ import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
@@ -67,6 +70,8 @@ public class confirmActivity extends AppCompatActivity {
     private EditText mEmailView;
     private EditText mPasswordView;
     EditText validCodeField;
+    Button codeImageButton;
+    Button mEmailSignInButton;
     ImageView loadingImage;
 
     private View mProgressView;
@@ -85,6 +90,8 @@ public class confirmActivity extends AppCompatActivity {
     String searchCookie = "";
     String redirectCookie = "";
     String ratingCookie = "";
+    String finalCookie = "";
+
 
 
 
@@ -107,16 +114,14 @@ public class confirmActivity extends AppCompatActivity {
         mPasswordView = (EditText) findViewById(R.id.password_confirm);
 
         validCodeField = (EditText) findViewById(R.id.code_field);
-        final Button codeImageButton = (Button) findViewById(R.id.code_image_btn);
+        codeImageButton = (Button) findViewById(R.id.code_image_btn);
+
 
         loadingImage = (ImageView)findViewById(R.id.loading_image);
-        RotateAnimation rotateAnimation = new RotateAnimation(0, 360,
-                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotateAnimation.setRepeatCount(Animation.INFINITE);
-        loadingImage.setAnimation(rotateAnimation);
-        loadingImage.startAnimation(rotateAnimation);
+//        loadingImage.setAnimation(rotateAnimation);
+//        loadingImage.startAnimation(rotateAnimation);
 
-        final Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button_confirm);
+        mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button_confirm);
         codeImageButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -147,6 +152,7 @@ public class confirmActivity extends AppCompatActivity {
             }
         });
         imageLoaderOne = VolleySingleton.getInstance().getImageLoaderOne();
+        showValidCode();
         yaoyaoExtroInfo(codeImageButton,mEmailSignInButton);
 
 
@@ -167,6 +173,29 @@ public class confirmActivity extends AppCompatActivity {
         mEditor.putString("newRegister", "no");
 
         mEditor.commit();
+    }
+
+
+    public void showValidCode() {
+
+
+
+
+        loadingImage.setVisibility(View.VISIBLE);
+        RotateAnimation rotateAnimation1 = new RotateAnimation(0f, 359f,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation1.setInterpolator(new LinearInterpolator());
+        rotateAnimation1.setDuration(1300);
+        rotateAnimation1.setRepeatCount(Animation.INFINITE);
+        rotateAnimation1.setFillAfter(true);
+
+        loadingImage.startAnimation(rotateAnimation1);
+//
+//
+
+
+
     }
 
 
@@ -202,6 +231,8 @@ public class confirmActivity extends AppCompatActivity {
                     codeButton.setText("");
                 }
                 CustomProgressBar.hideProgressBar();
+                loadingImage.clearAnimation();
+                loadingImage.setVisibility(View.INVISIBLE);
 
             }
 
@@ -237,7 +268,8 @@ public class confirmActivity extends AppCompatActivity {
                     codeButton.setText("");
                 }
                 CustomProgressBar.hideProgressBar();
-
+                loadingImage.clearAnimation();
+                loadingImage.setVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -246,6 +278,322 @@ public class confirmActivity extends AppCompatActivity {
             }
         });
         extras.startRequestValidCode();
+    }
+
+
+
+    public void submitYaoYaoLogin( String destURL, final String mVIEWSTATEGENERATOR, final String mVIEWSTATE, final String mEVENTVALIDATION, final String validCode, final String username, final String password) {
+
+
+
+        final String infoURLstring = "http://passport.5211game.com" + destURL;
+
+        if (destURL == null || destURL.equals("0") || mVIEWSTATEGENERATOR.equals("0") || mVIEWSTATE.equals("0") || mEVENTVALIDATION.equals("0")) {
+            yaoyaoExtroInfo(codeImageButton, mEmailSignInButton);
+            Toast.makeText(confirmActivity.this, "验证码错误，请重试", Toast.LENGTH_SHORT).show();
+
+        }
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, infoURLstring,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("On11Login", response);
+                        CustomProgressBar.hideProgressBar();
+
+                        if (response.contains("密码错误"))
+                        {
+                            refreshYaoYaoCode(codeImageButton,mEmailSignInButton);
+                            Toast.makeText(confirmActivity.this, "用户名或密码错误，请重试", Toast.LENGTH_SHORT).show();
+
+                        }else
+                        {
+
+
+                            String gamerID = pickUserID(response);
+
+                            Log.v("gamerID",gamerID);
+
+                            if (gamerID.equals("123")) {
+
+                                Toast.makeText(confirmActivity.this, "战绩获取失败，请重试", Toast.LENGTH_SHORT).show();
+                                refreshYaoYaoCode(codeImageButton, mEmailSignInButton);
+
+                            }
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+
+                String location = "";
+                String cookie_final = "";
+                if (error.networkResponse == null) {
+                    Toast.makeText(confirmActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
+
+                    return;
+                }
+
+                if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
+                    for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
+//                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
+
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {
+                            String cookieTemp = error.networkResponse.apacheHeaders[i].getValue();
+
+                            String[] cookieparts = cookieTemp.split(";");
+                            for (int j = 0; j < cookieparts.length; j++) {
+                                if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=")) {
+                                    if (cookie_final.equals("")) {
+                                        cookie_final = cookieparts[j];
+
+                                    } else {
+                                        cookie_final = cookie_final + ";" + cookieparts[j];
+                                    }
+                                }
+                            }
+
+
+                        }
+
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Location")) {
+                            location = error.networkResponse.apacheHeaders[i].getValue();
+                            String[] subUrl = location.split("st=");
+
+                            if (subUrl.length > 0) {
+                                location = "http://app.5211game.com/sso/login/?returnurl=http%3a%2f%2fscore.5211game.com%2fRecordCenter%2f&st=" + subUrl[1];
+                            }
+
+
+                        }
+
+                    }
+
+
+                }
+
+//
+                cookie_final = searchCookie + ";" + cookie_final;
+                searchCookie = cookie_final;
+
+//
+                redirectWithCookie(cookie_final, location, infoURLstring);
+
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0");
+                params.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                params.put("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
+                params.put("Referer", infoURLstring);
+                params.put("Cache-Control", "max-age=0");
+                params.put("Origin", "http://passport.5211game.com");
+                params.put("Upgrade-Insecure-Requests", "1");
+                params.put("Cookie", requestCookie);
+
+                return params;
+            }
+
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("__VIEWSTATE", mVIEWSTATE);
+                map.put("__VIEWSTATEGENERATOR", mVIEWSTATEGENERATOR);
+                map.put("__EVENTVALIDATION", mEVENTVALIDATION);
+                map.put("txtAccountName", username);
+                map.put("txtPassWord", password);
+                map.put("txtValidateCode", validCode);
+                map.put("ImgButtonLogin.x", "65");
+                map.put("ImgButtonLogin.y", "13");
+
+
+                return map;
+            }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                return super.parseNetworkResponse(response);
+            }
+        };
+
+
+        mQueue.add(stringRequest);
+    }
+
+
+    private void redirectWithCookie(final String cookie, final String loc, final String Referer) {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, loc,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("redirect done", response);
+
+                        for (int i = 0; i < response.length(); i += 1024) {
+                            if (i + 1024 < response.length())
+                                Log.d("redirect done", response.substring(i, i + 1024));
+                            else
+                                Log.d("redirect done", response.substring(i, response.length()));
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("TAG Redirect", error.getMessage(), error);
+//                String hostString = "";
+//                if (loc.startsWith("http://")) {
+//                    hostString = "http://" + loc.substring(7).split("/")[0];
+//                } else if (loc.startsWith("https://")) {
+//                    hostString = "https://" + loc.substring(8).split("/")[0];
+//                }
+
+
+                String location = "";
+                String cookie_final = "";
+
+                if (error.networkResponse == null) {
+                    Toast.makeText(confirmActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
+                    CustomProgressBar.hideProgressBar();
+
+                    return;
+                }
+                if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
+                    for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
+//                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {
+                            String cookieTemp = error.networkResponse.apacheHeaders[i].getValue();
+                            String[] cookieparts = cookieTemp.split(";");
+                            for (int j = 0; j < cookieparts.length; j++) {
+                                if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=") && !cookieparts[j].toLowerCase().contains("httponly")) {
+                                    if (cookie_final.equals("")) {
+                                        cookie_final = cookieparts[j];
+
+                                    } else {
+                                        cookie_final = cookie_final + ";" + cookieparts[j];
+                                    }
+                                }
+                            }
+                        }
+
+                        if (error.networkResponse.apacheHeaders[i].getName().equals("Location")) {
+                            location = error.networkResponse.apacheHeaders[i].getValue();
+
+                        }
+
+                    }
+                }
+                redirectCookie = cookie_final;
+                cookie_final = searchCookie + ";" + redirectCookie;
+                finalCookie = cookie_final;
+                Log.v("lkkkkk", finalCookie);
+
+
+
+
+                requestUserID(finalCookie, location);
+
+
+
+            }
+
+
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0");
+                params.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+                params.put("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
+                params.put("Referer", Referer);
+
+
+                Log.v("cookie redict", cookie);
+                params.put("Cookie", cookie);
+
+                return params;
+            }
+
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                return super.parseNetworkResponse(response);
+            }
+
+        };
+
+        mQueue.add(stringRequest);
+    }
+
+
+    private String pickUserID(String fullText) {
+
+
+        String[] aa = fullText.split("YY.u='");
+
+        if (aa.length > 1) {
+            String[] bb = aa[1].split("'");
+            return bb[0];
+        }
+        return "123";
+    }
+
+    private void requestUserID(final String cookie, String loc)
+    {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, loc,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) throws JSONException {
+
+                        Log.d("On11Login222", response);
+
+                        String gamerID = pickUserID(response);
+
+                        if (gamerID.equals("")) {
+
+                            Toast.makeText(confirmActivity.this, "战绩获取失败，请重试", Toast.LENGTH_SHORT).show();
+                            refreshYaoYaoCode(codeImageButton, mEmailSignInButton);
+
+                        } else {
+
+                            requestScore(gamerID);
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                CustomProgressBar.hideProgressBar();
+                Toast.makeText(confirmActivity.this, "战绩获取失败，请重试", Toast.LENGTH_SHORT).show();
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put("Cookie", cookie);
+
+                return params;
+            }
+
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                return super.parseNetworkResponse(response);
+            }
+        };
+
+
+        mQueue.add(stringRequest);
     }
 
     /**
@@ -263,6 +611,7 @@ public class confirmActivity extends AppCompatActivity {
         // Store values at the time of the login attempt.
         final String account = mEmailView.getText().toString();
         final String password = mPasswordView.getText().toString();
+        String validCode = validCodeField.getText().toString();
 //        final String account = "不是故意咯";
 //        final String password = "xuechan99";
 
@@ -272,7 +621,7 @@ public class confirmActivity extends AppCompatActivity {
         showProgress();
 
 
-        requestExtroInfoWithUser(account, password);
+        submitYaoYaoLogin(yaoyaoURL, VIEWSTATEGENERATOR, VIEWSTATE, EVENTVALIDATION,validCode,account, password);
 
 
     }
@@ -295,13 +644,7 @@ public class confirmActivity extends AppCompatActivity {
     public void showProgress() {
         CustomProgressBar.showProgressBar(this, false, "认证中");
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                CustomProgressBar.hideProgressBar();
-//            }
-//        }, 3000);
+
     }
 
 
@@ -381,509 +724,10 @@ public class confirmActivity extends AppCompatActivity {
     }
 
 
-    // request from 11....
-
-
-    private void requestExtroInfoWithUser(final String username, final String password) {
-
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://passport.5211game.com/t/Login.aspx?ReturnUrl=http%3a%2f%2fi.5211game.com%2flogin.aspx%3freturnurl%3d%252frating&loginUserName=",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) throws JSONException {
-
-//                        Log.d("TAG", response);
-
-                        String VIEWSTATEGENERATOR = pickVIEWSTATEGENERATOR(response);
-                        String VIEWSTATE = pickVIEWSTATE(response);
-                        String EVENTVALIDATION = pickEVENTVALIDATION(response);
-
-                        requestUserID(VIEWSTATE, VIEWSTATEGENERATOR, EVENTVALIDATION, username, password);
-//                        requestUserID_e(VIEWSTATE, VIEWSTATEGENERATOR, EVENTVALIDATION, "不是故意咯", "xuechan99", username);
-
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                CustomProgressBar.hideProgressBar();
-                Toast.makeText(confirmActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
-
-                Log.e("TAG", error.getMessage(), error);
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0");
-                params.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-                params.put("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
-
-                return params;
-            }
-
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String parsed;
-                try {
-                    parsed = new String(response.data, com.android.volley.toolbox.HttpHeaderParser.parseCharset(response.headers));
-                    String cookie = response.headers.get("Set-Cookie");
-                    String cookie_final = "";
-
-
-                    Pattern p = Pattern.compile("ASP.NET_SessionId=(.+)");
-                    Matcher m = p.matcher(cookie);
-
-                    if (m.find()) { //注意这里，是while不是if
-                        String xxx = m.group();
-//                        Log.v("cookiexxx", xxx);
-                        String[] aa = xxx.split(";");
-                        cookie_final = aa[0];
-//                        Log.v("cookiexxx1111", cookie);
-
-
-                    }
-                    requestCookie = cookie_final;
-
-
-                } catch (UnsupportedEncodingException e) {
-                    parsed = new String(response.data);
-                }
-                return Response.success(parsed, com.android.volley.toolbox.HttpHeaderParser.parseCacheHeaders(response));
-            }
-        };
-
-        mQueue.add(stringRequest);
-    }
-
-
-    private String pickVIEWSTATEGENERATOR(String fullText) {
-        String VIEWSTATEGENERATOR = "";
-        Pattern p = Pattern.compile("id=\"__VIEWSTATEGENERATOR\" value=\"(.+)\"");
-        Matcher m = p.matcher(fullText);
-
-        if (m.find()) { //注意这里，是while不是if
-            String xxx = m.group();
-//            Log.v("VIEWSTATEGENERATOR", xxx);
-
-
-            String[] aa = xxx.split("value=\"");
-//            Log.v("VIEWSTATEGENERATOR", aa[0]);
-
-            if (aa.length > 1) {
-//                Log.v("VIEWSTATEGENERATOR", aa[1]);
-
-                String[] bb = aa[1].split("\"");
-                VIEWSTATEGENERATOR = bb[0];
-//                Log.v("VIEWSTATEGENERATOR---->", VIEWSTATEGENERATOR);
-
-            }
-
-        }
-        return VIEWSTATEGENERATOR;
-    }
-
-
-    private String pickVIEWSTATE(String fullText) {
-        String VIEWSTATE = "";
-        Pattern p = Pattern.compile("id=\"__VIEWSTATE\" value=\"(.+)\"");
-        Matcher m = p.matcher(fullText);
-
-        if (m.find()) { //注意这里，是while不是if
-            String xxx = m.group();
-//            Log.v("VIEWSTATE", xxx);
-
-
-            String[] aa = xxx.split("value=\"");
-//            Log.v("VIEWSTATE", aa[0]);
-
-            if (aa.length > 1) {
-//                Log.v("VIEWSTATE", aa[1]);
-
-                String[] bb = aa[1].split("\"");
-                VIEWSTATE = bb[0];
-//                Log.v("VIEWSTATE---->", VIEWSTATE);
-
-            }
-
-        }
-        return VIEWSTATE;
-    }
-
-    private String pickEVENTVALIDATION(String fullText) {
-        String EVENTVALIDATION = "";
-        Pattern p = Pattern.compile("id=\"__EVENTVALIDATION\" value=\"(.+)\"");
-        Matcher m = p.matcher(fullText);
-
-        if (m.find()) { //注意这里，是while不是if
-            String xxx = m.group();
-//            Log.v("EVENTVALIDATION", xxx);
-
-
-            String[] aa = xxx.split("value=\"");
-//            Log.v("EVENTVALIDATION", aa[0]);
-
-            if (aa.length > 1) {
-//                Log.v("EVENTVALIDATION", aa[1]);
-
-                String[] bb = aa[1].split("\"");
-                EVENTVALIDATION = bb[0];
-//                Log.v("EVENTVALIDATION---->", EVENTVALIDATION);
-
-            }
-
-        }
-        return EVENTVALIDATION;
-    }
-
-    private void requestUserID(final String VIEWSTATE, final String VIEWSTATEGENERATOR, final String EVENTVALIDATION, final String username, final String password) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://passport.5211game.com/t/Login.aspx?ReturnUrl=http%3a%2f%2fi.5211game.com%2flogin.aspx%3freturnurl%3d%252frating&loginUserName=",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) throws JSONException {
-
-//                        Log.d("TAG<<<<<<<<<<", response);
-//
-                        CustomProgressBar.hideProgressBar();
-
-                        Toast.makeText(confirmActivity.this, "用户名或密码错误，请重新输入", Toast.LENGTH_SHORT).show();
-
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-//                CustomProgressBar.hideProgressBar();
-
-//                Log.e("TAG=========123=", error.networkResponse.headers.get("Set-Cookie"), error);
-
-                String location = "";
-                String cookie_final = "";
-                if (error.networkResponse==null)
-                {
-                    Toast.makeText(confirmActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
-                    CustomProgressBar.hideProgressBar();
-
-                    return;
-                }
-
-                if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
-                    for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
-//                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
-
-                        if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {
-                            String cookieTemp = error.networkResponse.apacheHeaders[i].getValue();
-
-                            String[] cookieparts = cookieTemp.split(";");
-                            for (int j = 0; j < cookieparts.length; j++) {
-                                if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=")) {
-                                    if (cookie_final.equals("")) {
-                                        cookie_final = cookieparts[j];
-
-                                    } else {
-                                        cookie_final = cookie_final + ";" + cookieparts[j];
-                                    }
-                                }
-                            }
-
-
-                        }
-
-                        if (error.networkResponse.apacheHeaders[i].getName().equals("Location")) {
-                            location = error.networkResponse.apacheHeaders[i].getValue();
-                            if (!location.startsWith("http")) {
-                                location = "http://passport.5211game.com" + location;
-                            }
-                        }
-
-                    }
-
-
-                }
-
-
-                searchCookie = cookie_final;
-
-                redirectWithCookie(cookie_final, location, username);
-
-
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-
-                Log.v("getHeaders", "getHeaders");
-
-                params.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0");
-                params.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-                params.put("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
-                params.put("Referer", "http://passport.5211game.com/t/Login.aspx?ReturnUrl=http%3a%2f%2fi.5211game.com%2flogin.aspx%3freturnurl%3d%252frating&loginUserName=");
-                params.put("Accept-Encoding", "gzip, deflate");
-
-
-// SharedPreferences mSharedPreferences = getApplication().getSharedPreferences("dotaerSharedPreferences", 0);
-//                String cookie = mSharedPreferences.getString("requestCookie","");
-                Log.v("cookie2", requestCookie);
-                params.put("Cookie", requestCookie);
-
-
-                return params;
-            }
-
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("__VIEWSTATE", VIEWSTATE);
-                map.put("__VIEWSTATEGENERATOR", VIEWSTATEGENERATOR);
-                map.put("__EVENTVALIDATION", EVENTVALIDATION);
-
-                map.put("txtUser", username);
-                map.put("txtPassWord", password);
-                map.put("butLogin", "登录");
-
-
-                return map;
-            }
-
-
-//            @Override
-
-
-//            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-//                String parsed;
-//                try {
-//                    parsed = new String(response.data, com.android.volley.toolbox.HttpHeaderParser.parseCharset(response.headers));
-//                    Log.v("cookieqqq", "cookieqqq");
-//
-//                    String cookie_final = "";
-//
-//                    String cookie = response.headers.get("Set-Cookie");
-//                    String[] cookieparts = cookie.split(";");
-//                    for (int j = 0; j < cookieparts.length; j++) {
-//                        if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=") && !cookieparts[j].toLowerCase().contains("httponly")) {
-//                            if (cookie_final.equals("")) {
-//                                cookie_final = cookieparts[j];
-//
-//                            } else {
-//                                cookie_final = cookie_final + ";" + cookieparts[j];
-//                            }
-//                        }
-//                    }
-////
-//                    ratingCookie = cookie_final;
-////
-//
-//                } catch (UnsupportedEncodingException e) {
-//                    parsed = new String(response.data);
-//                }
-//                return Response.success(parsed, com.android.volley.toolbox.HttpHeaderParser.parseCacheHeaders(response));
-//            }
-        };
-
-        mQueue.add(stringRequest);
-    }
-
-
-    private void redirectWithCookie(final String cookie, final String loc, final String SearchName) {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, loc,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) throws JSONException {
-
-                        Log.d("redirect done", response);
-
-                        for (int i = 0; i < response.length(); i += 1024) {
-                            if (i + 1024 < response.length())
-                                Log.d("redirect done", response.substring(i, i + 1024));
-                            else
-                                Log.d("redirect done", response.substring(i, response.length()));
-                        }
-
-                        String userID;
-
-
-                        Pattern p = Pattern.compile("YY.d.u = (.+)");
-                        Matcher m = p.matcher(response);
-
-                        if (m.find()) { //注意这里，是while不是if
-                            String xxx = m.group();
-//                            Log.v("Before score", xxx);
-
-                            String[] resultArray = xxx.split("YY.d.u = ");
-                            if (resultArray.length > 1) {
-                                userID = resultArray[1].split(",YY.d.n")[0];
-                                requestScore(userID);
-
-                            }
-
-                        } else {
-                            CustomProgressBar.hideProgressBar();
-                            if (response.contains("密码错误")) {
-                                Toast.makeText(confirmActivity.this, "用户名或密码错误，请重新输入", Toast.LENGTH_SHORT).show();
-
-                            } else {
-                                Toast.makeText(confirmActivity.this, "绑定请求出错，请稍后再试", Toast.LENGTH_SHORT).show();
-
-                            }
-
-                        }
-
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Log.e("TAG Redirect", error.getMessage(), error);
-                String hostString = "";
-                if (loc.startsWith("http://")) {
-                    hostString = "http://" + loc.substring(7).split("/")[0];
-                } else if (loc.startsWith("https://")) {
-                    hostString = "https://" + loc.substring(8).split("/")[0];
-                }
-
-
-                String location = "";
-                String cookie_final = "";
-
-                if (error.networkResponse==null)
-                {
-                    Toast.makeText(confirmActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
-                    CustomProgressBar.hideProgressBar();
-
-                    return;
-                }
-                if (error.networkResponse.statusCode == 302 || error.networkResponse.statusCode == 301) {
-                    for (int i = 0; i < error.networkResponse.apacheHeaders.length; i++) {
-//                        Log.d("my header", error.networkResponse.apacheHeaders[i].getName() + " - " + error.networkResponse.apacheHeaders[i].getValue());
-                        if (error.networkResponse.apacheHeaders[i].getName().equals("Set-Cookie")) {
-                            String cookieTemp = error.networkResponse.apacheHeaders[i].getValue();
-                            String[] cookieparts = cookieTemp.split(";");
-                            for (int j = 0; j < cookieparts.length; j++) {
-                                if (!cookieparts[j].toLowerCase().contains("domain=") && !cookieparts[j].toLowerCase().contains("path=") && !cookieparts[j].toLowerCase().contains("expires=") && !cookieparts[j].toLowerCase().contains("httponly")) {
-                                    if (cookie_final.equals("")) {
-                                        cookie_final = cookieparts[j];
-
-                                    } else {
-                                        cookie_final = cookie_final + ";" + cookieparts[j];
-                                    }
-                                }
-                            }
-                        }
-                        if (error.networkResponse.apacheHeaders[i].getName().equals("Location")) {
-                            location = error.networkResponse.apacheHeaders[i].getValue();
-                            if (!location.startsWith("http")) {
-                                location = hostString + location;
-                            }
-                        }
-                    }
-                }
-                redirectCookie = cookie_final;
-                cookie_final = searchCookie + ";" + redirectCookie;
-                ratingCookie = cookie_final;
-                redirectWithCookie(cookie_final, location, SearchName);
-
-            }
-
-
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0");
-                params.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-                params.put("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
-                params.put("Referer", "http://passport.5211game.com/t/Login.aspx?ReturnUrl=http%3a%2f%2fi.5211game.com%2flogin.aspx%3freturnurl%3d%252frating&loginUserName=");
-
-
-                Log.v("cookie redict", cookie);
-                params.put("Cookie", cookie);
-
-                return params;
-            }
-
-
-        };
-
-        mQueue.add(stringRequest);
-    }
-
-
-    //    private void requestSearchUserID(String searchName) {
-//        String infoURLstring = "";
-//        try {
-//            String strUTF8 = URLEncoder.encode(searchName, "UTF-8");
-//            infoURLstring = "http://i.5211game.com/Rating/Ladder?u=" + strUTF8;
-//            Log.v("strUTF8", strUTF8);
-//
-//
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, infoURLstring,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) throws JSONException {
-//
-//
-//                        String userID = "";
-//
-//
-//                        Pattern p = Pattern.compile("YY.d.u = (.+)");
-//                        Matcher m = p.matcher(response);
-//
-//                        if (m.find()) { //注意这里，是while不是if
-//                            String xxx = m.group();
-////                            Log.v("Before score", xxx);
-//
-//                            String[] resultArray = xxx.split("YY.d.j = ");
-//                            if (resultArray.length > 1) {
-//                                userID = resultArray[1].split(",YY.d.k")[0];
-//                                if (userID.equals("YY.d.u")) {
-//                                    userID = "443732422";
-//                                }
-//                            }
-//
-//                        }
-//
-//                        requestScore(userID);
-//
-//
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//
-//                Log.e("TAG", error.getMessage(), error);
-//            }
-//        }) {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> params = new HashMap<String, String>();
-//                params.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0");
-//                params.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-//                params.put("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");
-//                params.put("Referer", "http://passport.5211game.com/t/Login.aspx?ReturnUrl=http%3a%2f%2fi.5211game.com%2flogin.aspx%3freturnurl%3d%252frating&loginUserName=");
-//
-//
-//                Log.v("ratingCookie", ratingCookie);
-//                params.put("Cookie", ratingCookie);
-//
-//                return params;
-//            }
-//
-//
-//        };
-//
-//        mQueue.add(stringRequest);
-//    }
-//
     private void requestScore(final String userID) {
-        Long tsLong = System.currentTimeMillis();
-        String ts = tsLong.toString();
 
-        String urlString = "http://i.5211game.com/request/rating/?r=" + ts;
+
+        String urlString = "http://score.5211game.com/RecordCenter/request/record";
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, urlString,
@@ -920,7 +764,6 @@ public class confirmActivity extends AppCompatActivity {
 
                         submitLevel(userID);
 
-                        CustomProgressBar.hideProgressBar();
 
 
                     }
@@ -936,7 +779,7 @@ public class confirmActivity extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
 
 
-                params.put("Cookie", ratingCookie);
+                params.put("Cookie", finalCookie);
 
                 return params;
             }
@@ -944,7 +787,7 @@ public class confirmActivity extends AppCompatActivity {
 
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
-                map.put("method", "getrating");
+                map.put("method", "getrecord");
                 map.put("u", userID);
                 map.put("t", "10001");
 

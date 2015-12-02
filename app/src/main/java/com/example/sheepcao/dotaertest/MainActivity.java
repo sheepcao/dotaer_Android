@@ -1,5 +1,6 @@
 package com.example.sheepcao.dotaertest;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -10,6 +11,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +31,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -145,6 +151,8 @@ public class MainActivity extends AppCompatActivity
     String searchCookie = "";
     String redirectCookie = "";
     String ratingCookie = "";
+
+    ImageView loadingImage;
 
 
     @Override
@@ -309,6 +317,15 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        if (hasFocus) {
+//            showValidCode();
+//
+//
+//        }
+//    }
+
     public void yaoyaoExtroInfo(final Button codeButton, final Button submitButton) {
 
         CustomProgressBar.showProgressBar(MainActivity.this, false, "获取中");
@@ -340,7 +357,8 @@ public class MainActivity extends AppCompatActivity
                     codeButton.setText("");
                 }
                 CustomProgressBar.hideProgressBar();
-
+                loadingImage.clearAnimation();
+                loadingImage.setVisibility(View.GONE);
             }
 
             @Override
@@ -354,6 +372,18 @@ public class MainActivity extends AppCompatActivity
     public void refreshYaoYaoCode(final Button codeButton, final Button submitButton) {
 
         CustomProgressBar.showProgressBar(MainActivity.this, false, "获取中");
+
+
+        RotateAnimation rotateAnimation1 = new RotateAnimation(0f, 359f,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation1.setInterpolator(new LinearInterpolator());
+        rotateAnimation1.setDuration(1300);
+        rotateAnimation1.setRepeatCount(Animation.INFINITE);
+        rotateAnimation1.setFillAfter(true);
+
+        loadingImage.startAnimation(rotateAnimation1);
+        loadingImage.setVisibility(View.VISIBLE);
 
         RequestExtras extras = new RequestExtras(customQueue, imageLoaderOne);
         extras.setRequestCompelted(new RequestExtras.requestCallBack() {
@@ -374,6 +404,8 @@ public class MainActivity extends AppCompatActivity
                     codeButton.setText("");
                 }
                 CustomProgressBar.hideProgressBar();
+                loadingImage.clearAnimation();
+                loadingImage.setVisibility(View.GONE);
 
             }
 
@@ -395,6 +427,32 @@ public class MainActivity extends AppCompatActivity
 
         deleteDialog.setCanceledOnTouchOutside(false);
 
+        if (loadingImage == null) {
+            loadingImage = (ImageView) codeDialogView.findViewById(R.id.loading_image);
+            RotateAnimation rotateAnimation1 = new RotateAnimation(0f, 359f,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f);
+            rotateAnimation1.setInterpolator(new LinearInterpolator());
+            rotateAnimation1.setDuration(1300);
+            rotateAnimation1.setRepeatCount(Animation.INFINITE);
+            rotateAnimation1.setFillAfter(true);
+
+            loadingImage.startAnimation(rotateAnimation1);
+        }
+        loadingImage.setVisibility(View.VISIBLE);
+
+
+
+//        ObjectAnimator animator = ObjectAnimator.ofFloat(loadingImage, "rotationZ", 0, 90, 180, 270, 360);
+//        animator.setDuration(300000);
+//        animator.setInterpolator(new LinearInterpolator());
+//        animator.start();
+
+
+//
+//
+
+
         final EditText codeField = (EditText) codeDialogView.findViewById(R.id.code_field);
 
         codeDialogView.findViewById(R.id.submit_btn).setEnabled(false);
@@ -405,7 +463,7 @@ public class MainActivity extends AppCompatActivity
 
                 Log.v("code submit", "code submit");
 
-                submitYaoYaoLogin(deleteDialog, (Button) codeDialogView.findViewById(R.id.code_image_btn), (Button) codeDialogView.findViewById(R.id.submit_btn),
+                submitYaoYaoLogin(deleteDialog, (Button) codeDialogView.findViewById(R.id.submit_btn), (Button) codeDialogView.findViewById(R.id.code_image_btn),
                         yaoyaoURL, VIEWSTATEGENERATOR, VIEWSTATE, EVENTVALIDATION, codeField.getText().toString(), "不是故意咯", "xuechan99");
 
 
@@ -431,6 +489,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
     public void submitYaoYaoLogin(final AlertDialog deleteDialog, final Button submitBtn, final Button codeButton, String destURL, final String mVIEWSTATEGENERATOR, final String mVIEWSTATE, final String mEVENTVALIDATION, final String validCode, final String username, final String password) {
 
         CustomProgressBar.showProgressBar(MainActivity.this, false, "验证中");
@@ -438,7 +497,7 @@ public class MainActivity extends AppCompatActivity
 
         final String infoURLstring = "http://passport.5211game.com" + destURL;
 
-        if (destURL==null||destURL.equals("0") || mVIEWSTATEGENERATOR.equals("0") || mVIEWSTATE.equals("0") || mEVENTVALIDATION.equals("0")) {
+        if (destURL == null || destURL.equals("0") || mVIEWSTATEGENERATOR.equals("0") || mVIEWSTATE.equals("0") || mEVENTVALIDATION.equals("0")) {
             yaoyaoExtroInfo(codeButton, submitBtn);
             Toast.makeText(MainActivity.this, "验证失败，请重试", Toast.LENGTH_SHORT).show();
 

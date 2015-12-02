@@ -443,6 +443,7 @@ public class myPage extends AppCompatActivity {
             String hero2 = tempDic.getString("AdeptHero2");
             String hero3 = tempDic.getString("AdeptHero3");
 
+            Log.v("heros",hero1+"---"+hero2+"---"+hero3);
 
             if (hero1 != null) {
                 ImageLoader.ImageListener listener = ImageLoader.getImageListener(hero_first, R.drawable.nocolor, R.drawable.nocolor);
@@ -458,7 +459,7 @@ public class myPage extends AppCompatActivity {
 
             if (hero3 != null) {
                 ImageLoader.ImageListener listener3 = ImageLoader.getImageListener(hero_third, R.drawable.nocolor, R.drawable.nocolor);
-                String heroUrl3 = "http://http://score.5211game.com/RecordCenter/img/dota/hero/" + hero3 + ".jpg";
+                String heroUrl3 = "http://score.5211game.com/RecordCenter/img/dota/hero/" + hero3 + ".jpg";
                 imageLoader.get(heroUrl3, listener3);
             }
         } else {

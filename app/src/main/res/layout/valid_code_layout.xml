@@ -35,17 +35,32 @@
             android:textColor="#00090b"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/code_image_btn"
-            android:layout_width="80dp"
+        <FrameLayout android:layout_width="80dp"
             android:layout_height="24dp"
             android:layout_marginLeft="12dp"
+
+            >
+        <Button
+            android:id="@+id/code_image_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:background="@android:color/transparent"
             android:clickable="true"
-            android:text="刷新"
+            android:text=""
             android:textColor="#6096a3"
             android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/loading_image"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginLeft="28dp"
+            android:background="#0095a1b6"
+            android:src="@drawable/loading"
+
+            />
+        </FrameLayout>
+
     </LinearLayout>
 
     <Button

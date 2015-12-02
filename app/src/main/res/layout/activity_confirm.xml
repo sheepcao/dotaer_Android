@@ -23,7 +23,7 @@
     <ScrollView
         android:id="@+id/login_form"
         android:layout_width="250dp"
-        android:layout_height="260dp">
+        android:layout_height="350dp">
 
         <LinearLayout
             android:id="@+id/email_login_form_confirm"
@@ -60,17 +60,19 @@
                 android:layout_width="220dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
+                android:layout_marginTop="15dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/code_field"
                     android:layout_width="130dp"
-                    android:layout_height="30dp"
+                    android:layout_height="40dp"
                     android:clickable="true"
                     android:textColor="#00090b"
-                    android:textStyle="bold" />
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
 
                 <RelativeLayout
                     android:layout_width="78dp"
